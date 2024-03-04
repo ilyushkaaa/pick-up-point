@@ -22,7 +22,7 @@ func (od *OrderDelivery) IssueOrderDelivery(args []string) error {
 	}
 	err := od.service.IssueOrderService(orderIDs)
 	if err != nil {
-		return fmt.Errorf("error in issuing order to client: %s", err)
+		return fmt.Errorf("error in issuing order to client: %w", err)
 	}
 	fmt.Println("orders were issued to client")
 	return nil

@@ -19,7 +19,7 @@ func (od *OrderDelivery) ReturnOrderDelivery(args []string) error {
 	}
 	err = od.service.ReturnOrderService(clientID, orderID)
 	if err != nil {
-		return fmt.Errorf("error in returning order from client to pick-up point: %s", err)
+		return fmt.Errorf("error in returning order from client to pick-up point: %w", err)
 	}
 	fmt.Println("client's order was returned to pick-up point")
 	return nil

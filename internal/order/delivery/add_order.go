@@ -24,7 +24,7 @@ func (od *OrderDelivery) AddOrderDelivery(args []string) error {
 	}
 	err = od.service.AddOrderService(orderID, clientID, expireDate)
 	if err != nil {
-		return fmt.Errorf("error in adding order to pick-up point: %s", err)
+		return fmt.Errorf("error in adding order to pick-up point: %w", err)
 	}
 	fmt.Println("order is added")
 	return nil
