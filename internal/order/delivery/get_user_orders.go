@@ -56,25 +56,22 @@ func makeFilters(params []string) (model.Filters, error) {
 
 	var err error
 
-	switch len(params) {
-	case 1:
-		if params[0] == "PP-only" {
+	for _, par := range params {
+		switch par {
+		case "PP-only":
+			if filters.PPOnly {
+				return filters, fmt.Errorf("can not set PP-only twice")
+			}
 			filters.PPOnly = true
-		} else {
+		default:
+			if filters.Limit != 0 {
+				return filters, fmt.Errorf("can not set limit twice")
+			}
 			filters.Limit, err = parseLimit(params[0])
 			if err != nil {
 				return filters, err
 			}
 		}
-	case 2:
-		filters.Limit, err = parseLimit(params[0])
-		if err != nil {
-			return filters, err
-		}
-		if params[1] != "PP-only" {
-			return filters, fmt.Errorf("unknown param")
-		}
-		filters.PPOnly = true
 	}
 	return filters, nil
 }

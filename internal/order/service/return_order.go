@@ -11,21 +11,20 @@ func (op *OrderServicePP) ReturnOrderService(clientID, orderID int) error {
 		if orderID != order.ID {
 			continue
 		}
-		if clientID == order.ClientID {
-			if !order.IsIssued {
-				return ErrOrderIsNotIssued
-			}
-			if order.IsReturned {
-				return ErrOrderIsReturned
-			}
-			maxReturnTime := order.OrderIssueDate.Add(time.Hour * 24 * 2)
-			if maxReturnTime.Before(time.Now()) {
-				return ErrReturnTimeExpired
-			}
-			return op.storage.ReturnOrderStorage(clientID, orderID)
+		if clientID != order.ClientID {
+			break
 		}
-		break
-
+		if !order.IsIssued {
+			return ErrOrderIsNotIssued
+		}
+		if order.IsReturned {
+			return ErrOrderIsReturned
+		}
+		maxReturnTime := order.OrderIssueDate.Add(time.Hour * 24 * 2)
+		if maxReturnTime.Before(time.Now()) {
+			return ErrReturnTimeExpired
+		}
+		return op.storage.ReturnOrderStorage(clientID, orderID)
 	}
 	return ErrClientOrderNotFound
 }

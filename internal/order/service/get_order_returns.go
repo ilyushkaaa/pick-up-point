@@ -13,12 +13,5 @@ func (op *OrderServicePP) GetOrderReturnsService(pageNum int) ([]model.Order, er
 	if startingOrderForPage >= len(orders) {
 		return nil, ErrNoOrdersOnThisPage
 	}
-	return orders[startingOrderForPage:getMin(startingOrderForPage+4, len(orders))], nil
-}
-
-func getMin(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
+	return orders[startingOrderForPage:min(startingOrderForPage+4, len(orders))], nil
 }
