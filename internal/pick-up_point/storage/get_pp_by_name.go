@@ -2,8 +2,8 @@ package storage
 
 import "homework/internal/pick-up_point/model"
 
-func (fs *FilePPStorage) GetPickUpPointByNameStorage(name string) (*model.PickUpPoint, error) {
-	pickUpPoints, err := fs.GetPickUpPointsStorage()
+func (fs *FilePPStorage) GetPickUpPointByName(name string) (*model.PickUpPoint, error) {
+	pickUpPoints, err := fs.GetPickUpPoints()
 	if err != nil {
 		return nil, err
 	}

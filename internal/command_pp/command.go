@@ -14,17 +14,17 @@ import (
 
 type Commands []Command
 
-const commandsNum = 3
-
 func InitCommands(
 	ppDelivery *delivery.PPDelivery,
 	chanForRead chan<- request.Request,
-	chanForWrite chan<- request.Request) Commands {
-	commands := make(Commands, 0, commandsNum)
-	commands = append(commands, New("add", chanForWrite, ppDelivery.AddPickUpPointDelivery))
-	commands = append(commands, New("get_by_name", chanForRead, ppDelivery.GetPickUpPointByNameDelivery))
-	commands = append(commands, New("get_all", chanForRead, ppDelivery.GetPickUpPointsDelivery))
-	return commands
+	chanForWrite chan<- request.Request,
+) Commands {
+	return Commands{
+		New("add", chanForWrite, ppDelivery.AddPickUpPoint),
+		New("get_by_name", chanForRead, ppDelivery.GetPickUpPointByName),
+		New("get_all", chanForRead, ppDelivery.GetPickUpPoints),
+		New("update", chanForWrite, ppDelivery.UpdatePickUpPoint),
+	}
 }
 
 func (cs Commands) Call(commandName string, params []string) (uuid.UUID, error) {

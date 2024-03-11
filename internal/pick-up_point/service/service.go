@@ -6,9 +6,10 @@ import (
 )
 
 type PickUpPointService interface {
-	AddPickUpPointService(point model.PickUpPoint) error
-	GetPickUpPointsService() ([]model.PickUpPoint, error)
-	GetPickUpPointByNameService(name string) (*model.PickUpPoint, error)
+	AddPickUpPoint(point model.PickUpPoint) error
+	GetPickUpPoints() ([]model.PickUpPoint, error)
+	GetPickUpPointByName(name string) (*model.PickUpPoint, error)
+	UpdatePickUpPoint(point model.PickUpPoint) error
 }
 
 type PPService struct {

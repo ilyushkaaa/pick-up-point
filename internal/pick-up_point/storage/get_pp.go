@@ -8,7 +8,7 @@ import (
 	"homework/internal/pick-up_point/model"
 )
 
-func (fs *FilePPStorage) GetPickUpPointsStorage() ([]model.PickUpPoint, error) {
+func (fs *FilePPStorage) GetPickUpPoints() ([]model.PickUpPoint, error) {
 	fs.mu.Lock()
 	defer fs.mu.Unlock()
 	decoder := json.NewDecoder(fs.file)

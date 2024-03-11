@@ -8,7 +8,7 @@ import (
 	"homework/internal/pick-up_point/model"
 )
 
-func (ps *PPDelivery) AddPickUpPointDelivery(params []string) response.Response {
+func (ps *PPDelivery) AddPickUpPoint(params []string) response.Response {
 	if len(params) != 1 {
 		return response.Response{
 			Err: fmt.Errorf("add pick-up point method must have 1 param"),
@@ -22,19 +22,12 @@ func (ps *PPDelivery) AddPickUpPointDelivery(params []string) response.Response 
 		}
 	}
 
-	if validationErrors := newPickUpPoint.Validate(); len(validationErrors) != 0 {
-		var errorsJSON []byte
-		errorsJSON, err = json.Marshal(validationErrors)
-		if err != nil {
-			return response.Response{
-				Err: fmt.Errorf("you have problems with validation, but there was an error in coding them in json: %w", err),
-			}
-		}
+	if err = ps.Validate(newPickUpPoint); err != nil {
 		return response.Response{
-			Err: fmt.Errorf("validation errors: %s", string(errorsJSON)),
+			Err: err,
 		}
 	}
-	err = ps.service.AddPickUpPointService(newPickUpPoint)
+	err = ps.service.AddPickUpPoint(newPickUpPoint)
 	if err != nil {
 		return response.Response{
 			Err: fmt.Errorf("error in adding new pick-up point: %w", err),

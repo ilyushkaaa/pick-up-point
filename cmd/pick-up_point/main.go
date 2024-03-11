@@ -24,6 +24,13 @@ func main() {
 		fmt.Printf("error in creating storage: %s\n", err)
 		return
 	}
+	defer func() {
+		fmt.Println("was closed")
+		err = PPStorage.Close()
+		if err != nil {
+			fmt.Printf("error in closing storage: %s\n", err)
+		}
+	}()
 
 	PPService := service.New(PPStorage)
 	PPDelivery := delivery.New(PPService)
@@ -44,9 +51,4 @@ func main() {
 
 	<-sgChan
 	fmt.Println("Got end signal")
-	err = PPStorage.Close()
-	if err != nil {
-		fmt.Printf("error in closing storage: %s\n", err)
-	}
-	os.Exit(0)
 }

@@ -11,9 +11,10 @@ import (
 const fileName = "storage_pp.json"
 
 type PPStorage interface {
-	AddPickUpPointStorage(point model.PickUpPoint) error
-	GetPickUpPointsStorage() ([]model.PickUpPoint, error)
-	GetPickUpPointByNameStorage(name string) (*model.PickUpPoint, error)
+	AddPickUpPoint(point model.PickUpPoint) error
+	GetPickUpPoints() ([]model.PickUpPoint, error)
+	GetPickUpPointByName(name string) (*model.PickUpPoint, error)
+	UpdatePickUpPoint(point model.PickUpPoint) error
 	Close() error
 }
 
