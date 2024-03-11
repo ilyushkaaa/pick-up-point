@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"os"
 
-	"homework/internal/command"
+	"homework/internal/command_order"
 	"homework/internal/order/delivery"
 	"homework/internal/order/service"
 	"homework/internal/order/storage"
 )
 
-const tipText = `To see full list of commands start program with command line argument "help"`
+const tipText = `To see full list of commands start program with command_order line argument "help"`
 
 func main() {
 	orderStorage, err := storage.New()
@@ -31,7 +31,7 @@ func main() {
 		fmt.Printf("Command is not set: %s\n", tipText)
 		return
 	}
-	commands := command.InitCommands(orderDelivery)
+	commands := commandorder.InitCommands(orderDelivery)
 	err = commands.Call(args[0], args[1:])
 	if err != nil {
 		fmt.Printf("ended with error: %s", err)

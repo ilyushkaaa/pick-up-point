@@ -7,7 +7,7 @@ import (
 	"homework/internal/order/model"
 )
 
-const fileName = "storage.json"
+const fileName = "storage_order.json"
 
 type OrderStorage interface {
 	AddOrderStorage(newOrder model.Order) error

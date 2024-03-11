@@ -6,4 +6,5 @@
 .DS_STORE
 .DS_Store
 /.vscode
-/storage.json
+/storage_order.json
+/storage_pp.json
