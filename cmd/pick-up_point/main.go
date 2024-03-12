@@ -25,7 +25,6 @@ func main() {
 	chanForRead := make(chan request.Request)
 	responseChan := make(chan response.Response)
 	logChan := make(chan string)
-	inputChan := make(chan string)
 
 	PPStorage, err := storage.New(logChan)
 	if err != nil {
@@ -61,7 +60,7 @@ func main() {
 	go func() {
 		wg.Add(1)
 		defer wg.Done()
-		commands.ProcessInput(ctx, inputChan)
+		commands.ProcessInput(ctx)
 	}()
 	go commandpp.ProcessLogs(logChan)
 

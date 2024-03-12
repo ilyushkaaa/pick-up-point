@@ -39,7 +39,8 @@ func (cs Commands) Call(commandName string, params []string) (uuid.UUID, error) 
 	return uuid.UUID{}, fmt.Errorf("unknown command")
 }
 
-func (cs Commands) ProcessInput(ctx context.Context, inputChan chan string) {
+func (cs Commands) ProcessInput(ctx context.Context) {
+	inputChan := make(chan string)
 	go input(inputChan)
 	for {
 		select {

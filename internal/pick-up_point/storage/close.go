@@ -1,7 +1,7 @@
 package storage
 
 func (fs *FilePPStorage) Close() error {
-	err := fs.SaveCashToFile()
+	err := fs.SaveCacheToFile()
 	if err != nil {
 		return err
 	}
