@@ -38,13 +38,13 @@ func New(logChan chan<- string) (*FilePPStorage, error) {
 		mu:    &sync.RWMutex{},
 		cache: make([]model.PickUpPoint, 0),
 	}
-	err = filePPStorage.getCash()
-	go filePPStorage.processSavingCash(logChan)
+	err = filePPStorage.getCache()
+	go filePPStorage.processSavingCache(logChan)
 	return filePPStorage, err
 
 }
 
-func (fs *FilePPStorage) getCash() error {
+func (fs *FilePPStorage) getCache() error {
 	decoder := json.NewDecoder(fs.file)
 	var pickUpPoints []model.PickUpPoint
 	if err := decoder.Decode(&pickUpPoints); err != nil {
@@ -60,7 +60,7 @@ func (fs *FilePPStorage) getCash() error {
 	return nil
 }
 
-func (fs *FilePPStorage) SaveCashToFile() error {
+func (fs *FilePPStorage) SaveCacheToFile() error {
 	fs.mu.Lock()
 	defer fs.mu.Unlock()
 	_, err := fs.file.Seek(0, 0)
@@ -71,10 +71,10 @@ func (fs *FilePPStorage) SaveCashToFile() error {
 	return encoder.Encode(fs.cache)
 }
 
-func (fs *FilePPStorage) processSavingCash(logChan chan<- string) {
+func (fs *FilePPStorage) processSavingCache(logChan chan<- string) {
 	ticker := time.NewTicker(time.Minute)
 	for range ticker.C {
-		err := fs.SaveCashToFile()
+		err := fs.SaveCacheToFile()
 		var logMessage string
 		if err != nil {
 			logMessage = fmt.Sprintf("Log info: error in saving cash into file: %s", err)
