@@ -2,6 +2,7 @@ package commandpp
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
 	"strings"
@@ -38,29 +39,34 @@ func (cs Commands) Call(commandName string, params []string) (uuid.UUID, error) 
 	return uuid.UUID{}, fmt.Errorf("unknown command")
 }
 
-func (cs Commands) ProcessInput() {
+func (cs Commands) ProcessInput(ctx context.Context) {
 	for {
-		scanner := bufio.NewScanner(os.Stdin)
-		fmt.Println("User info: Waiting for command:")
-		scanner.Scan()
-		paramsStr := scanner.Text()
+		select {
+		case <-ctx.Done():
+			fmt.Println("End receiving commands")
+			return
+		default:
+			scanner := bufio.NewScanner(os.Stdin)
+			fmt.Println("User info: Waiting for command:")
+			scanner.Scan()
+			paramsStr := scanner.Text()
 
-		if err := scanner.Err(); err != nil {
-			fmt.Println("User info:Error in reading input:", err)
-		}
+			if err := scanner.Err(); err != nil {
+				fmt.Println("User info:Error in reading input:", err)
+			}
 
-		params := strings.Split(paramsStr, " ")
-		if len(params) == 0 {
-			fmt.Println("User info: no command entered")
-			continue
+			params := strings.Split(paramsStr, " ")
+			if len(params) == 0 {
+				fmt.Println("User info: no command entered")
+				continue
+			}
+			reqID, err := cs.Call(params[0], params[1:])
+			if err != nil {
+				fmt.Printf("User info: ended with error: %s\n", err)
+			} else {
+				fmt.Printf("User info: your request got ID %s\n", reqID)
+			}
 		}
-		reqID, err := cs.Call(params[0], params[1:])
-		if err != nil {
-			fmt.Printf("User info: ended with error: %s\n", err)
-		} else {
-			fmt.Printf("User info: your request got ID %s\n", reqID)
-		}
-
 	}
 }
 

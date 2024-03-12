@@ -3,15 +3,16 @@ package storage
 import "homework/internal/pick-up_point/model"
 
 func (fs *FilePPStorage) UpdatePickUpPoint(point model.PickUpPoint) error {
-	pickUpPoints, err := fs.GetPickUpPoints()
-	if err != nil {
-		return err
-	}
-	for i, pp := range pickUpPoints {
+	fs.mu.RLock()
+	for i, pp := range fs.cash {
 		if pp.Name == point.Name {
-			pickUpPoints[i] = point
-			break
+			fs.mu.RUnlock()
+			fs.mu.Lock()
+			fs.cash[i] = point
+			fs.mu.Unlock()
+			return nil
 		}
 	}
-	return fs.writePickUpPoints(pickUpPoints)
+	fs.mu.RUnlock()
+	return nil
 }

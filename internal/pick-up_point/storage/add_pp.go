@@ -5,10 +5,7 @@ import (
 )
 
 func (fs *FilePPStorage) AddPickUpPoint(point model.PickUpPoint) error {
-	pickUpPoints, err := fs.GetPickUpPoints()
-	if err != nil {
-		return err
-	}
-	pickUpPoints = append(pickUpPoints, point)
-	return fs.writePickUpPoints(pickUpPoints)
+	fs.mu.Lock()
+	fs.cash = append(fs.cash, point)
+	return nil
 }
