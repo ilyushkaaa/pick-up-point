@@ -6,6 +6,7 @@ import (
 
 func (fs *FilePPStorage) AddPickUpPoint(point model.PickUpPoint) error {
 	fs.mu.Lock()
-	fs.cash = append(fs.cash, point)
+	defer fs.mu.Unlock()
+	fs.cache = append(fs.cache, point)
 	return nil
 }

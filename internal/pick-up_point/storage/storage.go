@@ -23,9 +23,9 @@ type PPStorage interface {
 }
 
 type FilePPStorage struct {
-	file *os.File
-	cash []model.PickUpPoint
-	mu   *sync.RWMutex
+	file  *os.File
+	cache []model.PickUpPoint
+	mu    *sync.RWMutex
 }
 
 func New(logChan chan<- string) (*FilePPStorage, error) {
@@ -34,9 +34,9 @@ func New(logChan chan<- string) (*FilePPStorage, error) {
 		return nil, fmt.Errorf("error in opening file")
 	}
 	filePPStorage := &FilePPStorage{
-		file: file,
-		mu:   &sync.RWMutex{},
-		cash: make([]model.PickUpPoint, 0),
+		file:  file,
+		mu:    &sync.RWMutex{},
+		cache: make([]model.PickUpPoint, 0),
 	}
 	err = filePPStorage.getCash()
 	go filePPStorage.processSavingCash(logChan)
@@ -56,7 +56,7 @@ func (fs *FilePPStorage) getCash() error {
 	if err != nil {
 		return err
 	}
-	fs.cash = pickUpPoints
+	fs.cache = pickUpPoints
 	return nil
 }
 
@@ -68,7 +68,7 @@ func (fs *FilePPStorage) SaveCashToFile() error {
 		return err
 	}
 	encoder := json.NewEncoder(fs.file)
-	return encoder.Encode(fs.cash)
+	return encoder.Encode(fs.cache)
 }
 
 func (fs *FilePPStorage) processSavingCash(logChan chan<- string) {

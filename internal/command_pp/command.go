@@ -39,22 +39,14 @@ func (cs Commands) Call(commandName string, params []string) (uuid.UUID, error) 
 	return uuid.UUID{}, fmt.Errorf("unknown command")
 }
 
-func (cs Commands) ProcessInput(ctx context.Context) {
+func (cs Commands) ProcessInput(ctx context.Context, inputChan chan string) {
+	go input(inputChan)
 	for {
 		select {
 		case <-ctx.Done():
 			fmt.Println("End receiving commands")
 			return
-		default:
-			scanner := bufio.NewScanner(os.Stdin)
-			fmt.Println("User info: Waiting for command:")
-			scanner.Scan()
-			paramsStr := scanner.Text()
-
-			if err := scanner.Err(); err != nil {
-				fmt.Println("User info:Error in reading input:", err)
-			}
-
+		case paramsStr := <-inputChan:
 			params := strings.Split(paramsStr, " ")
 			if len(params) == 0 {
 				fmt.Println("User info: no command entered")
@@ -67,6 +59,20 @@ func (cs Commands) ProcessInput(ctx context.Context) {
 				fmt.Printf("User info: your request got ID %s\n", reqID)
 			}
 		}
+	}
+}
+
+func input(inputChan chan string) {
+	scanner := bufio.NewScanner(os.Stdin)
+	for {
+		fmt.Println("User info: Waiting for command:")
+		scanner.Scan()
+		paramsStr := scanner.Text()
+
+		if err := scanner.Err(); err != nil {
+			fmt.Println("User info:Error in reading input:", err)
+		}
+		inputChan <- paramsStr
 	}
 }
 

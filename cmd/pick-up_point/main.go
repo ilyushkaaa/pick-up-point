@@ -25,6 +25,7 @@ func main() {
 	chanForRead := make(chan request.Request)
 	responseChan := make(chan response.Response)
 	logChan := make(chan string)
+	inputChan := make(chan string)
 
 	PPStorage, err := storage.New(logChan)
 	if err != nil {
@@ -34,7 +35,11 @@ func main() {
 
 	wg := &sync.WaitGroup{}
 
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+
 	defer func() {
+		cancel()
 		wg.Wait()
 		err = PPStorage.Close()
 		if err != nil {
@@ -49,17 +54,17 @@ func main() {
 
 	commands := commandpp.InitCommands(PPDelivery, chanForRead, chanForWrite)
 
-	ctx := context.Background()
-	ctx, cancel := context.WithCancel(ctx)
-
-	go worker.Work(chanForWrite, responseChan, logChan, wg)
-	go worker.Work(chanForRead, responseChan, logChan, wg)
+	go worker.Work(chanForWrite, responseChan, logChan)
+	go worker.Work(chanForRead, responseChan, logChan)
 
 	go commandpp.ProcessResponses(responseChan)
-	go commands.ProcessInput(ctx)
+	go func() {
+		wg.Add(1)
+		defer wg.Done()
+		commands.ProcessInput(ctx, inputChan)
+	}()
 	go commandpp.ProcessLogs(logChan)
 
 	<-sgChan
 	fmt.Println("Got end signal")
-	cancel()
 }
