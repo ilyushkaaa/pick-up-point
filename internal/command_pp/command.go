@@ -40,8 +40,7 @@ func (cs Commands) Call(commandName string, params []string) (uuid.UUID, error) 
 }
 
 func (cs Commands) ProcessInput(ctx context.Context) {
-	inputChan := make(chan string)
-	go input(inputChan)
+	inputChan := input()
 	for {
 		select {
 		case <-ctx.Done():
@@ -63,18 +62,23 @@ func (cs Commands) ProcessInput(ctx context.Context) {
 	}
 }
 
-func input(inputChan chan string) {
+func input() <-chan string {
+	inputChan := make(chan string)
 	scanner := bufio.NewScanner(os.Stdin)
-	for {
-		fmt.Println("User info: Waiting for command:")
-		scanner.Scan()
-		paramsStr := scanner.Text()
+	go func() {
+		for {
+			fmt.Println("User info: Waiting for command:")
+			
+			scanner.Scan()
+			paramsStr := scanner.Text()
 
-		if err := scanner.Err(); err != nil {
-			fmt.Println("User info:Error in reading input:", err)
+			if err := scanner.Err(); err != nil {
+				fmt.Println("User info:Error in reading input:", err)
+			}
+			inputChan <- paramsStr
 		}
-		inputChan <- paramsStr
-	}
+	}()
+	return inputChan
 }
 
 func ProcessResponses(responseChan <-chan response.Response) {
