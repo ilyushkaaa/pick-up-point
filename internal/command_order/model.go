@@ -1,4 +1,4 @@
-package command
+package commandorder
 
 type Command struct {
 	Name        string
