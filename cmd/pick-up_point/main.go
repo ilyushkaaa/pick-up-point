@@ -57,8 +57,8 @@ func main() {
 	go worker.Work(ctx, chanForRead, responseChan, logChan)
 
 	go commandpp.ProcessResponses(responseChan)
+	wg.Add(1)
 	go func() {
-		wg.Add(1)
 		defer wg.Done()
 		commands.ProcessInput(ctx)
 	}()
