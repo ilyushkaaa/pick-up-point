@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 
+	"homework/pkg/hash"
 	"homework/pkg/response"
 )
 
@@ -19,7 +20,16 @@ func (mw *Middleware) Auth(next http.Handler) http.Handler {
 			return
 		}
 
-		if !isAuthDataCorrect(username, password) {
+		isSuccessAuth, err := isAuthDataCorrect(username, password)
+		if err != nil {
+			mw.logger.Errorf("error in getting hash password: %v", err)
+			err = response.WriteResponse(w, []byte(`{"error":"internal error"}`), http.StatusInternalServerError)
+			if err != nil {
+				mw.logger.Errorf("error in writing response: %v", err)
+			}
+			return
+		}
+		if !isSuccessAuth {
 			mw.logger.Errorf("wrong username/password passed")
 			err := response.WriteResponse(w, []byte(`{"error":"username/password is wrong"}`), http.StatusUnauthorized)
 			if err != nil {
@@ -31,6 +41,10 @@ func (mw *Middleware) Auth(next http.Handler) http.Handler {
 	})
 }
 
-func isAuthDataCorrect(username, password string) bool {
-	return username == os.Getenv("username") && password == os.Getenv("password")
+func isAuthDataCorrect(username, password string) (bool, error) {
+	hashedPassword, err := hash.GetHash(password)
+	if err != nil {
+		return false, err
+	}
+	return username == os.Getenv("username") && hashedPassword == os.Getenv("password"), nil
 }
