@@ -8,3 +8,6 @@
 /.vscode
 /storage_order.json
 /storage_pp.json
+/.env
+/server.crt
+/server.key

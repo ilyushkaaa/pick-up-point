@@ -1,15 +1,18 @@
 package service
 
 import (
+	"context"
+
 	"homework/internal/pick-up_point/model"
 	"homework/internal/pick-up_point/storage"
 )
 
 type PickUpPointService interface {
-	AddPickUpPoint(point model.PickUpPoint) error
-	GetPickUpPoints() ([]model.PickUpPoint, error)
-	GetPickUpPointByName(name string) (*model.PickUpPoint, error)
-	UpdatePickUpPoint(point model.PickUpPoint) error
+	AddPickUpPoint(ctx context.Context, point model.PickUpPoint) (*model.PickUpPoint, error)
+	GetPickUpPoints(ctx context.Context) ([]model.PickUpPoint, error)
+	GetPickUpPointByID(ctx context.Context, ID uint64) (*model.PickUpPoint, error)
+	UpdatePickUpPoint(ctx context.Context, point model.PickUpPoint) error
+	DeletePickUpPoint(ctx context.Context, ID uint64) error
 }
 
 type PPService struct {

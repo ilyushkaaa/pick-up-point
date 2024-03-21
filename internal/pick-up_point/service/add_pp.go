@@ -1,16 +1,22 @@
 package service
 
-import "homework/internal/pick-up_point/model"
+import (
+	"context"
 
-func (ps *PPService) AddPickUpPoint(point model.PickUpPoint) error {
-	pickUpPoints, err := ps.storage.GetPickUpPoints()
+	"homework/internal/pick-up_point/model"
+)
+
+func (ps *PPService) AddPickUpPoint(ctx context.Context, point model.PickUpPoint) (*model.PickUpPoint, error) {
+	pp, err := ps.storage.GetPickUpPointByName(ctx, point.Name)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	for _, pp := range pickUpPoints {
-		if pp.Name == point.Name {
-			return ErrPickUpPointAlreadyExists
-		}
+	if pp != nil {
+		return nil, ErrPickUpPointAlreadyExists
 	}
-	return ps.storage.AddPickUpPoint(point)
+	addedPP, err := ps.storage.AddPickUpPoint(ctx, point)
+	if err != nil {
+		return nil, err
+	}
+	return addedPP, nil
 }
