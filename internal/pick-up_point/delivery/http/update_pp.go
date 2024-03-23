@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"homework/internal/pick-up_point/delivery/dto"
-	"homework/internal/pick-up_point/service"
 	"homework/internal/pick-up_point/storage"
 	"homework/pkg/response"
 )
@@ -58,7 +57,7 @@ func (d *PPDelivery) UpdatePickUpPoint(w http.ResponseWriter, r *http.Request) {
 		response.WriteResponse(w, []byte(errText), http.StatusNotFound, d.logger)
 		return
 	}
-	if errors.Is(err, service.ErrPickUpPointAlreadyExists) {
+	if errors.Is(err, storage.ErrPickUpPointNameExists) {
 		d.logger.Errorf("pick-up point with name %s already exists", pickUpPointDTO.Name)
 		errText := fmt.Sprintf(`{"error":"pick-up point with name %s already exists"}`, pickUpPointDTO.Name)
 		response.WriteResponse(w, []byte(errText), http.StatusBadRequest, d.logger)

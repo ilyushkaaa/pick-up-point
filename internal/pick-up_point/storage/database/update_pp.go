@@ -2,7 +2,9 @@ package storage
 
 import (
 	"context"
+	"errors"
 
+	"github.com/jackc/pgconn"
 	"homework/internal/pick-up_point/model"
 	"homework/internal/pick-up_point/storage"
 )
@@ -13,6 +15,10 @@ func (s *PPStorageDB) UpdatePickUpPoint(ctx context.Context, point model.PickUpP
 		point.PhoneNumber, point.Address.Region, point.Address.City, point.Address.Street, point.Address.HouseNum,
 		point.Name, point.ID)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return storage.ErrPickUpPointNameExists
+		}
 		return err
 	}
 	if result.RowsAffected() == 0 {

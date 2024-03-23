@@ -8,10 +8,7 @@ import (
 )
 
 func NewPool(ctx context.Context) (*pgxpool.Pool, error) {
-	dsn, err := generateDsn()
-	if err != nil {
-		return nil, err
-	}
+	dsn := generateDsn()
 	pool, err := pgxpool.Connect(ctx, dsn)
 	if err != nil {
 		return nil, err
@@ -19,11 +16,8 @@ func NewPool(ctx context.Context) (*pgxpool.Pool, error) {
 	return pool, nil
 }
 
-func generateDsn() (string, error) {
-	connData, err := getConnectData()
-	if err != nil {
-		return "", err
-	}
+func generateDsn() string {
+	connData := getConnectData()
 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		connData.host, connData.port, connData.user, connData.password, connData.dbName), nil
+		connData.host, connData.port, connData.user, connData.password, connData.dbName)
 }
