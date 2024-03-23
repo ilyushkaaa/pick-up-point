@@ -16,10 +16,7 @@ func (d *PPDelivery) UpdatePickUpPoint(w http.ResponseWriter, r *http.Request) {
 	rBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		d.logger.Errorf("error in reading request body: %v", err)
-		err = response.WriteResponse(w, []byte(`{"error":"internal error"}`), http.StatusInternalServerError)
-		if err != nil {
-			d.logger.Errorf("error in writing response: %v", err)
-		}
+		response.WriteResponse(w, []byte(`{"error":"internal error"}`), http.StatusInternalServerError, d.logger)
 		return
 	}
 
@@ -36,17 +33,11 @@ func (d *PPDelivery) UpdatePickUpPoint(w http.ResponseWriter, r *http.Request) {
 		var jsonErr *json.SyntaxError
 		if errors.As(err, &jsonErr) {
 			d.logger.Errorf("invalid json: %s", string(rBody))
-			err = response.WriteResponse(w, []byte(`{"error":"invalid json passed"}`), http.StatusBadRequest)
-			if err != nil {
-				d.logger.Errorf("error in writing response: %v", err)
-			}
+			response.WriteResponse(w, []byte(`{"error":"invalid json passed"}`), http.StatusBadRequest, d.logger)
 			return
 		}
 		d.logger.Errorf("error in response body unmarshalling: %v", err)
-		err = response.WriteResponse(w, []byte(`{"error":"internal error"}`), http.StatusInternalServerError)
-		if err != nil {
-			d.logger.Errorf("error in writing response: %v", err)
-		}
+		response.WriteResponse(w, []byte(`{"error":"internal error"}`), http.StatusInternalServerError, d.logger)
 		return
 	}
 
@@ -54,10 +45,7 @@ func (d *PPDelivery) UpdatePickUpPoint(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		d.logger.Errorf("validation errors in adding pick-up point: %v", err)
 		errText := fmt.Sprintf(`{"error":"%s"}`, err)
-		err = response.WriteResponse(w, []byte(errText), http.StatusBadRequest)
-		if err != nil {
-			d.logger.Errorf("error in writing response: %v", err)
-		}
+		response.WriteResponse(w, []byte(errText), http.StatusBadRequest, d.logger)
 		return
 	}
 
@@ -66,33 +54,16 @@ func (d *PPDelivery) UpdatePickUpPoint(w http.ResponseWriter, r *http.Request) {
 	if errors.Is(err, service.ErrPickUpPointNotFound) {
 		d.logger.Errorf("pick-up point with id %d does not exist", pickUpPointDTO.ID)
 		errText := fmt.Sprintf(`{"error":"no pick-up points with id %d"}`, pickUpPointDTO.ID)
-		err = response.WriteResponse(w, []byte(errText), http.StatusNotFound)
-		if err != nil {
-			d.logger.Errorf("error in writing response: %v", err)
-		}
+		response.WriteResponse(w, []byte(errText), http.StatusNotFound, d.logger)
 		return
 	}
 	if err != nil {
 		d.logger.Errorf("internal server error in updating pick-up point: %v", err)
-		err = response.WriteResponse(w, []byte(`{"error":"internal error"}`), http.StatusInternalServerError)
-		if err != nil {
-			d.logger.Errorf("error in writing response: %v", err)
-		}
+		response.WriteResponse(w, []byte(`{"error":"internal error"}`), http.StatusInternalServerError, d.logger)
 		return
 	}
 
 	ppJSON, err := json.Marshal(pickUpPointToUpdate)
-	if err != nil {
-		d.logger.Errorf("error in marshalling pick-up point: %v", err)
-		err = response.WriteResponse(w, []byte(`{"error":"internal error"}`), http.StatusInternalServerError)
-		if err != nil {
-			d.logger.Errorf("error in writing response: %v", err)
-		}
-		return
-	}
+	response.WriteMarshalledResponse(w, ppJSON, err, d.logger)
 
-	err = response.WriteResponse(w, ppJSON, http.StatusOK)
-	if err != nil {
-		d.logger.Errorf("error in writing response: %v", err)
-	}
 }

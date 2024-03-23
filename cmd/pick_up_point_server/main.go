@@ -37,7 +37,7 @@ func main() {
 	mw := middleware.New(logger)
 	router := routes.GetRouter(d, mw)
 
-	port := os.Getenv("appPort")
+	port := os.Getenv("APP_PORT")
 	addr := ":" + port
 	logger.Infow("starting server",
 		"type", "START",

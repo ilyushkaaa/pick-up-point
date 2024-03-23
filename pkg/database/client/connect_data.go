@@ -2,11 +2,7 @@ package client
 
 import (
 	"os"
-
-	"github.com/joho/godotenv"
 )
-
-const envFileName = ".env"
 
 type connectData struct {
 	host     string
@@ -17,14 +13,11 @@ type connectData struct {
 }
 
 func getConnectData() (*connectData, error) {
-	if err := godotenv.Load(envFileName); err != nil {
-		return nil, err
-	}
 	connData := &connectData{}
-	connData.password = os.Getenv("dbPass")
-	connData.user = os.Getenv("dbUser")
-	connData.dbName = os.Getenv("dbName")
-	connData.host = os.Getenv("dbHost")
-	connData.port = os.Getenv("dbPort")
+	connData.password = os.Getenv("DB_PASS")
+	connData.user = os.Getenv("DB_USER")
+	connData.dbName = os.Getenv("DB_NAME")
+	connData.host = os.Getenv("DB_HOST")
+	connData.port = os.Getenv("DB_PORT")
 	return connData, nil
 }

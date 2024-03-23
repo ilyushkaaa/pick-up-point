@@ -11,9 +11,9 @@ import (
 	"homework/internal/command_pp"
 	"homework/internal/command_pp/request"
 	"homework/internal/command_pp/response"
-	"homework/internal/pick-up_point/delivery/cli"
+	delivery "homework/internal/pick-up_point/delivery/cli"
 	"homework/internal/pick-up_point/service"
-	"homework/internal/pick-up_point/storage/file"
+	storage "homework/internal/pick-up_point/storage/file"
 	"homework/internal/pick-up_point/worker"
 )
 

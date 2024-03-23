@@ -17,7 +17,7 @@ func (ps *PPDelivery) GetPickUpPointByID(ctx context.Context, input []string) re
 	ppID, err := strconv.ParseUint(input[0], 10, 64)
 	if err != nil {
 		return response.Response{
-			Err: fmt.Errorf("pick-up point ID must be positive integer"),
+			Err: fmt.Errorf("pick-up point ID %q must be positive integer", input[0]),
 		}
 	}
 	pickUpPoint, err := ps.service.GetPickUpPointByID(ctx, ppID)

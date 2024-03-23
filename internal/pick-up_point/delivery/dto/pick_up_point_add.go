@@ -4,7 +4,6 @@ import (
 	"github.com/asaskevich/govalidator"
 	"homework/internal/pick-up_point/model"
 	"homework/internal/pick-up_point/model/address"
-	"homework/pkg/validation"
 )
 
 type PickUpPointAdd struct {
@@ -15,7 +14,7 @@ type PickUpPointAdd struct {
 
 func (p *PickUpPointAdd) Validate() error {
 	_, err := govalidator.ValidateStruct(p)
-	return validation.CollectErrors(err)
+	return err
 }
 
 func (p *PickUpPointAdd) ConvertToPickUpPoint() model.PickUpPoint {
