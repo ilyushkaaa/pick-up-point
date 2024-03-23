@@ -1,10 +1,28 @@
-FROM golang:1.21.1
+# Builder
+FROM golang:1.22-alpine AS builder
+RUN apk add --update make git curl
 
-WORKDIR /usr/local/src
+ARG MODULE_NAME=homework
 
-COPY ./ ./
+COPY Makefile /home/${MODULE_NAME}/Makefile
+COPY go.mod /home/${MODULE_NAME}/go.mod
+COPY go.sum /home/${MODULE_NAME}/go.sum
 
-RUN go mod tidy
-RUN go build -o ./app_start ./cmd/pick_up_point_server/main.go
+WORKDIR /home/${MODULE_NAME}
 
-CMD ["./app_start"]
+COPY . /home/${MODULE_NAME}
+
+RUN make build
+
+# Service
+FROM alpine:latest as server
+ARG MODULE_NAME=homework
+WORKDIR /root/
+
+COPY --from=builder /home/${MODULE_NAME}/main .
+COPY --from=builder /home/${MODULE_NAME}/server.crt .
+COPY --from=builder /home/${MODULE_NAME}/server.key .
+
+RUN chown root:root main
+
+CMD ["./main"]

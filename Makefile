@@ -16,3 +16,6 @@ migration-up:
 migration-down:
 	goose -dir "$(MIGRATION_FOLDER)" postgres "user=$(DB_USER) password=$(DB_PASS) dbname=$(DB_NAME) host=$(DB_HOST) port=$(DB_PORT) sslmode=disable" down
 
+.PHONY: build
+build:
+	go build cmd/pick_up_point_server/main.go

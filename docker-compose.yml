@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    command: ./app_start
+    command: ./main
     ports:
       - "9000:9000"
     depends_on:
