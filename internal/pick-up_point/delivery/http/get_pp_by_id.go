@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"homework/internal/pick-up_point/service"
+	"homework/internal/pick-up_point/storage"
 	"homework/pkg/response"
 )
 
@@ -28,7 +28,7 @@ func (d *PPDelivery) GetPickUpPointByID(w http.ResponseWriter, r *http.Request) 
 	}
 
 	pickUpPoint, err := d.service.GetPickUpPointByID(r.Context(), ppIDInt)
-	if errors.Is(err, service.ErrPickUpPointNotFound) {
+	if errors.Is(err, storage.ErrPickUpPointNotFound) {
 		d.logger.Errorf("no pick-up points with id %d", ppIDInt)
 		response.WriteResponse(w, []byte(`{"error": "pick-up with such id does not exist"}`), http.StatusNotFound, d.logger)
 		return

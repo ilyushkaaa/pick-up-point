@@ -7,12 +7,5 @@ import (
 )
 
 func (ps *PPService) UpdatePickUpPoint(ctx context.Context, point model.PickUpPoint) error {
-	wasUpdated, err := ps.storage.UpdatePickUpPoint(ctx, point)
-	if err != nil {
-		return err
-	}
-	if !wasUpdated {
-		return ErrPickUpPointNotFound
-	}
-	return nil
+	return ps.storage.UpdatePickUpPoint(ctx, point)
 }

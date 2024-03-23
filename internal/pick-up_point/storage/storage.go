@@ -11,7 +11,7 @@ type PPStorage interface {
 	GetPickUpPoints(ctx context.Context) ([]model.PickUpPoint, error)
 	GetPickUpPointByID(ctx context.Context, ID uint64) (*model.PickUpPoint, error)
 	GetPickUpPointByName(ctx context.Context, name string) (*model.PickUpPoint, error)
-	UpdatePickUpPoint(ctx context.Context, point model.PickUpPoint) (bool, error)
-	DeletePickUpPoint(ctx context.Context, ID uint64) (bool, error)
+	UpdatePickUpPoint(ctx context.Context, point model.PickUpPoint) error
+	DeletePickUpPoint(ctx context.Context, ID uint64) error
 	Close() error
 }

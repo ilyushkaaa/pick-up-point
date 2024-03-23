@@ -11,8 +11,5 @@ func (ps *PPService) GetPickUpPointByID(ctx context.Context, id uint64) (*model.
 	if err != nil {
 		return nil, err
 	}
-	if pickUpPoint == nil {
-		return nil, ErrPickUpPointNotFound
-	}
 	return pickUpPoint, nil
 }

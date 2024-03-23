@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"homework/internal/pick-up_point/model"
+	"homework/internal/pick-up_point/storage"
 )
 
 func (fs *FilePPStorage) GetPickUpPointByName(_ context.Context, name string) (*model.PickUpPoint, error) {
@@ -14,5 +15,5 @@ func (fs *FilePPStorage) GetPickUpPointByName(_ context.Context, name string) (*
 			return &pp, nil
 		}
 	}
-	return nil, nil
+	return nil, storage.ErrPickUpPointNotFound
 }

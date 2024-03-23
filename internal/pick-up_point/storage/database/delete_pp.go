@@ -1,14 +1,18 @@
 package storage
 
-import "context"
+import (
+	"context"
 
-func (s *PPStorageDB) DeletePickUpPoint(ctx context.Context, id uint64) (bool, error) {
+	"homework/internal/pick-up_point/storage"
+)
+
+func (s *PPStorageDB) DeletePickUpPoint(ctx context.Context, id uint64) error {
 	result, err := s.cluster.Exec(ctx, `DELETE FROM pick_up_points WHERE id = $1`, id)
 	if err != nil {
-		return false, err
+		return err
 	}
 	if result.RowsAffected() == 0 {
-		return false, nil
+		return storage.ErrPickUpPointNotFound
 	}
-	return true, nil
+	return nil
 }

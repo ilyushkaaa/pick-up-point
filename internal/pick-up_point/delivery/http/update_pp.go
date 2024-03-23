@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	"homework/internal/pick-up_point/delivery/dto"
-	"homework/internal/pick-up_point/service"
+	"homework/internal/pick-up_point/storage"
 	"homework/pkg/response"
 )
 
@@ -51,7 +51,7 @@ func (d *PPDelivery) UpdatePickUpPoint(w http.ResponseWriter, r *http.Request) {
 
 	pickUpPointToUpdate := pickUpPointDTO.ConvertToPickUpPoint()
 	err = d.service.UpdatePickUpPoint(r.Context(), pickUpPointToUpdate)
-	if errors.Is(err, service.ErrPickUpPointNotFound) {
+	if errors.Is(err, storage.ErrPickUpPointNotFound) {
 		d.logger.Errorf("pick-up point with id %d does not exist", pickUpPointDTO.ID)
 		errText := fmt.Sprintf(`{"error":"no pick-up points with id %d"}`, pickUpPointDTO.ID)
 		response.WriteResponse(w, []byte(errText), http.StatusNotFound, d.logger)
