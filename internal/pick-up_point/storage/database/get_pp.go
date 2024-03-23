@@ -14,10 +14,8 @@ func (s *PPStorageDB) GetPickUpPoints(ctx context.Context) ([]model.PickUpPoint,
 	var pickUpPointsDB []dto.PickUpPointDB
 	err := pgxscan.Select(ctx, s.cluster, &pickUpPointsDB,
 		`SELECT id, name, phone_number, region, city, street, house_num FROM pick_up_points`)
-	if err != nil {
-		if !errors.Is(err, pgx.ErrNoRows) {
-			return nil, err
-		}
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+		return nil, err
 	}
 	pickUpPoints := make([]model.PickUpPoint, len(pickUpPointsDB))
 	for i := range pickUpPointsDB {

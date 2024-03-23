@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS "pick_up_points"
+-- +goose Up
+-- +goose StatementBegin
+CREATE TABLE "pick_up_points"
 (
     id           SERIAL PRIMARY KEY NOT NULL,
     name         VARCHAR(50)        NOT NULL,
@@ -10,3 +12,9 @@ CREATE TABLE IF NOT EXISTS "pick_up_points"
 
     CONSTRAINT pick_up_points_name_unique UNIQUE (name)
 );
+-- +goose StatementEnd
+
+-- +goose Down
+-- +goose StatementBegin
+DROP TABLE pick_up_points
+-- +goose StatementEnd
