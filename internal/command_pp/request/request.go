@@ -1,17 +1,21 @@
 package request
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 	"homework/internal/command_pp/response"
 )
 
+type handlerFn func(context.Context, []string) response.Response
+
 type Request struct {
 	ID         uuid.UUID
-	FuncToCall func([]string) response.Response
+	FuncToCall handlerFn
 	Params     []string
 }
 
-func NewRequest(funcToCall func([]string) response.Response, params []string) Request {
+func NewRequest(funcToCall handlerFn, params []string) Request {
 	return Request{
 		ID:         uuid.New(),
 		FuncToCall: funcToCall,

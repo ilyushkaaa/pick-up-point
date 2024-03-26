@@ -1,34 +1,35 @@
 package delivery
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
 	"homework/internal/command_pp/response"
-	"homework/internal/pick-up_point/model"
+	"homework/internal/pick-up_point/delivery/dto"
 )
 
-func (ps *PPDelivery) UpdatePickUpPoint(params []string) response.Response {
+func (ps *PPDelivery) UpdatePickUpPoint(ctx context.Context, params []string) response.Response {
 	if len(params) != 1 {
 		return response.Response{
 			Err: fmt.Errorf("update pick-up point method must have 1 param"),
 		}
 	}
-	var pickUpPoint model.PickUpPoint
-	err := json.Unmarshal([]byte(params[0]), &pickUpPoint)
+	var pp dto.PickUpPointUpdate
+	err := json.Unmarshal([]byte(params[0]), &pp)
 	if err != nil {
 		return response.Response{
 			Err: fmt.Errorf("potential updated pick-up point must be valid json: %w", err),
 		}
 	}
-
-	if err = ps.Validate(pickUpPoint); err != nil {
+	err = pp.Validate()
+	if err != nil {
 		return response.Response{
 			Err: err,
 		}
 	}
-
-	err = ps.service.UpdatePickUpPoint(pickUpPoint)
+	pickUpPoint := pp.ConvertToPickUpPoint()
+	err = ps.service.UpdatePickUpPoint(ctx, pickUpPoint)
 	if err != nil {
 		return response.Response{
 			Err: fmt.Errorf("error in updating pick-up point: %w", err),

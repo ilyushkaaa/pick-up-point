@@ -11,9 +11,9 @@ import (
 	"homework/internal/command_pp"
 	"homework/internal/command_pp/request"
 	"homework/internal/command_pp/response"
-	"homework/internal/pick-up_point/delivery"
+	delivery "homework/internal/pick-up_point/delivery/cli"
 	"homework/internal/pick-up_point/service"
-	"homework/internal/pick-up_point/storage"
+	storage "homework/internal/pick-up_point/storage/file"
 	"homework/internal/pick-up_point/worker"
 )
 
@@ -53,12 +53,12 @@ func main() {
 
 	commands := commandpp.InitCommands(PPDelivery, chanForRead, chanForWrite)
 
-	go worker.Work(chanForWrite, responseChan, logChan)
-	go worker.Work(chanForRead, responseChan, logChan)
+	go worker.Work(ctx, chanForWrite, responseChan, logChan)
+	go worker.Work(ctx, chanForRead, responseChan, logChan)
 
 	go commandpp.ProcessResponses(responseChan)
+	wg.Add(1)
 	go func() {
-		wg.Add(1)
 		defer wg.Done()
 		commands.ProcessInput(ctx)
 	}()

@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 	"homework/internal/command_pp/request"
 	"homework/internal/command_pp/response"
-	"homework/internal/pick-up_point/delivery"
+	"homework/internal/pick-up_point/delivery/cli"
 )
 
 type Commands []Command
@@ -22,7 +22,7 @@ func InitCommands(
 ) Commands {
 	return Commands{
 		New("add", chanForWrite, ppDelivery.AddPickUpPoint),
-		New("get_by_name", chanForRead, ppDelivery.GetPickUpPointByName),
+		New("get_by_id", chanForRead, ppDelivery.GetPickUpPointByID),
 		New("get_all", chanForRead, ppDelivery.GetPickUpPoints),
 		New("update", chanForWrite, ppDelivery.UpdatePickUpPoint),
 	}
@@ -68,7 +68,7 @@ func input() <-chan string {
 	go func() {
 		for {
 			fmt.Println("User info: Waiting for command:")
-			
+
 			scanner.Scan()
 			paramsStr := scanner.Text()
 

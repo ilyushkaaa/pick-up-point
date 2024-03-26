@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: ./main
+    ports:
+      - "9000:9000"
+    depends_on:
+      - postgres
+    tty: true
+    env_file:
+      - .env
+
+  postgres:
+    image: postgres:13.2
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - '5432:5432'
+
+

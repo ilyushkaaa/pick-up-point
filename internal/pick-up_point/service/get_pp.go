@@ -1,14 +1,15 @@
 package service
 
-import "homework/internal/pick-up_point/model"
+import (
+	"context"
 
-func (ps *PPService) GetPickUpPoints() ([]model.PickUpPoint, error) {
-	pickUpPoints, err := ps.storage.GetPickUpPoints()
+	"homework/internal/pick-up_point/model"
+)
+
+func (ps *PPService) GetPickUpPoints(ctx context.Context) ([]model.PickUpPoint, error) {
+	pickUpPoints, err := ps.storage.GetPickUpPoints(ctx)
 	if err != nil {
 		return nil, err
-	}
-	if len(pickUpPoints) == 0 {
-		return nil, ErrNoPickUpPoints
 	}
 	return pickUpPoints, nil
 }
