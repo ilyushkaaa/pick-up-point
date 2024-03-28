@@ -1,19 +1,20 @@
 package delivery
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 
 	"homework/internal/filters/model"
 )
 
-func (od *OrderDelivery) GetUserOrdersDelivery(args []string) error {
+func (od *OrderDelivery) GetUserOrdersDelivery(ctx context.Context, args []string) error {
 	if len(args) == 0 || len(args) > 3 {
 		return fmt.Errorf("bad number of params")
 	}
-	clientID, err := strconv.Atoi(args[0])
+	clientID, err := strconv.ParseUint(args[0], 10, 64)
 	if err != nil {
-		return fmt.Errorf("client ID must be integer: %w", err)
+		return fmt.Errorf("client ID must be positive integer: %w", err)
 	}
 
 	filters, err := makeFilters(args[1:])
@@ -21,7 +22,7 @@ func (od *OrderDelivery) GetUserOrdersDelivery(args []string) error {
 		return err
 	}
 
-	orders, err := od.service.GetUserOrdersService(clientID, filters)
+	orders, err := od.service.GetUserOrders(ctx, clientID, filters)
 	if err != nil {
 		return fmt.Errorf("error in getting user orders: %w", err)
 	}

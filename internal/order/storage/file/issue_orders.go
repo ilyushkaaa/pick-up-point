@@ -1,11 +1,12 @@
 package storage
 
 import (
+	"context"
 	"time"
 )
 
-func (fs *FileOrderStorage) IssueOrdersStorage(orderIDs map[int]struct{}) error {
-	orders, err := fs.GetOrders()
+func (fs *FileOrderStorage) IssueOrders(ctx context.Context, orderIDs map[uint64]struct{}) error {
+	orders, err := fs.GetOrders(ctx)
 	if err != nil {
 		return err
 	}

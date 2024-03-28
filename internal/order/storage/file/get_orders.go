@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -8,7 +9,7 @@ import (
 	"homework/internal/order/model"
 )
 
-func (fs *FileOrderStorage) GetOrders() ([]model.Order, error) {
+func (fs *FileOrderStorage) GetOrders(_ context.Context) ([]model.Order, error) {
 	decoder := json.NewDecoder(fs.file)
 	var orders []model.Order
 

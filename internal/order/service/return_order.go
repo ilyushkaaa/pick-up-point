@@ -1,30 +1,27 @@
 package service
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
-func (op *OrderServicePP) ReturnOrderService(clientID, orderID int) error {
-	orders, err := op.storage.GetOrders()
+func (op *OrderServicePP) ReturnOrder(ctx context.Context, clientID, orderID uint64) error {
+	order, err := op.storage.GetOrderByID(ctx, orderID)
 	if err != nil {
 		return err
 	}
-	for _, order := range orders {
-		if orderID != order.ID {
-			continue
-		}
-		if clientID != order.ClientID {
-			break
-		}
-		if !order.IsIssued {
-			return ErrOrderIsNotIssued
-		}
-		if order.IsReturned {
-			return ErrOrderIsReturned
-		}
-		maxReturnTime := order.OrderIssueDate.Add(time.Hour * 24 * 2)
-		if maxReturnTime.Before(time.Now()) {
-			return ErrReturnTimeExpired
-		}
-		return op.storage.ReturnOrderStorage(clientID, orderID)
+	if order.ClientID != clientID {
+		return ErrClientOrderNotFound
 	}
-	return ErrClientOrderNotFound
+	if !order.IsIssued {
+		return ErrOrderIsNotIssued
+	}
+	if order.IsReturned {
+		return ErrOrderIsReturned
+	}
+	maxReturnTime := order.OrderIssueDate.Add(time.Hour * 24 * 2)
+	if maxReturnTime.Before(time.Now()) {
+		return ErrReturnTimeExpired
+	}
+	return op.storage.ReturnOrder(ctx, clientID, orderID)
 }

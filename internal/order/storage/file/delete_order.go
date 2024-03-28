@@ -1,7 +1,9 @@
 package storage
 
-func (fs *FileOrderStorage) DeleteOrderStorage(orderID int) error {
-	orders, err := fs.GetOrders()
+import "context"
+
+func (fs *FileOrderStorage) DeleteOrder(ctx context.Context, orderID uint64) error {
+	orders, err := fs.GetOrders(ctx)
 	if err != nil {
 		return err
 	}

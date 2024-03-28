@@ -1,17 +1,19 @@
 package service
 
-import "homework/internal/order/model"
+import (
+	"context"
 
-const maxOrdersPerPage = 4
+	"homework/internal/order/model"
+)
 
-func (op *OrderServicePP) GetOrderReturnsService(pageNum int) ([]model.Order, error) {
-	orders, err := op.storage.GetOrderReturnsStorage()
+func (op *OrderServicePP) GetOrderReturns(ctx context.Context, maxOrdersPerPage, pageNum uint64) ([]model.Order, error) {
+	orders, err := op.storage.GetOrderReturns(ctx)
 	if err != nil {
 		return nil, err
 	}
 	startingOrderForPage := maxOrdersPerPage * (pageNum - 1)
-	if startingOrderForPage >= len(orders) {
+	if startingOrderForPage >= uint64(len(orders)) {
 		return nil, ErrNoOrdersOnThisPage
 	}
-	return orders[startingOrderForPage:min(startingOrderForPage+4, len(orders))], nil
+	return orders[startingOrderForPage:min(startingOrderForPage+4, uint64(len(orders)))], nil
 }

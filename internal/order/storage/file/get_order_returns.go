@@ -1,11 +1,13 @@
 package storage
 
 import (
+	"context"
+
 	"homework/internal/order/model"
 )
 
-func (fs *FileOrderStorage) GetOrderReturnsStorage() ([]model.Order, error) {
-	orders, err := fs.GetOrders()
+func (fs *FileOrderStorage) GetOrderReturns(ctx context.Context) ([]model.Order, error) {
+	orders, err := fs.GetOrders(ctx)
 	if err != nil {
 		return nil, err
 	}

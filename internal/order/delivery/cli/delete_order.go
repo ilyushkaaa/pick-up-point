@@ -1,19 +1,20 @@
 package delivery
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 )
 
-func (od *OrderDelivery) DeleteOrderDelivery(args []string) error {
+func (od *OrderDelivery) DeleteOrderDelivery(ctx context.Context, args []string) error {
 	if len(args) != 1 {
 		return fmt.Errorf("bad number of params")
 	}
-	orderID, err := strconv.Atoi(args[0])
+	orderID, err := strconv.ParseUint(args[0], 10, 64)
 	if err != nil {
-		return fmt.Errorf("order ID must be integer: %w", err)
+		return fmt.Errorf("order ID must be positive integer: %w", err)
 	}
-	err = od.service.DeleteOrderService(orderID)
+	err = od.service.DeleteOrder(ctx, orderID)
 	if err != nil {
 		return fmt.Errorf("error in returning order to courier: %w", err)
 	}

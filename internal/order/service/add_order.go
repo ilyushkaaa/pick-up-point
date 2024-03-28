@@ -1,31 +1,34 @@
 package service
 
 import (
+	"context"
+	"errors"
 	"time"
 
 	"homework/internal/order/model"
+	"homework/internal/order/storage"
 )
 
-func (op *OrderServicePP) AddOrderService(orderID, clientID int, expireDate time.Time) error {
-	orders, err := op.storage.GetOrders()
-	if err != nil {
+func (op *OrderServicePP) AddOrder(ctx context.Context, order model.Order, packageType string) error {
+	_, err := op.storage.GetOrderByID(ctx, order.ID)
+	if err != nil && !errors.Is(err, storage.ErrOrderNotFound) {
 		return err
 	}
-	for _, order := range orders {
-		if order.ID == orderID {
-			return ErrOrderAlreadyExists
+	if err == nil {
+		return ErrOrderAlreadyInPickUpPoint
+	}
+	if packageType != "" {
+		chosenPackage, exists := op.packages[packageType]
+		if !exists {
+			return ErrUnknownPackage
+		}
+		err = chosenPackage.AddPackageToOrder(&order)
+		if err != nil {
+			return err
 		}
 	}
-	if time.Now().After(expireDate) {
+	if time.Now().After(order.StorageExpirationDate) {
 		return ErrShelfTimeExpired
 	}
-	newOrder := model.Order{
-		ID:                    orderID,
-		ClientID:              clientID,
-		StorageExpirationDate: expireDate,
-		OrderIssueDate:        time.Time{},
-		IsIssued:              false,
-		IsReturned:            false,
-	}
-	return op.storage.AddOrderStorage(newOrder)
+	return op.storage.AddOrder(ctx, order)
 }

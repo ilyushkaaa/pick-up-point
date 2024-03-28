@@ -1,10 +1,11 @@
 package commandorder
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
-	"homework/internal/order/delivery"
+	delivery "homework/internal/order/delivery/cli"
 )
 
 const commandsNumber = 6
@@ -19,7 +20,7 @@ func (cs Commands) Call(commandName string, params []string) error {
 	default:
 		for _, cmd := range cs {
 			if cmd.Name == commandName {
-				return cmd.FuncToCall(params)
+				return cmd.FuncToCall(context.Background(), params)
 			}
 		}
 		return fmt.Errorf("unknown command")
@@ -37,8 +38,9 @@ func InitCommands(orderDelivery *delivery.OrderDelivery) Commands {
 	commands := make([]Command, 0, commandsNumber)
 	commands = append(commands, New("add_order",
 		`command process getting order from courier and adding it in pick-up point. 
-   It gets 3 required params: order ID, client ID and expiration date of order storage in format "yyyy-mm-dd"`,
-		[]string{"<order_id>", "<client_id", "<expire_date>"}, orderDelivery.AddOrderDelivery))
+   It gets 5 required params: order ID, client ID  expiration date of order storage in format "yyyy-mm-dd",
+   order weight, order price and 1 optional param package type`,
+		[]string{"<order_id>", "<client_id", "<expire_date>, <weight>, <price>, [<packageType>]"}, orderDelivery.AddOrderDelivery))
 	commands = append(commands, New("delete_order",
 		`command process returning order to courier due to its expiration of shelf life. 
    It gets 1 required param: order ID`,
@@ -58,8 +60,8 @@ func InitCommands(orderDelivery *delivery.OrderDelivery) Commands {
 		[]string{"<client_id>", "<order_id>"}, orderDelivery.ReturnOrderDelivery))
 	commands = append(commands, New("get_order_returns",
 		`command shows list of all order returns with pagination. 
-   It has 1 optional param: page number. Default value: 1`,
-		[]string{"[<page_num>]"}, orderDelivery.GetOrderReturnsDelivery))
+   It has 1 required param: num of orders per page; and 1 optional param: page number. Default value: 1`,
+		[]string{"<orders_per_page>, [<page_num>]"}, orderDelivery.GetOrderReturnsDelivery))
 
 	return commands
 }

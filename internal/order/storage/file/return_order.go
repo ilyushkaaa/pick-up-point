@@ -1,7 +1,9 @@
 package storage
 
-func (fs *FileOrderStorage) ReturnOrderStorage(clientID, orderID int) error {
-	orders, err := fs.GetOrders()
+import "context"
+
+func (fs *FileOrderStorage) ReturnOrder(ctx context.Context, clientID, orderID uint64) error {
+	orders, err := fs.GetOrders(ctx)
 	if err != nil {
 		return err
 	}

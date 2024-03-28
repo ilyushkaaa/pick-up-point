@@ -13,7 +13,7 @@ import (
 
 func (s *PPStorageDB) GetPickUpPointByID(ctx context.Context, id uint64) (*model.PickUpPoint, error) {
 	var ppDB dto.PickUpPointDB
-	err := pgxscan.Get(ctx, s.cluster, &ppDB,
+	err := pgxscan.Get(ctx, s.db.Cluster, &ppDB,
 		`SELECT id, name, phone_number, region, city, street, house_num 
                 FROM pick_up_points WHERE id = $1`, id)
 	if err != nil {

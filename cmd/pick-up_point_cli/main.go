@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"homework/internal/command_order"
-	"homework/internal/order/delivery"
+	delivery "homework/internal/order/delivery/cli"
 	"homework/internal/order/service"
-	"homework/internal/order/storage"
+	storage "homework/internal/order/storage/file"
 )
 
 const tipText = `To see full list of commands start program with command_order line argument "help"`
