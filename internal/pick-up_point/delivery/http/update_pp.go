@@ -47,7 +47,7 @@ func (d *PPDelivery) UpdatePickUpPoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pickUpPointToUpdate := pickUpPointDTO.ConvertToPickUpPoint()
+	pickUpPointToUpdate := dto.ConvertPPUpdateToPickUpPoint(pickUpPointDTO)
 	err = d.service.UpdatePickUpPoint(r.Context(), pickUpPointToUpdate)
 	if err != nil {
 		if errors.Is(err, storage.ErrPickUpPointNotFound) {
