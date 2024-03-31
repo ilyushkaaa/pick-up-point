@@ -18,17 +18,17 @@ func GetRouter(handlersPP *deliveryPP.PPDelivery, handlersOrder *deliveryOrder.O
 
 func assignRoutes(router *mux.Router, handlersPP *deliveryPP.PPDelivery, handlersOrder *deliveryOrder.OrderDelivery) {
 	router.HandleFunc("/pick-up-points", handlersPP.GetPickUpPoints).Methods(http.MethodGet)
-	router.HandleFunc("/pick-up-point/{PP_ID}", handlersPP.GetPickUpPointByID).Methods(http.MethodGet)
-	router.HandleFunc("/pick-up-point/{PP_ID}", handlersPP.DeletePickUpPoint).Methods(http.MethodDelete)
 	router.HandleFunc("/pick-up-point", handlersPP.AddPickUpPoint).Methods(http.MethodPost)
 	router.HandleFunc("/pick-up-point", handlersPP.UpdatePickUpPoint).Methods(http.MethodPut)
+	router.HandleFunc("/pick-up-point/{PP_ID}", handlersPP.GetPickUpPointByID).Methods(http.MethodGet)
+	router.HandleFunc("/pick-up-point/{PP_ID}", handlersPP.DeletePickUpPoint).Methods(http.MethodDelete)
 
 	router.HandleFunc("/order", handlersOrder.AddOrder).Methods(http.MethodPost)
-	router.HandleFunc("/order/{ORDER_ID}", handlersOrder.DeleteOrder).Methods(http.MethodDelete)
-	router.HandleFunc("/orders/{CLIENT_ID}", handlersOrder.GetUserOrders).Methods(http.MethodGet)
-	router.HandleFunc("/orders/returns/{ORDERS_PER_PAGE}", handlersOrder.GetOrderReturns).Methods(http.MethodGet)
 	router.HandleFunc("/orders/issue", handlersOrder.IssueOrders).Methods(http.MethodPut)
 	router.HandleFunc("/orders/return", handlersOrder.ReturnOrder).Methods(http.MethodPut)
+	router.HandleFunc("/order/{ORDER_ID}", handlersOrder.DeleteOrder).Methods(http.MethodDelete)
+	router.HandleFunc("/clients/{CLIENT_ID}/orders", handlersOrder.GetUserOrders).Methods(http.MethodGet)
+	router.HandleFunc("/orders/returns/{ORDERS_PER_PAGE}", handlersOrder.GetOrderReturns).Methods(http.MethodGet)
 }
 
 func assignMiddleware(router *mux.Router, mw *middleware.Middleware) {

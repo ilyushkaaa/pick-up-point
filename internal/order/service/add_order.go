@@ -9,7 +9,7 @@ import (
 	"homework/internal/order/storage"
 )
 
-func (op *OrderServicePP) AddOrder(ctx context.Context, order model.Order, packageType string) error {
+func (op *OrderServicePP) AddOrder(ctx context.Context, order model.Order) error {
 	_, err := op.storage.GetOrderByID(ctx, order.ID)
 	if err != nil && !errors.Is(err, storage.ErrOrderNotFound) {
 		return err
@@ -17,8 +17,8 @@ func (op *OrderServicePP) AddOrder(ctx context.Context, order model.Order, packa
 	if err == nil {
 		return ErrOrderAlreadyInPickUpPoint
 	}
-	if packageType != "" {
-		chosenPackage, exists := op.packages[packageType]
+	if order.PackageType != "" {
+		chosenPackage, exists := op.packages[order.PackageType]
 		if !exists {
 			return ErrUnknownPackage
 		}

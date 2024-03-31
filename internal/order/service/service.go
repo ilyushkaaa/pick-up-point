@@ -10,7 +10,7 @@ import (
 )
 
 type OrderService interface {
-	AddOrder(ctx context.Context, order ordermodel.Order, packageType string) error
+	AddOrder(ctx context.Context, order ordermodel.Order) error
 	DeleteOrder(ctx context.Context, orderID uint64) error
 	IssueOrders(ctx context.Context, orderIDs map[uint64]struct{}) error
 	GetUserOrders(ctx context.Context, clientID uint64, filters filtermodel.Filters) ([]ordermodel.Order, error)

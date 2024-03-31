@@ -6,7 +6,7 @@ MIGRATION_FOLDER=$(CURDIR)/pkg/database/migrations
 
 .PHONY: migration-create
 migration-create:
-	goose -dir "$(MIGRATION_FOLDER)" create "" sql
+	goose -dir "$(MIGRATION_FOLDER)" create "$(name)" sql
 
 .PHONY: migration-up
 migration-up:

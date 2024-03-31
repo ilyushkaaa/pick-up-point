@@ -14,7 +14,7 @@ import (
 func (s *OrderStoragePG) GetOrderByID(ctx context.Context, id uint64) (*model.Order, error) {
 	var orderDB dto.OrderDB
 	err := pgxscan.Get(ctx, s.db.Cluster, &orderDB,
-		`SELECT id, client_id, weight, price, storage_expiration_date, order_issue_date, is_issued, is_returned 
+		`SELECT id, client_id, weight, price, package_type, storage_expiration_date, order_issue_date, is_returned 
                 FROM orders WHERE id = $1`, id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {

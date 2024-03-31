@@ -28,5 +28,6 @@ func (o *OrderFromCourierInputData) ConvertToOrder() model.Order {
 		Weight:                o.Weight,
 		Price:                 o.Price,
 		StorageExpirationDate: o.StorageExpirationDate,
+		PackageType:           o.PackageType,
 	}
 }

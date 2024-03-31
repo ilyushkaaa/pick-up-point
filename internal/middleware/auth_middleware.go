@@ -13,19 +13,19 @@ func (mw *Middleware) Auth(next http.Handler) http.Handler {
 		username, password, ok := r.BasicAuth()
 		if !ok {
 			mw.logger.Errorf("password or/and username are not passed or passed incorrectly")
-			response.WriteResponse(w, []byte(`{"error":"auth data was not passed/passed incorrectly"}`), http.StatusUnauthorized, mw.logger)
+			response.WriteResponse(w, response.Result{Res: "auth data was not passed/passed incorrectly"}, http.StatusUnauthorized, mw.logger)
 			return
 		}
 
 		isSuccessAuth, err := isAuthDataCorrect(username, password)
 		if err != nil {
 			mw.logger.Errorf("error in getting hash password: %v", err)
-			response.WriteResponse(w, []byte(`{"error":"internal error"}`), http.StatusInternalServerError, mw.logger)
+			response.WriteResponse(w, response.Result{Res: response.ErrInternal.Error()}, http.StatusInternalServerError, mw.logger)
 			return
 		}
 		if !isSuccessAuth {
 			mw.logger.Errorf("wrong username/password passed")
-			response.WriteResponse(w, []byte(`{"error":"username/password is wrong"}`), http.StatusUnauthorized, mw.logger)
+			response.WriteResponse(w, response.Result{Res: "username/password is wrong"}, http.StatusUnauthorized, mw.logger)
 			return
 		}
 		next.ServeHTTP(w, r)

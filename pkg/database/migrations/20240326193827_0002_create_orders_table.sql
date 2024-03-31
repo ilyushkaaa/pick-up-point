@@ -6,9 +6,9 @@ CREATE TABLE "orders"
     client_id               INTEGER             NOT NULL,
     weight                  FLOAT               NOT NULL,
     price                   FLOAT               NOT NULL,
+    package_type            VARCHAR,
     storage_expiration_date TIMESTAMP           NOT NULL,
     order_issue_date        TIMESTAMP,
-    is_issued               BOOLEAN             NOT NULL,
     is_returned             BOOLEAN             NOT NULL
 );
 -- +goose StatementEnd
@@ -17,3 +17,4 @@ CREATE TABLE "orders"
 -- +goose StatementBegin
 DROP TABLE "orders";
 -- +goose StatementEnd
+

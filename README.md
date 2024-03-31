@@ -74,7 +74,7 @@ https://127.0.0.1:9000/order \
 -d '{
     "id": 12345,
     "client_id": 67890,
-    "weight": 47.1,
+    "weight": 12.1,
     "price": 50.99,
     "storage_expiration_date": "2024-03-29T12:00:00Z",
     "package_type": "box"
@@ -96,7 +96,7 @@ https://127.0.0.1:9000/orders/returns/2 -H 'Authorization: Basic YWRtaW46cGFzc3d
 ### Получить список заказов клиента
 ```
 curl -k -X GET \
-https://127.0.0.1:9000/orders/67890?num_of_last_orders=1 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
+https://127.0.0.1:9000//clients/{CLIENT_ID}/orders?num_of_last_orders=1 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
 ```
 
 ### Отдать заказ клиенту

@@ -10,12 +10,12 @@ import (
 	"homework/internal/order/storage/database/dto"
 )
 
-func (s *OrderStoragePG) AddOrder(ctx context.Context, newOrder model.Order) error{
+func (s *OrderStoragePG) AddOrder(ctx context.Context, newOrder model.Order) error {
 	orderDB := dto.NewOrderDB(newOrder)
 	_, err := s.db.Cluster.Exec(ctx,
-		`INSERT INTO orders (id, client_id, weight, price, storage_expiration_date, order_issue_date, is_issued, is_returned)
+		`INSERT INTO orders (id, client_id, weight, price, package_type, storage_expiration_date, order_issue_date, is_returned)
               VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-		orderDB.ID, orderDB.ClientID, orderDB.Weight, orderDB.Price, orderDB.StorageExpirationDate, orderDB.OrderIssueDate, false, false)
+		orderDB.ID, orderDB.ClientID, orderDB.Weight, orderDB.Price, orderDB.PackageType, orderDB.StorageExpirationDate, orderDB.OrderIssueDate, false)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
