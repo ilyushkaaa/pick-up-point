@@ -18,9 +18,5 @@ func (s *OrderStoragePG) GetOrders(ctx context.Context) ([]model.Order, error) {
 	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		return nil, err
 	}
-	orders := make([]model.Order, len(ordersDB))
-	for i := range ordersDB {
-		orders[i] = ordersDB[i].ConvertToOrder()
-	}
-	return orders, nil
+	return dto.ConvertSliceToOrders(ordersDB), nil
 }

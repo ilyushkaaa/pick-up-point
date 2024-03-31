@@ -47,7 +47,7 @@ func (d *PPDelivery) AddPickUpPoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pickUpPointToAdd := pickUpPointDTO.ConvertToPickUpPoint()
+	pickUpPointToAdd := dto.ConvertToPickUpPoint(pickUpPointDTO)
 	addedPickUpPoint, err := d.service.AddPickUpPoint(r.Context(), pickUpPointToAdd)
 	if err != nil {
 		if errors.Is(err, service.ErrPickUpPointAlreadyExists) {

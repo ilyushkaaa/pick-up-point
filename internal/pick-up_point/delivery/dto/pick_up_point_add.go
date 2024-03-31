@@ -17,7 +17,7 @@ func (p *PickUpPointAdd) Validate() error {
 	return err
 }
 
-func (p *PickUpPointAdd) ConvertToPickUpPoint() model.PickUpPoint {
+func ConvertToPickUpPoint(p PickUpPointAdd) model.PickUpPoint {
 	return model.PickUpPoint{
 		Name: p.Name,
 		Address: address.PPAddress{

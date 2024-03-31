@@ -17,9 +17,5 @@ func (s *PPStorageDB) GetPickUpPoints(ctx context.Context) ([]model.PickUpPoint,
 	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		return nil, err
 	}
-	pickUpPoints := make([]model.PickUpPoint, len(pickUpPointsDB))
-	for i := range pickUpPointsDB {
-		pickUpPoints[i] = pickUpPointsDB[i].ConvertToPickUpPoint()
-	}
-	return pickUpPoints, nil
+	return dto.ConvertSliceToPickUpPoints(pickUpPointsDB), nil
 }

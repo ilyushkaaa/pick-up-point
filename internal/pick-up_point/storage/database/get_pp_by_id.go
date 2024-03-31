@@ -22,6 +22,6 @@ func (s *PPStorageDB) GetPickUpPointByID(ctx context.Context, id uint64) (*model
 		}
 		return nil, err
 	}
-	pp := ppDB.ConvertToPickUpPoint()
+	pp := dto.ConvertToPickUpPoint(ppDB)
 	return &pp, nil
 }

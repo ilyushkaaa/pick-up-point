@@ -34,22 +34,3 @@ func NewOrderDB(o model.Order) OrderDB {
 		PackageType:           packageType,
 	}
 }
-
-func (o *OrderDB) ConvertToOrder() model.Order {
-	order := model.Order{
-		ID:                    o.ID,
-		ClientID:              o.ClientID,
-		Weight:                o.Weight,
-		Price:                 o.Price,
-		StorageExpirationDate: o.StorageExpirationDate,
-		IsReturned:            o.IsReturned,
-	}
-	if o.OrderIssueDate.Valid {
-		order.OrderIssueDate = o.OrderIssueDate.Time
-		order.IsIssued = true
-	}
-	if o.PackageType.Valid {
-		order.PackageType = o.PackageType.String
-	}
-	return order
-}

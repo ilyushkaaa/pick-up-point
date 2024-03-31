@@ -22,6 +22,6 @@ func (s *OrderStoragePG) GetOrderByID(ctx context.Context, id uint64) (*model.Or
 		}
 		return nil, err
 	}
-	order := orderDB.ConvertToOrder()
+	order := dto.ConvertToOrder(orderDB)
 	return &order, nil
 }

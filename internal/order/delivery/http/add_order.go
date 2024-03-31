@@ -47,7 +47,7 @@ func (d *OrderDelivery) AddOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	order := orderToAdd.ConvertToOrder()
+	order := dto.ConvertToOrder(orderToAdd)
 	err = d.service.AddOrder(r.Context(), order)
 	if err != nil {
 		if errors.Is(err, service.ErrOrderAlreadyInPickUpPoint) {

@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/asaskevich/govalidator"
-	"homework/internal/order/model"
 )
 
 type OrderFromCourierInputData struct {
@@ -19,15 +18,4 @@ type OrderFromCourierInputData struct {
 func (o *OrderFromCourierInputData) Validate() error {
 	_, err := govalidator.ValidateStruct(o)
 	return err
-}
-
-func (o *OrderFromCourierInputData) ConvertToOrder() model.Order {
-	return model.Order{
-		ID:                    o.ID,
-		ClientID:              o.ClientID,
-		Weight:                o.Weight,
-		Price:                 o.Price,
-		StorageExpirationDate: o.StorageExpirationDate,
-		PackageType:           o.PackageType,
-	}
 }
