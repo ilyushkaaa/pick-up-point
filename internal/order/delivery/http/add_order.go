@@ -8,7 +8,6 @@ import (
 
 	"homework/internal/order/delivery/dto"
 	"homework/internal/order/service"
-	"homework/internal/order/service/packages"
 	"homework/pkg/response"
 )
 
@@ -66,7 +65,7 @@ func (d *OrderDelivery) AddOrder(w http.ResponseWriter, r *http.Request) {
 			response.WriteResponse(w, response.Result{Res: err.Error()}, http.StatusBadRequest, d.logger)
 			return
 		}
-		if errors.Is(err, packages.ErrPackageCanNotBeApplied) {
+		if errors.Is(err, service.ErrPackageCanNotBeApplied) {
 			d.logger.Errorf("%s can not be applied for order %v", orderToAdd.PackageType, order)
 			response.WriteResponse(w, response.Result{Res: err.Error()}, http.StatusBadRequest, d.logger)
 			return

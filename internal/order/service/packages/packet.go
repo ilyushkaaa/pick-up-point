@@ -6,10 +6,13 @@ import (
 
 type Packet struct{}
 
-func (p *Packet) AddPackageToOrder(order *model.Order) error {
+func (p *Packet) CheckIfPackageCanBeApplied(order model.Order) bool {
 	if order.Weight > 10 {
-		return ErrPackageCanNotBeApplied
+		return false
 	}
-	order.Price += 5
-	return nil
+	return true
+}
+
+func (p *Packet) GetPrice() float64 {
+	return 5
 }

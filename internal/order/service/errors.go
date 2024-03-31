@@ -15,4 +15,5 @@ var (
 	ErrNoOrdersOnThisPage        = errors.New("no orders on page with this number")
 	ErrOrderAlreadyInPickUpPoint = errors.New("order with such id is already in pick-up point")
 	ErrUnknownPackage            = errors.New("unknown package type passed")
+	ErrPackageCanNotBeApplied    = errors.New("this package type can not be applied for such order")
 )

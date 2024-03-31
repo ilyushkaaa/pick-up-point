@@ -3,5 +3,6 @@ package packages
 import "homework/internal/order/model"
 
 type Package interface {
-	AddPackageToOrder(order *model.Order) error
+	CheckIfPackageCanBeApplied(order model.Order) bool
+	GetPrice() float64
 }
