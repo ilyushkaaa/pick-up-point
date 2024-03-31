@@ -2,7 +2,6 @@ package dto
 
 import (
 	"homework/internal/pick-up_point/model"
-	"homework/internal/pick-up_point/model/address"
 )
 
 type PickUpPointDB struct {
@@ -15,16 +14,14 @@ type PickUpPointDB struct {
 	HouseNum    string `db:"house_num"`
 }
 
-func (pp *PickUpPointDB) ConvertToPickUpPoint() model.PickUpPoint {
-	return model.PickUpPoint{
-		ID:          pp.ID,
-		Name:        pp.Name,
-		PhoneNumber: pp.PhoneNumber,
-		Address: address.PPAddress{
-			Region:   pp.Region,
-			City:     pp.City,
-			Street:   pp.Street,
-			HouseNum: pp.HouseNum,
-		},
+func NewPickUpPointDB(p model.PickUpPoint) PickUpPointDB {
+	return PickUpPointDB{
+		ID:          p.ID,
+		Name:        p.Name,
+		PhoneNumber: p.PhoneNumber,
+		Region:      p.Address.Region,
+		City:        p.Address.City,
+		Street:      p.Address.City,
+		HouseNum:    p.Address.HouseNum,
 	}
 }

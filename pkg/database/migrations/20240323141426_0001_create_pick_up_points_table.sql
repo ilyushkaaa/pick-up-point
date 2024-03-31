@@ -16,5 +16,5 @@ CREATE TABLE "pick_up_points"
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE pick_up_points
+DROP TABLE pick_up_points;
 -- +goose StatementEnd

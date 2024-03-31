@@ -8,10 +8,15 @@ import (
 
 	"go.uber.org/zap"
 	"homework/internal/middleware"
-	delivery "homework/internal/pick-up_point/delivery/http"
-	"homework/internal/pick-up_point/delivery/http/routes"
-	"homework/internal/pick-up_point/service"
-	storage "homework/internal/pick-up_point/storage/database"
+	deliveryOrder "homework/internal/order/delivery/http"
+	serviceOrder "homework/internal/order/service"
+	"homework/internal/order/service/packages"
+	storageOrder "homework/internal/order/storage/database"
+	deliveryPP "homework/internal/pick-up_point/delivery/http"
+	servicePP "homework/internal/pick-up_point/service"
+	storagePP "homework/internal/pick-up_point/storage/database"
+	"homework/internal/routes"
+	database "homework/pkg/database/postgres"
 )
 
 func main() {
@@ -28,14 +33,28 @@ func main() {
 	}()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	st, err := storage.New(ctx)
+	db, err := database.NewDatabase(ctx)
 	if err != nil {
-		logger.Fatalf("error in storage init: %v", err)
+		logger.Fatalf("error in database init: %v", err)
 	}
-	sv := service.New(st)
-	d := delivery.New(sv, logger)
+	defer func() {
+		err = db.Close()
+		if err != nil {
+			logger.Errorf("error in closing db")
+		}
+	}()
+	stPP := storagePP.New(db)
+	svPP := servicePP.New(stPP)
+	dPP := deliveryPP.New(svPP, logger)
+
+	stOrder := storageOrder.New(db)
+
+	packageTypes := packages.Init()
+	svOrder := serviceOrder.New(stOrder, packageTypes)
+	dOrder := deliveryOrder.New(svOrder, logger)
+
 	mw := middleware.New(logger)
-	router := routes.GetRouter(d, mw)
+	router := routes.GetRouter(dPP, dOrder, mw)
 
 	port := os.Getenv("APP_PORT")
 	addr := ":" + port

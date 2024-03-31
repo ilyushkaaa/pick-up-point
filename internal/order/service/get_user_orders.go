@@ -1,12 +1,14 @@
 package service
 
 import (
+	"context"
+
 	filtermodel "homework/internal/filters/model"
 	ordermodel "homework/internal/order/model"
 )
 
-func (op *OrderServicePP) GetUserOrdersService(clientID int, filters filtermodel.Filters) ([]ordermodel.Order, error) {
-	orders, err := op.storage.GetUserOrdersStorage(clientID)
+func (op *OrderServicePP) GetUserOrders(ctx context.Context, clientID uint64, filters filtermodel.Filters) ([]ordermodel.Order, error) {
+	orders, err := op.storage.GetUserOrders(ctx, clientID)
 	if err != nil {
 		return nil, err
 	}

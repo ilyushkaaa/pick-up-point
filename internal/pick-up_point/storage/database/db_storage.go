@@ -1,20 +1,11 @@
 package storage
 
-import (
-	"context"
-
-	"github.com/jackc/pgx/v4/pgxpool"
-	"homework/pkg/database/client"
-)
+import "homework/pkg/database/postgres"
 
 type PPStorageDB struct {
-	cluster *pgxpool.Pool
+	db *database.PGDatabase
 }
 
-func New(ctx context.Context) (*PPStorageDB, error) {
-	cluster, err := client.NewPool(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return &PPStorageDB{cluster: cluster}, nil
+func New(db *database.PGDatabase) *PPStorageDB {
+	return &PPStorageDB{db: db}
 }

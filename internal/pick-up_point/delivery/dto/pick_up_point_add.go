@@ -2,8 +2,6 @@ package dto
 
 import (
 	"github.com/asaskevich/govalidator"
-	"homework/internal/pick-up_point/model"
-	"homework/internal/pick-up_point/model/address"
 )
 
 type PickUpPointAdd struct {
@@ -15,17 +13,4 @@ type PickUpPointAdd struct {
 func (p *PickUpPointAdd) Validate() error {
 	_, err := govalidator.ValidateStruct(p)
 	return err
-}
-
-func (p *PickUpPointAdd) ConvertToPickUpPoint() model.PickUpPoint {
-	return model.PickUpPoint{
-		Name: p.Name,
-		Address: address.PPAddress{
-			Region:   p.Address.Region,
-			City:     p.Address.City,
-			Street:   p.Address.Street,
-			HouseNum: p.Address.HouseNum,
-		},
-		PhoneNumber: p.PhoneNumber,
-	}
 }
