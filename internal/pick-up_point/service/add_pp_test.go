@@ -19,8 +19,8 @@ func Test_AddPickUpPoint(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
 		defer s.tearDown()
-
 		s.mockStorage.EXPECT().GetPickUpPointByName(ctx, states.PPName).Return(nil, fmt.Errorf("internal error"))
+
 		pp, err := s.srv.AddPickUpPoint(ctx, fixtures.PickUpPoint().ValidWithoutID().V())
 
 		assert.Nil(t, pp)
@@ -31,8 +31,8 @@ func Test_AddPickUpPoint(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
 		defer s.tearDown()
-
 		s.mockStorage.EXPECT().GetPickUpPointByName(ctx, states.PPName).Return(fixtures.PickUpPoint().Valid().P(), nil)
+
 		pp, err := s.srv.AddPickUpPoint(ctx, fixtures.PickUpPoint().ValidWithoutID().V())
 
 		assert.Nil(t, pp)
@@ -43,9 +43,9 @@ func Test_AddPickUpPoint(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
 		defer s.tearDown()
-
 		s.mockStorage.EXPECT().GetPickUpPointByName(ctx, states.PPName).Return(nil, storage.ErrPickUpPointNotFound)
 		s.mockStorage.EXPECT().AddPickUpPoint(ctx, fixtures.PickUpPoint().ValidWithoutID().V()).Return(nil, fmt.Errorf("internal error"))
+
 		pp, err := s.srv.AddPickUpPoint(ctx, fixtures.PickUpPoint().ValidWithoutID().V())
 
 		assert.Nil(t, pp)
@@ -56,9 +56,9 @@ func Test_AddPickUpPoint(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
 		defer s.tearDown()
-
 		s.mockStorage.EXPECT().GetPickUpPointByName(ctx, states.PPName).Return(nil, storage.ErrPickUpPointNotFound)
 		s.mockStorage.EXPECT().AddPickUpPoint(ctx, fixtures.PickUpPoint().ValidWithoutID().V()).Return(fixtures.PickUpPoint().Valid().P(), nil)
+
 		pp, err := s.srv.AddPickUpPoint(ctx, fixtures.PickUpPoint().ValidWithoutID().V())
 
 		assert.Equal(t, fixtures.PickUpPoint().Valid().P(), pp)

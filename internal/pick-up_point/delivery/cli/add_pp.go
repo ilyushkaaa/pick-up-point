@@ -36,6 +36,6 @@ func (ps *PPDelivery) AddPickUpPoint(ctx context.Context, params []string) respo
 		}
 	}
 	return response.Response{
-		Body: fmt.Sprintf("pick-up point was successfully added: %v", addedPP),
+		Body: fmt.Sprintf("pick-up point was successfully added: %+v", addedPP),
 	}
 }

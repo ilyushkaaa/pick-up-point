@@ -1,4 +1,4 @@
-package json_body
+package test_json
 
 const (
 	InValidPPRequest = `{

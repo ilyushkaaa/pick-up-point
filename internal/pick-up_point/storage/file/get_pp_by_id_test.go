@@ -16,6 +16,8 @@ func Test_GetPickUpPointByID(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("not exists", func(t *testing.T) {
+		t.Parallel()
+
 		pp, err := s.st.GetPickUpPointByID(ctx, states.PPID+1)
 
 		assert.Nil(t, pp)
@@ -23,10 +25,11 @@ func Test_GetPickUpPointByID(t *testing.T) {
 	})
 
 	t.Run("ok", func(t *testing.T) {
+		t.Parallel()
+
 		pp, err := s.st.GetPickUpPointByID(ctx, states.PPID)
 
 		assert.NoError(t, err)
 		assert.Equal(t, fixtures.PickUpPoint().Valid().P(), pp)
 	})
-
 }

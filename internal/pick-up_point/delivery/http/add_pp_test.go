@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"homework/internal/pick-up_point/service"
 	"homework/tests/fixtures"
-	"homework/tests/json_body"
+	"homework/tests/test_json"
 )
 
 func Test_AddPickUpPoint(t *testing.T) {
@@ -21,16 +21,16 @@ func Test_AddPickUpPoint(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
 		defer s.tearDown()
-
 		request := httptest.NewRequest(http.MethodPost, "/pick-up-point", strings.NewReader(`{"`))
 		respWriter := httptest.NewRecorder()
+
 		s.del.AddPickUpPoint(respWriter, request)
 		resp := respWriter.Result()
 		body, err := io.ReadAll(resp.Body)
 
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-		assert.Equal(t, json_body.InvalidInput, string(body))
+		assert.Equal(t, test_json.InvalidInput, string(body))
 
 	})
 
@@ -38,9 +38,9 @@ func Test_AddPickUpPoint(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
 		defer s.tearDown()
-
-		request := httptest.NewRequest(http.MethodPost, "/pick-up-point", strings.NewReader(json_body.InValidPPRequest))
+		request := httptest.NewRequest(http.MethodPost, "/pick-up-point", strings.NewReader(test_json.InValidPPRequest))
 		respWriter := httptest.NewRecorder()
+
 		s.del.AddPickUpPoint(respWriter, request)
 		resp := respWriter.Result()
 		body, err := io.ReadAll(resp.Body)
@@ -54,10 +54,10 @@ func Test_AddPickUpPoint(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
 		defer s.tearDown()
-
-		request := httptest.NewRequest(http.MethodPost, "/pick-up-point", strings.NewReader(json_body.ValidPPAddRequest))
+		request := httptest.NewRequest(http.MethodPost, "/pick-up-point", strings.NewReader(test_json.ValidPPAddRequest))
 		s.mockService.EXPECT().AddPickUpPoint(request.Context(), fixtures.PickUpPoint().ValidWithoutID().V()).Return(nil, service.ErrPickUpPointAlreadyExists)
 		respWriter := httptest.NewRecorder()
+
 		s.del.AddPickUpPoint(respWriter, request)
 		resp := respWriter.Result()
 		body, err := io.ReadAll(resp.Body)
@@ -71,34 +71,34 @@ func Test_AddPickUpPoint(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
 		defer s.tearDown()
-
-		request := httptest.NewRequest(http.MethodPost, "/pick-up-point", strings.NewReader(json_body.ValidPPAddRequest))
+		request := httptest.NewRequest(http.MethodPost, "/pick-up-point", strings.NewReader(test_json.ValidPPAddRequest))
 		s.mockService.EXPECT().AddPickUpPoint(request.Context(), fixtures.PickUpPoint().ValidWithoutID().V()).Return(nil, fmt.Errorf("internal error"))
 		respWriter := httptest.NewRecorder()
+
 		s.del.AddPickUpPoint(respWriter, request)
 		resp := respWriter.Result()
 		body, err := io.ReadAll(resp.Body)
 
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-		assert.Equal(t, json_body.InternalError, string(body))
+		assert.Equal(t, test_json.InternalError, string(body))
 	})
 
 	t.Run("ok", func(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
 		defer s.tearDown()
-
-		request := httptest.NewRequest(http.MethodPost, "/pick-up-point", strings.NewReader(json_body.ValidPPAddRequest))
+		request := httptest.NewRequest(http.MethodPost, "/pick-up-point", strings.NewReader(test_json.ValidPPAddRequest))
 		s.mockService.EXPECT().AddPickUpPoint(request.Context(), fixtures.PickUpPoint().ValidWithoutID().V()).Return(fixtures.PickUpPoint().Valid().P(), nil)
 		respWriter := httptest.NewRecorder()
+
 		s.del.AddPickUpPoint(respWriter, request)
 		resp := respWriter.Result()
 		body, err := io.ReadAll(resp.Body)
 
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		assert.Equal(t, json_body.ValidPPResponse, string(body))
+		assert.Equal(t, test_json.ValidPPResponse, string(body))
 	})
 
 }

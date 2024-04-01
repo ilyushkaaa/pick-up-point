@@ -18,8 +18,8 @@ func Test_GetPickUpPointByID(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
 		defer s.tearDown()
-
 		s.mockStorage.EXPECT().GetPickUpPointByID(ctx, states.PPID).Return(nil, fmt.Errorf("internal error"))
+
 		pp, err := s.srv.GetPickUpPointByID(ctx, states.PPID)
 
 		assert.Nil(t, pp)
@@ -30,8 +30,8 @@ func Test_GetPickUpPointByID(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
 		defer s.tearDown()
-
 		s.mockStorage.EXPECT().GetPickUpPointByID(ctx, states.PPID).Return(fixtures.PickUpPoint().Valid().P(), nil)
+
 		pp, err := s.srv.GetPickUpPointByID(ctx, states.PPID)
 
 		assert.Equal(t, fixtures.PickUpPoint().Valid().P(), pp)

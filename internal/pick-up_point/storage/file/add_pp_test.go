@@ -19,5 +19,4 @@ func Test_AddPickUpPoint(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, fixtures.PickUpPoint().Valid().P(), pp)
 	})
-
 }

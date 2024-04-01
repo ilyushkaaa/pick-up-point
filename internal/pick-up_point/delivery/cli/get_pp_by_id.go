@@ -23,7 +23,7 @@ func (ps *PPDelivery) GetPickUpPointByID(ctx context.Context, input []string) re
 	pickUpPoint, err := ps.service.GetPickUpPointByID(ctx, ppID)
 	if err != nil {
 		return response.Response{
-			Err: fmt.Errorf("error in getting pick-up pointby name: %w", err),
+			Err: fmt.Errorf("error in getting pick-up point by id: %w", err),
 		}
 	}
 	return response.Response{
