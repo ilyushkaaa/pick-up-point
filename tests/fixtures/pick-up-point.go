@@ -56,10 +56,10 @@ func (b *PickUpPointBuilder) V() model.PickUpPoint {
 }
 
 func (b *PickUpPointBuilder) ValidWithoutID() *PickUpPointBuilder {
-	return PickUpPoint().Name(states.PPName).Region(states.PPRegion).City(states.PPCity).Street(states.PPStreet).
+	return PickUpPoint().Name(states.PPName1).Region(states.PPRegion).City(states.PPCity).Street(states.PPStreet).
 		HouseNum(states.PPHouseNum).PhoneNumber(states.PPPhoneNumber)
 }
 
 func (b *PickUpPointBuilder) Valid() *PickUpPointBuilder {
-	return b.ValidWithoutID().ID(states.PPID)
+	return b.ValidWithoutID().ID(states.PPID1)
 }

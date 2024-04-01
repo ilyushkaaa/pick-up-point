@@ -7,6 +7,7 @@ import (
 	"homework/internal/command_order"
 	delivery "homework/internal/order/delivery/cli"
 	"homework/internal/order/service"
+	"homework/internal/order/service/packages"
 	storage "homework/internal/order/storage/file"
 )
 
@@ -24,7 +25,9 @@ func main() {
 			fmt.Printf("error in closing storage: %s", err)
 		}
 	}()
-	orderService := service.New(orderStorage)
+	packageTypes := packages.Init()
+
+	orderService := service.New(orderStorage, packageTypes)
 	orderDelivery := delivery.New(orderService)
 	args := os.Args[1:]
 	if len(args) == 0 {

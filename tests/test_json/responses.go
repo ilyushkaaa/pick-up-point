@@ -20,9 +20,41 @@ const (
 		},
 		"phone_number": "88005553535"}`
 
+	ValidPPAddRequestUnique = `{
+		"name": "PickUpPointNew",
+			"address": {
+			"region": "Курская область",
+  			"city": "Курск",
+			"street": "Студенческая",
+			"house_num": "2A"
+		},
+		"phone_number": "88005553535"}`
+
 	ValidPPUpdateRequest = `{
 		"id": 5000,
 		"name": "PickUpPoint1",
+			"address": {
+			"region": "Курская область",
+  			"city": "Курск",
+			"street": "Студенческая",
+			"house_num": "2A"
+		},
+		"phone_number": "88005553535"}`
+
+	ValidPPUpdateRequestNotExists = `{
+		"id": 5020,
+		"name": "PickUpPoint1",
+			"address": {
+			"region": "Курская область",
+  			"city": "Курск",
+			"street": "Студенческая",
+			"house_num": "2A"
+		},
+		"phone_number": "88005553535"}`
+
+	ValidPPUpdateRequestNameAlreadyExists = `{
+		"id": 5000,
+		"name": "PickUpPoint2",
 			"address": {
 			"region": "Курская область",
   			"city": "Курск",

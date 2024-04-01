@@ -16,7 +16,7 @@ func setUp() pickUpPointStorageFixtures {
 	st := FilePPStorage{
 		cache:  []model.PickUpPoint{fixtures.PickUpPoint().Valid().V()},
 		mu:     &sync.RWMutex{},
-		nextID: states.PPID,
+		nextID: states.PPID1,
 	}
 	return pickUpPointStorageFixtures{
 		st: st,
