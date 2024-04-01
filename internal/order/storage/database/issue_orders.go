@@ -19,6 +19,6 @@ func (s *OrderStoragePG) IssueOrders(ctx context.Context, orderIDs map[uint64]st
 		idCount++
 	}
 	query := fmt.Sprintf("UPDATE orders SET order_issue_date = $2 WHERE id IN (%s)", strings.Join(placeholders, ", "))
-	_, err := s.db.Cluster.Exec(ctx, query, args...)
+	_, err := s.db.Exec(ctx, query, args...)
 	return err
 }

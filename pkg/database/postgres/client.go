@@ -1,4 +1,4 @@
-package client
+package database
 
 import (
 	"context"
@@ -7,13 +7,13 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-func NewPool(ctx context.Context) (*pgxpool.Pool, error) {
+func NewDB(ctx context.Context) (*PGDatabase, error) {
 	dsn := generateDsn()
 	pool, err := pgxpool.Connect(ctx, dsn)
 	if err != nil {
 		return nil, err
 	}
-	return pool, nil
+	return NewDatabase(pool), nil
 }
 
 func generateDsn() string {

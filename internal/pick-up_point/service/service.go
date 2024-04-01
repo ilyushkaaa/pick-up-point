@@ -6,7 +6,7 @@ import (
 	"homework/internal/pick-up_point/model"
 	"homework/internal/pick-up_point/storage"
 )
-
+//go:generate mockgen -source ./service.go -destination=./mocks/service.go -package=mock_service
 type PickUpPointService interface {
 	AddPickUpPoint(ctx context.Context, point model.PickUpPoint) (*model.PickUpPoint, error)
 	GetPickUpPoints(ctx context.Context) ([]model.PickUpPoint, error)

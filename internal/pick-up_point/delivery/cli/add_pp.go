@@ -28,7 +28,7 @@ func (ps *PPDelivery) AddPickUpPoint(ctx context.Context, params []string) respo
 			Err: err,
 		}
 	}
-	newPickUpPoint := pp.ConvertToPickUpPoint()
+	newPickUpPoint := dto.ConvertPPAddToPickUpPoint(pp)
 	addedPP, err := ps.service.AddPickUpPoint(ctx, newPickUpPoint)
 	if err != nil {
 		return response.Response{

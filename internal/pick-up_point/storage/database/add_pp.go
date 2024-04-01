@@ -10,7 +10,7 @@ import (
 func (s *PPStorageDB) AddPickUpPoint(ctx context.Context, point model.PickUpPoint) (*model.PickUpPoint, error) {
 	var id uint64
 	pointDB := dto.NewPickUpPointDB(point)
-	err := s.db.Cluster.QueryRow(ctx,
+	err := s.db.QueryRow(ctx,
 		`INSERT INTO pick_up_points (name, phone_number, region, city, street, house_num)
               VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
 		pointDB.Name, pointDB.PhoneNumber, pointDB.Region, pointDB.City, pointDB.Street, pointDB.HouseNum).Scan(&id)

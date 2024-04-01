@@ -12,7 +12,7 @@ import (
 
 func (s *PPStorageDB) UpdatePickUpPoint(ctx context.Context, point model.PickUpPoint) error {
 	pointDB := dto.NewPickUpPointDB(point)
-	result, err := s.db.Cluster.Exec(ctx, `UPDATE pick_up_points SET phone_number = $1, region = $2, 
+	result, err := s.db.Exec(ctx, `UPDATE pick_up_points SET phone_number = $1, region = $2, 
                           city = $3, street = $4, house_num = $5, name = $6 WHERE id = $7`,
 		pointDB.PhoneNumber, pointDB.Region, pointDB.City, pointDB.Street, pointDB.HouseNum,
 		pointDB.Name, pointDB.ID)
