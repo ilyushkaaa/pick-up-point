@@ -29,6 +29,8 @@ func TestAddPickUpPoint(t *testing.T) {
 		body, err := io.ReadAll(resp.Body)
 
 		assert.NoError(t, err)
+		defer resp.Body.Close()
+
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 		assert.Equal(t, `{"result":"pick-up point with such name already exists"}`, string(body))
 	})
@@ -45,6 +47,7 @@ func TestAddPickUpPoint(t *testing.T) {
 		body, err := io.ReadAll(resp.Body)
 
 		assert.NoError(t, err)
+		defer resp.Body.Close()
 		pp := getPPFromResponse(t, body)
 
 		assert.Equal(t, http.StatusOK, resp.StatusCode)

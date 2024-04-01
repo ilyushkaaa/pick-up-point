@@ -28,6 +28,7 @@ func TestGetPickUpPoints(t *testing.T) {
 		body, err := io.ReadAll(resp.Body)
 
 		assert.NoError(t, err)
+		defer resp.Body.Close()
 		pp := getPPSliceFromResponse(t, body)
 
 		assert.Equal(t, http.StatusOK, resp.StatusCode)

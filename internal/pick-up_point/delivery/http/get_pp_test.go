@@ -29,6 +29,8 @@ func Test_GetPickUpPoints(t *testing.T) {
 		body, err := io.ReadAll(resp.Body)
 
 		assert.NoError(t, err)
+		defer resp.Body.Close()
+
 		assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
 		assert.Equal(t, test_json.InternalError, string(body))
 	})
@@ -46,6 +48,8 @@ func Test_GetPickUpPoints(t *testing.T) {
 		body, err := io.ReadAll(resp.Body)
 
 		assert.NoError(t, err)
+		defer resp.Body.Close()
+
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 		assert.Equal(t, `[{"ID":5000,"Name":"PickUpPoint1","Address":{"Region":"Курская область","City":"Курск","Street":"Студенческая","HouseNum":"2A"},"PhoneNumber":"88005553535"}]`, string(body))
 	})

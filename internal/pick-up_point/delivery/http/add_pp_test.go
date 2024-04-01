@@ -29,6 +29,8 @@ func Test_AddPickUpPoint(t *testing.T) {
 		body, err := io.ReadAll(resp.Body)
 
 		assert.NoError(t, err)
+		defer resp.Body.Close()
+
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 		assert.Equal(t, test_json.InvalidInput, string(body))
 
@@ -46,6 +48,8 @@ func Test_AddPickUpPoint(t *testing.T) {
 		body, err := io.ReadAll(resp.Body)
 
 		assert.NoError(t, err)
+		defer resp.Body.Close()
+
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 		assert.Equal(t, `{"result":"Address.house_num: non zero value required"}`, string(body))
 	})
@@ -63,6 +67,8 @@ func Test_AddPickUpPoint(t *testing.T) {
 		body, err := io.ReadAll(resp.Body)
 
 		assert.NoError(t, err)
+		defer resp.Body.Close()
+
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 		assert.Equal(t, `{"result":"pick-up point with such name already exists"}`, string(body))
 	})
@@ -80,6 +86,8 @@ func Test_AddPickUpPoint(t *testing.T) {
 		body, err := io.ReadAll(resp.Body)
 
 		assert.NoError(t, err)
+		defer resp.Body.Close()
+
 		assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
 		assert.Equal(t, test_json.InternalError, string(body))
 	})
@@ -97,6 +105,8 @@ func Test_AddPickUpPoint(t *testing.T) {
 		body, err := io.ReadAll(resp.Body)
 
 		assert.NoError(t, err)
+		defer resp.Body.Close()
+
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 		assert.Equal(t, test_json.ValidPPResponse, string(body))
 	})

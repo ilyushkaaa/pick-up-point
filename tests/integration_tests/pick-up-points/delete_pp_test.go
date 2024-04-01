@@ -25,6 +25,8 @@ func TestDeletePickUpPointBy(t *testing.T) {
 		body, err := io.ReadAll(resp.Body)
 
 		assert.NoError(t, err)
+		defer resp.Body.Close()
+
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
 		assert.Equal(t, `{"result":"no pick-up points with such id"}`, string(body))
 	})
@@ -41,6 +43,8 @@ func TestDeletePickUpPointBy(t *testing.T) {
 		body, err := io.ReadAll(resp.Body)
 
 		assert.NoError(t, err)
+		defer resp.Body.Close()
+
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 		assert.Equal(t, `{"result":"success"}`, string(body))
 	})
