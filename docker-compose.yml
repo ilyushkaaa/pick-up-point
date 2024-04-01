@@ -22,14 +22,6 @@ services:
     ports:
       - '5432:5432'
 
-  test_postgres:
-    image: postgres:13.2
-    environment:
-      POSTGRES_PASSWORD: ${TEST_DB_PASS}
-      POSTGRES_DB: ${TEST_DB_NAME}
-    ports:
-      - '5433:5432'
-
 
 
 

@@ -2,7 +2,7 @@
 
 #### Запуск
 ```bash
-docker-compose up --build
+make app_start
 ```
 
 ### Добавление ПВЗ

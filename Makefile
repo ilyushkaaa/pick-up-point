@@ -4,6 +4,10 @@ export
 
 MIGRATION_FOLDER=$(CURDIR)/pkg/database/migrations
 
+.PHONY: app_start
+app_start:
+	docker-compose up --build
+
 .PHONY: migration-create
 migration-create:
 	goose -dir "$(MIGRATION_FOLDER)" create "$(name)" sql
@@ -22,7 +26,7 @@ build:
 
 .PHONY: test_env_up
 test_env_up:
-	docker-compose up test_postgres
+	docker-compose -f $(CURDIR)/tests/integration_tests/docker-compose.yml up
 
 .PHONY: integration_tests_run
 integration_tests_run:
