@@ -26,7 +26,8 @@ build:
 
 .PHONY: test_env_up
 test_env_up:
-	docker-compose -f $(CURDIR)/tests/integration_tests/docker-compose.yml up
+	docker-compose -f $(CURDIR)/tests/integration_tests/docker-compose.yml up -d
+	make migration-up DB_HOST=$(TEST_DB_HOST) DB_USER=$(TEST_DB_USER) DB_PASS=$(TEST_DB_PASS) DB_NAME=$(TEST_DB_NAME) DB_PORT=$(TEST_DB_PORT)
 
 .PHONY: integration_tests_run
 integration_tests_run:
