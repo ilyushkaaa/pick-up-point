@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"homework/tests/fixtures"
 	"homework/tests/test_json"
 )
 
@@ -52,7 +51,6 @@ func TestUpdatePickUpPoint(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		setUp(t, db, tableName)
 		fillDataBase(t, db)
-		ppExpected := fixtures.PickUpPoint().Valid().V()
 		request := httptest.NewRequest(http.MethodPut, "/pick-up-point", strings.NewReader(test_json.ValidPPUpdateRequest))
 		respWriter := httptest.NewRecorder()
 
@@ -62,9 +60,8 @@ func TestUpdatePickUpPoint(t *testing.T) {
 
 		assert.NoError(t, err)
 		defer resp.Body.Close()
-		pp := getPPFromResponse(t, body)
 
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		assert.Equal(t, ppExpected, pp)
+		assert.Equal(t, test_json.ValidPPResponse, string(body))
 	})
 }

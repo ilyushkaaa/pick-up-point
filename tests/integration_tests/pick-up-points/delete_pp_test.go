@@ -8,6 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
+	"homework/tests/test_json"
 )
 
 func TestDeletePickUpPointBy(t *testing.T) {
@@ -46,6 +47,6 @@ func TestDeletePickUpPointBy(t *testing.T) {
 		defer resp.Body.Close()
 
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		assert.Equal(t, `{"result":"success"}`, string(body))
+		assert.Equal(t, test_json.SuccessResult, string(body))
 	})
 }

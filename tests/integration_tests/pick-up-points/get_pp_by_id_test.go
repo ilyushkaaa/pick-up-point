@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
-	"homework/tests/fixtures"
+	"homework/tests/test_json"
 )
 
 func TestGetPickUpPointByID(t *testing.T) {
@@ -35,7 +35,6 @@ func TestGetPickUpPointByID(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		setUp(t, db, tableName)
 		fillDataBase(t, db)
-		ppExpected := fixtures.PickUpPoint().Valid().V()
 		request := httptest.NewRequest(http.MethodGet, "/pick-up-point/5000", nil)
 		request = mux.SetURLVars(request, map[string]string{"PP_ID": "5000"})
 		respWriter := httptest.NewRecorder()
@@ -46,9 +45,8 @@ func TestGetPickUpPointByID(t *testing.T) {
 
 		assert.NoError(t, err)
 		defer resp.Body.Close()
-		pp := getPPFromResponse(t, body)
 
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		assert.Equal(t, ppExpected, pp)
+		assert.Equal(t, test_json.ValidPPResponse, string(body))
 	})
 }
