@@ -71,7 +71,7 @@ const (
 
 	ValidPPResponse = `{"ID":5000,"Name":"PickUpPoint1","Address":{"Region":"Курская область","City":"Курск","Street":"Студенческая","HouseNum":"2A"},"PhoneNumber":"88005553535"}`
 
-	ValidPPResponseAdd = `{"ID":5010,"Name":"PickUpPointNew","Address":{"Region":"Курская область","City":"Курск","Street":"Студенческая","HouseNum":"2A"},"PhoneNumber":"88005553535"}`
+	ValidPPResponseAdd = `{"ID":1,"Name":"PickUpPointNew","Address":{"Region":"Курская область","City":"Курск","Street":"Студенческая","HouseNum":"2A"},"PhoneNumber":"88005553535"}`
 
 	ValidPPSliceResponse = `[{"ID":5000,"Name":"PickUpPoint1","Address":{"Region":"Курская область","City":"Курск","Street":"Студенческая","HouseNum":"2A"},"PhoneNumber":"88005553535"},{"ID":5001,"Name":"PickUpPoint2","Address":{"Region":"Курская область","City":"Курск","Street":"Студенческая","HouseNum":"2A"},"PhoneNumber":"88005553535"}]`
 )

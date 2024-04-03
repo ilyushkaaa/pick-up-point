@@ -17,18 +17,10 @@ func setUp(t *testing.T, db database.DBops, tableName string) {
 
 	err := truncateTable(ctx, db, tableName)
 	assert.NoError(t, err)
-
-	err = resetIDSequence(ctx, db, tableName)
-	assert.NoError(t, err)
 }
 
 func truncateTable(ctx context.Context, db database.DBops, tableName string) error {
-	_, err := db.Exec(ctx, fmt.Sprintf("TRUNCATE table %s", tableName))
-	return err
-}
-
-func resetIDSequence(ctx context.Context, db database.DBops, tableName string) error {
-	_, err := db.Exec(ctx, fmt.Sprintf("ALTER SEQUENCE %s RESTART WITH 5010", tableName+"_id_seq"))
+	_, err := db.Exec(ctx, fmt.Sprintf("TRUNCATE table %s RESTART IDENTITY", tableName))
 	return err
 }
 
