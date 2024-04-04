@@ -7,7 +7,7 @@ import (
 )
 
 func (s *PPStorageDB) DeletePickUpPoint(ctx context.Context, id uint64) error {
-	result, err := s.db.Cluster.Exec(ctx, `DELETE FROM pick_up_points WHERE id = $1`, id)
+	result, err := s.db.Exec(ctx, `DELETE FROM pick_up_points WHERE id = $1`, id)
 	if err != nil {
 		return err
 	}

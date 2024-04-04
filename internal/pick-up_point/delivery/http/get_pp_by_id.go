@@ -30,7 +30,7 @@ func (d *PPDelivery) GetPickUpPointByID(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		if errors.Is(err, storage.ErrPickUpPointNotFound) {
 			d.logger.Errorf("no pick-up points with id %d", ppIDInt)
-			response.WriteResponse(w, response.Result{Res: "pick-up with such id does not exist"},
+			response.WriteResponse(w, response.Result{Res: err.Error()},
 				http.StatusNotFound, d.logger)
 			return
 		}

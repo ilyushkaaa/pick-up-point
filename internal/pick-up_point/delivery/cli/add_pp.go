@@ -28,7 +28,7 @@ func (ps *PPDelivery) AddPickUpPoint(ctx context.Context, params []string) respo
 			Err: err,
 		}
 	}
-	newPickUpPoint := pp.ConvertToPickUpPoint()
+	newPickUpPoint := dto.ConvertPPAddToPickUpPoint(pp)
 	addedPP, err := ps.service.AddPickUpPoint(ctx, newPickUpPoint)
 	if err != nil {
 		return response.Response{
@@ -36,6 +36,6 @@ func (ps *PPDelivery) AddPickUpPoint(ctx context.Context, params []string) respo
 		}
 	}
 	return response.Response{
-		Body: fmt.Sprintf("pick-up point was successfully added: %v", addedPP),
+		Body: fmt.Sprintf("pick-up point was successfully added: %+v", addedPP),
 	}
 }

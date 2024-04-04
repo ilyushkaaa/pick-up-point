@@ -1,11 +1,13 @@
 package storage
 
-import "homework/pkg/database/postgres"
+import (
+	"homework/pkg/database/postgres"
+)
 
 type PPStorageDB struct {
-	db *database.PGDatabase
+	db database.DBops
 }
 
-func New(db *database.PGDatabase) *PPStorageDB {
+func New(db database.DBops) *PPStorageDB {
 	return &PPStorageDB{db: db}
 }
