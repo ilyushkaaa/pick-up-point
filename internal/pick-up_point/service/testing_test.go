@@ -23,7 +23,3 @@ func setUp(t *testing.T) pickUpPointServiceFixtures {
 		mockStorage: mockPPStorage,
 	}
 }
-
-func (a *pickUpPointServiceFixtures) tearDown() {
-	a.ctrl.Finish()
-}

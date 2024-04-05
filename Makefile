@@ -3,6 +3,7 @@ export
 
 
 MIGRATION_FOLDER=$(CURDIR)/pkg/database/migrations
+TEST_ENV_FILE=$(CURDIR)/.env.testing
 
 .PHONY: app_start
 app_start:
@@ -26,12 +27,12 @@ build:
 
 .PHONY: test_env_up
 test_env_up:
-	docker-compose -f $(CURDIR)/tests/integration_tests/docker-compose.yml up -d
-	make migration-up DB_HOST=$(TEST_DB_HOST) DB_USER=$(TEST_DB_USER) DB_PASS=$(TEST_DB_PASS) DB_NAME=$(TEST_DB_NAME) DB_PORT=$(TEST_DB_PORT)
+	docker-compose --env-file $(CURDIR)/.env.testing -f $(CURDIR)/tests/integration_tests/docker-compose.yml up -d --build
+	make migration-up DB_HOST=$(DB_HOST) DB_USER=$(DB_USER) DB_PASS=$(DB_PASS) DB_NAME=$(DB_NAME) DB_PORT=$(DB_PORT)
 
 .PHONY: integration_tests_run
 integration_tests_run:
-	go test $(CURDIR)/tests/integration_tests/pick-up-points/...
+	go test $(CURDIR)/tests/integration_tests/pick-up-points/... DB_HOST=$(DB_HOST) DB_USER=$(DB_USER) DB_PASS=$(DB_PASS) DB_NAME=$(DB_NAME) DB_PORT=$(DB_PORT)
 
 
 .PHONY: unit_tests_run

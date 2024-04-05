@@ -5,9 +5,9 @@ import (
 )
 
 type PPStorageDB struct {
-	db database.DBops
+	db database.Database
 }
 
-func New(db database.DBops) *PPStorageDB {
+func New(db database.Database) *PPStorageDB {
 	return &PPStorageDB{db: db}
 }

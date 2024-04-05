@@ -22,10 +22,10 @@ type OrderService interface {
 
 type OrderServicePP struct {
 	storage  storage.OrderStorage
-	packages map[string]packages.Package
+	packages map[string]*packages.Package
 }
 
-func New(storage storage.OrderStorage, packages map[string]packages.Package) *OrderServicePP {
+func New(storage storage.OrderStorage, packages map[string]*packages.Package) *OrderServicePP {
 	return &OrderServicePP{
 		storage:  storage,
 		packages: packages,

@@ -22,10 +22,10 @@ func (op *OrderServicePP) AddOrder(ctx context.Context, order model.Order) error
 		if !exists {
 			return ErrUnknownPackage
 		}
-		if ok := chosenPackage.CheckIfPackageCanBeApplied(order); !ok {
+		if chosenPackage.MaxWeight != 0 && chosenPackage.MaxWeight < order.Weight {
 			return ErrPackageCanNotBeApplied
 		}
-		order.Price += chosenPackage.GetPrice()
+		order.Price += chosenPackage.Price
 	}
 	if time.Now().After(order.StorageExpirationDate) {
 		return ErrShelfTimeExpired

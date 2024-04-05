@@ -21,7 +21,7 @@ func Test_GetPickUpPointByName(t *testing.T) {
 		pp, err := s.st.GetPickUpPointByName(ctx, "unknown")
 
 		assert.Nil(t, pp)
-		assert.Equal(t, storage.ErrPickUpPointNotFound, err)
+		assert.ErrorIs(t, storage.ErrPickUpPointNotFound, err)
 	})
 
 	t.Run("ok", func(t *testing.T) {

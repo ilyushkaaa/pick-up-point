@@ -23,7 +23,3 @@ func setUp(t *testing.T) pickUpPointDeliveryFixtures {
 		mockService: mockPPService,
 	}
 }
-
-func (a *pickUpPointDeliveryFixtures) tearDown() {
-	a.ctrl.Finish()
-}

@@ -8,6 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"homework/tests/test_json"
 )
 
@@ -25,11 +26,11 @@ func TestGetPickUpPointByID(t *testing.T) {
 		resp := respWriter.Result()
 		body, err := io.ReadAll(resp.Body)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		defer resp.Body.Close()
 
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
-		assert.Equal(t, `{"result":"no pick-up points with such id"}`, string(body))
+		assert.JSONEq(t, `{"result":"no pick-up points with such id"}`, string(body))
 	})
 
 	t.Run("ok", func(t *testing.T) {
@@ -43,10 +44,10 @@ func TestGetPickUpPointByID(t *testing.T) {
 		resp := respWriter.Result()
 		body, err := io.ReadAll(resp.Body)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		defer resp.Body.Close()
 
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		assert.Equal(t, test_json.ValidPPResponse, string(body))
+		assert.JSONEq(t, test_json.ValidPPResponse, string(body))
 	})
 }

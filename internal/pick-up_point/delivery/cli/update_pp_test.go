@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"homework/tests/fixtures"
 	"homework/tests/test_json"
 )
@@ -17,11 +19,10 @@ func Test_UpdatePickUpPoint(t *testing.T) {
 	t.Run("error bad number of params", func(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
-		defer s.tearDown()
 
 		resp := s.del.UpdatePickUpPoint(ctx, []string{})
 
-		assert.Error(t, resp.Err)
+		require.Error(t, resp.Err)
 		assert.Empty(t, resp.Body)
 		assert.Equal(t, "update pick-up point method must have 1 param", resp.Err.Error())
 	})
@@ -29,11 +30,10 @@ func Test_UpdatePickUpPoint(t *testing.T) {
 	t.Run("validation error", func(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
-		defer s.tearDown()
 
 		resp := s.del.UpdatePickUpPoint(ctx, []string{test_json.InValidPPRequest})
 
-		assert.Error(t, resp.Err)
+		require.Error(t, resp.Err)
 		assert.Empty(t, resp.Body)
 		assert.Equal(t, "Address.house_num: non zero value required;ID: non zero value required", resp.Err.Error())
 	})
@@ -41,12 +41,11 @@ func Test_UpdatePickUpPoint(t *testing.T) {
 	t.Run("error in updating", func(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
-		defer s.tearDown()
-		s.mockService.EXPECT().UpdatePickUpPoint(ctx, fixtures.PickUpPoint().Valid().V()).Return(fmt.Errorf("internal error"))
+		s.mockService.EXPECT().UpdatePickUpPoint(gomock.Any(), fixtures.PickUpPoint().Valid().V()).Return(fmt.Errorf("internal error"))
 
 		resp := s.del.UpdatePickUpPoint(ctx, []string{test_json.ValidPPUpdateRequest})
 
-		assert.Error(t, resp.Err)
+		require.Error(t, resp.Err)
 		assert.Empty(t, resp.Body)
 		assert.Equal(t, "error in updating pick-up point: internal error", resp.Err.Error())
 	})
@@ -54,8 +53,7 @@ func Test_UpdatePickUpPoint(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
-		defer s.tearDown()
-		s.mockService.EXPECT().UpdatePickUpPoint(ctx, fixtures.PickUpPoint().Valid().V()).Return(nil)
+		s.mockService.EXPECT().UpdatePickUpPoint(gomock.Any(), fixtures.PickUpPoint().Valid().V()).Return(nil)
 
 		resp := s.del.UpdatePickUpPoint(ctx, []string{test_json.ValidPPUpdateRequest})
 

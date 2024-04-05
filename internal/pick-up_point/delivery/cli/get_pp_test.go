@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"homework/internal/pick-up_point/model"
 	"homework/tests/fixtures"
 )
@@ -17,11 +19,10 @@ func Test_GetPickUpPoints(t *testing.T) {
 	t.Run("error bad number of params", func(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
-		defer s.tearDown()
 
 		resp := s.del.GetPickUpPoints(ctx, []string{"dummy"})
 
-		assert.Error(t, resp.Err)
+		require.Error(t, resp.Err)
 		assert.Empty(t, resp.Body)
 		assert.Equal(t, "this request must not contain any params", resp.Err.Error())
 	})
@@ -29,12 +30,11 @@ func Test_GetPickUpPoints(t *testing.T) {
 	t.Run("error in getting pick-up points", func(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
-		defer s.tearDown()
-		s.mockService.EXPECT().GetPickUpPoints(ctx).Return(nil, fmt.Errorf("internal error"))
+		s.mockService.EXPECT().GetPickUpPoints(gomock.Any()).Return(nil, fmt.Errorf("internal error"))
 
 		resp := s.del.GetPickUpPoints(ctx, []string{})
 
-		assert.Error(t, resp.Err)
+		require.Error(t, resp.Err)
 		assert.Empty(t, resp.Body)
 		assert.Equal(t, "error in getting pick-up points: internal error", resp.Err.Error())
 	})
@@ -42,8 +42,7 @@ func Test_GetPickUpPoints(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
-		defer s.tearDown()
-		s.mockService.EXPECT().GetPickUpPoints(ctx).Return([]model.PickUpPoint{fixtures.PickUpPoint().Valid().V()}, nil)
+		s.mockService.EXPECT().GetPickUpPoints(gomock.Any()).Return([]model.PickUpPoint{fixtures.PickUpPoint().Valid().V()}, nil)
 
 		resp := s.del.GetPickUpPoints(ctx, []string{})
 
