@@ -13,11 +13,11 @@ type connectData struct {
 }
 
 func getConnectData() *connectData {
-	connData := &connectData{}
-	connData.password = os.Getenv("DB_PASS")
-	connData.user = os.Getenv("DB_USER")
-	connData.dbName = os.Getenv("DB_NAME")
-	connData.host = os.Getenv("DB_HOST")
-	connData.port = os.Getenv("DB_PORT")
-	return connData
+	return &connectData{
+		host:     os.Getenv("DB_HOST"),
+		port:     os.Getenv("DB_PORT"),
+		user:     os.Getenv("DB_USER"),
+		password: os.Getenv("DB_PASS"),
+		dbName:   os.Getenv("DB_NAME"),
+	}
 }
