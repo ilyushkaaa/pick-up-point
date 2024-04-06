@@ -11,4 +11,3 @@
 /.env
 /server.crt
 /server.key
-/.env.testing
