@@ -22,13 +22,13 @@ import (
 func main() {
 	zapLogger, err := zap.NewProduction()
 	if err != nil {
-		log.Fatalf("error in logger initialization: %v", err)
+		log.Fatalf("error in events initialization: %v", err)
 	}
 	logger := zapLogger.Sugar()
 	defer func() {
 		err = logger.Sync()
 		if err != nil {
-			log.Printf("error in logger sync: %v", err)
+			log.Printf("error in events sync: %v", err)
 		}
 	}()
 	ctx, cancel := context.WithCancel(context.Background())
