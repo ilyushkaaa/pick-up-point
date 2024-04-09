@@ -3,9 +3,9 @@ package storage
 import database "homework/pkg/database/postgres"
 
 type OrderStoragePG struct {
-	db database.DBops
+	db database.Database
 }
 
-func New(db database.DBops) *OrderStoragePG {
+func New(db database.Database) *OrderStoragePG {
 	return &OrderStoragePG{db: db}
 }

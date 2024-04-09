@@ -16,7 +16,6 @@ func Test_UpdatePickUpPoint(t *testing.T) {
 	t.Run("error in updating pick-up points", func(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
-		defer s.tearDown()
 		s.mockStorage.EXPECT().UpdatePickUpPoint(ctx, fixtures.PickUpPoint().Valid().V()).Return(fmt.Errorf("internal error"))
 
 		err := s.srv.UpdatePickUpPoint(ctx, fixtures.PickUpPoint().Valid().V())
@@ -27,7 +26,6 @@ func Test_UpdatePickUpPoint(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
-		defer s.tearDown()
 		s.mockStorage.EXPECT().UpdatePickUpPoint(ctx, fixtures.PickUpPoint().Valid().V()).Return(nil)
 
 		err := s.srv.UpdatePickUpPoint(ctx, fixtures.PickUpPoint().Valid().V())

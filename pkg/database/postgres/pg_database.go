@@ -9,7 +9,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-type DBops interface {
+type Database interface {
 	Select(ctx context.Context, dest interface{}, query string, args ...interface{}) error
 	Exec(ctx context.Context, query string, args ...interface{}) (pgconn.CommandTag, error)
 	QueryRow(ctx context.Context, query string, args ...interface{}) pgx.Row

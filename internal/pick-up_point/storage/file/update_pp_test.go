@@ -19,7 +19,7 @@ func Test_UpdatePickUpPoint(t *testing.T) {
 
 		err := s.st.UpdatePickUpPoint(ctx, fixtures.PickUpPoint().Valid().Name("unknown").V())
 
-		assert.Equal(t, storage.ErrPickUpPointNotFound, err)
+		assert.ErrorIs(t, storage.ErrPickUpPointNotFound, err)
 	})
 
 	t.Run("ok", func(t *testing.T) {

@@ -1,8 +1,6 @@
 package packages
 
-import "homework/internal/order/model"
-
-type Package interface {
-	CheckIfPackageCanBeApplied(order model.Order) bool
-	GetPrice() float64
+type Package struct {
+	Price     float64
+	MaxWeight float64
 }

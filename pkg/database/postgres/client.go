@@ -7,8 +7,8 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-func NewDB(ctx context.Context, option string) (*PGDatabase, error) {
-	dsn := generateDsn(option)
+func New(ctx context.Context) (*PGDatabase, error) {
+	dsn := generateDsn()
 	pool, err := pgxpool.Connect(ctx, dsn)
 	if err != nil {
 		return nil, err
@@ -16,8 +16,8 @@ func NewDB(ctx context.Context, option string) (*PGDatabase, error) {
 	return NewDatabase(pool), nil
 }
 
-func generateDsn(option string) string {
-	connData := getConnectData(option)
+func generateDsn() string {
+	connData := getConnectData()
 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		connData.host, connData.port, connData.user, connData.password, connData.dbName)
 }

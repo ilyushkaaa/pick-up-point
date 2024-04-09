@@ -1,11 +1,13 @@
+//go:build integration
+// +build integration
+
 package pick_up_points
 
 import (
 	"context"
 	"testing"
 
-	"github.com/joho/godotenv"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	delivery "homework/internal/pick-up_point/delivery/http"
 	"homework/internal/pick-up_point/service"
@@ -13,14 +15,12 @@ import (
 	database "homework/pkg/database/postgres"
 )
 
-func initTest(t *testing.T) (*delivery.PPDelivery, database.DBops) {
+func initTest(t *testing.T) (*delivery.PPDelivery, database.Database) {
 	t.Helper()
 
-	err := godotenv.Load("../../../.env")
-	assert.NoError(t, err)
-	db, err := database.NewDB(context.Background(), database.OptionTest)
+	db, err := database.New(context.Background())
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	st := storage.New(db)
 	srv := service.New(st)

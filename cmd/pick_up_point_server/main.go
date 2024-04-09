@@ -33,7 +33,7 @@ func main() {
 	}()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	db, err := database.NewDB(ctx, database.OptionProd)
+	db, err := database.New(ctx)
 	if err != nil {
 		logger.Fatalf("error in database init: %v", err)
 	}

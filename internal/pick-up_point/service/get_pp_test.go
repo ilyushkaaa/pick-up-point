@@ -17,7 +17,6 @@ func Test_GetPickUpPoints(t *testing.T) {
 	t.Run("error in getting pick-up points", func(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
-		defer s.tearDown()
 		s.mockStorage.EXPECT().GetPickUpPoints(ctx).Return(nil, fmt.Errorf("internal error"))
 
 		pp, err := s.srv.GetPickUpPoints(ctx)
@@ -29,7 +28,6 @@ func Test_GetPickUpPoints(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
-		defer s.tearDown()
 		s.mockStorage.EXPECT().GetPickUpPoints(ctx).Return([]model.PickUpPoint{fixtures.PickUpPoint().Valid().V()}, nil)
 
 		pp, err := s.srv.GetPickUpPoints(ctx)

@@ -21,7 +21,7 @@ func Test_GetPickUpPointByID(t *testing.T) {
 		pp, err := s.st.GetPickUpPointByID(ctx, states.PPID1+1)
 
 		assert.Nil(t, pp)
-		assert.Equal(t, storage.ErrPickUpPointNotFound, err)
+		assert.ErrorIs(t, storage.ErrPickUpPointNotFound, err)
 	})
 
 	t.Run("ok", func(t *testing.T) {
