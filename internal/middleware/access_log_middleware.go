@@ -2,19 +2,17 @@ package middleware
 
 import (
 	"net/http"
-	"time"
+
+	"homework/internal/events/model"
 )
 
 func (mw *Middleware) AccessLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		mw.logger.Infof("access log middleware start")
-		start := time.Now()
+		newEvent := model.NewEvent(r.RemoteAddr, r.URL.Path, r.Method)
+		err := mw.producer.SendMessage(newEvent)
+		if err != nil {
+			mw.logger.Errorf("error in writing new event into kafka: %s", err)
+		}
 		next.ServeHTTP(w, r)
-		mw.logger.Infow("New request",
-			"method", r.Method,
-			"remote_addr", r.RemoteAddr,
-			"url", r.URL.Path,
-			"time", time.Since(start),
-		)
 	})
 }

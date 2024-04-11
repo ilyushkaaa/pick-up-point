@@ -6,7 +6,9 @@ MIGRATION_FOLDER=$(CURDIR)/pkg/database/migrations
 
 .PHONY: app_start
 app_start:
-	docker-compose up --build
+	docker-compose up -d zookeeper kafka1 kafka2 kafka3 postgres
+	go run $(CURDIR)/cmd/pick_up_point_server/main.go
+
 
 .PHONY: migration-create
 migration-create:

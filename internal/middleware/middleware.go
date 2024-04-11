@@ -1,13 +1,18 @@
 package middleware
 
-import "go.uber.org/zap"
+import (
+	"go.uber.org/zap"
+	"homework/internal/events/service/producer"
+)
 
 type Middleware struct {
-	logger *zap.SugaredLogger
+	logger   *zap.SugaredLogger
+	producer *producer.EventsProducer
 }
 
-func New(logger *zap.SugaredLogger) *Middleware {
+func New(logger *zap.SugaredLogger, producer *producer.EventsProducer) *Middleware {
 	return &Middleware{
-		logger: logger,
+		logger:   logger,
+		producer: producer,
 	}
 }

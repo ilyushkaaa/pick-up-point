@@ -1,4 +1,4 @@
-package service
+package consumer
 
 import (
 	"encoding/json"
@@ -8,33 +8,33 @@ import (
 	"homework/internal/events/model"
 )
 
-type EventsService struct {
+type EventsConsumer struct {
 	logger *zap.SugaredLogger
 	ready  chan bool
 }
 
-func NewEventsService(logger *zap.SugaredLogger) EventsService {
-	return EventsService{
+func NewEventsConsumer(logger *zap.SugaredLogger) EventsConsumer {
+	return EventsConsumer{
 		logger: logger,
 		ready:  make(chan bool),
 	}
 }
 
-func (s *EventsService) Ready() <-chan bool {
+func (s *EventsConsumer) Ready() <-chan bool {
 	return s.ready
 }
 
-func (s *EventsService) Setup(_ sarama.ConsumerGroupSession) error {
+func (s *EventsConsumer) Setup(_ sarama.ConsumerGroupSession) error {
 	close(s.ready)
 
 	return nil
 }
 
-func (s *EventsService) Cleanup(_ sarama.ConsumerGroupSession) error {
+func (s *EventsConsumer) Cleanup(_ sarama.ConsumerGroupSession) error {
 	return nil
 }
 
-func (s *EventsService) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
+func (s *EventsConsumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
 	for {
 		select {
 		case message := <-claim.Messages():
@@ -50,7 +50,6 @@ func (s *EventsService) ConsumeClaim(session sarama.ConsumerGroupSession, claim 
 				"method", newEvent.RequestMethod,
 				"remote_addr", newEvent.RemoteAddr,
 				"url", newEvent.URL,
-				"request body", newEvent.RequestBody,
 			)
 
 			session.MarkMessage(message, "")

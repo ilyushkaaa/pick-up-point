@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/joho/godotenv"
 	"go.uber.org/zap"
+	eventsProducer "homework/internal/events/service/producer"
 	"homework/internal/middleware"
 	deliveryOrder "homework/internal/order/delivery/http"
 	serviceOrder "homework/internal/order/service"
@@ -17,6 +19,8 @@ import (
 	storagePP "homework/internal/pick-up_point/storage/database"
 	"homework/internal/routes"
 	database "homework/pkg/database/postgres"
+	"homework/pkg/kafka/consumer"
+	"homework/pkg/kafka/producer"
 )
 
 func main() {
@@ -28,9 +32,13 @@ func main() {
 	defer func() {
 		err = logger.Sync()
 		if err != nil {
-			log.Printf("error in events sync: %v", err)
+			log.Printf("error in logger sync: %v", err)
 		}
 	}()
+	err = godotenv.Load(".env")
+	if err != nil {
+		logger.Fatalf("error in getting env: %s", err)
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	db, err := database.New(ctx)
@@ -53,8 +61,29 @@ func main() {
 	svOrder := serviceOrder.New(stOrder, packageTypes)
 	dOrder := deliveryOrder.New(svOrder, logger)
 
-	mw := middleware.New(logger)
+	brokers := []string{os.Getenv("KAFKA1_ADDR"), os.Getenv("KAFKA2_ADDR"), os.Getenv("KAFKA3_ADDR")}
+	syncProducer, err := producer.NewSyncProducer(brokers)
+	if err != nil {
+		logger.Fatalf("error in kafka producer create: %s", err)
+	}
+
+	defer func() {
+		err = syncProducer.Close()
+		if err != nil {
+			logger.Errorf("error in closing sync kafka producer: %s", err)
+		}
+	}()
+
+	ep := eventsProducer.NewEventsProducer(syncProducer, os.Getenv("KAFKA_EVENTS_TOPIC"), logger)
+	mw := middleware.New(logger, ep)
 	router := routes.GetRouter(dPP, dOrder, mw)
+
+	go func() {
+		err = consumer.Run(brokers, logger, ctx)
+		if err != nil {
+			logger.Errorf("error in consumer running")
+		}
+	}()
 
 	port := os.Getenv("APP_PORT")
 	addr := ":" + port
@@ -62,5 +91,6 @@ func main() {
 		"type", "START",
 		"addr", addr,
 	)
+
 	logger.Fatal(http.ListenAndServeTLS(addr, "./server.crt", "./server.key", router))
 }

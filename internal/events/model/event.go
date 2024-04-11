@@ -3,9 +3,17 @@ package model
 import "time"
 
 type Event struct {
-	RequestTime   time.Time
+	RequestTime   string
 	RequestMethod string
 	RemoteAddr    string
 	URL           string
-	RequestBody   string
+}
+
+func NewEvent(rAddr, rURL, rMethod string) Event {
+	return Event{
+		RequestTime:   time.Now().Format("2006-01-02 15:04:05"),
+		RequestMethod: rMethod,
+		RemoteAddr:    rAddr,
+		URL:           rURL,
+	}
 }

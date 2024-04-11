@@ -1,6 +1,7 @@
 package consumer
 
 import (
+	"os"
 	"time"
 
 	"github.com/Shopify/sarama"
@@ -18,7 +19,7 @@ func newConsumerGroup(brokers []string) (sarama.ConsumerGroup, error) {
 
 	config.Consumer.Group.Rebalance.GroupStrategies = []sarama.BalanceStrategy{sarama.BalanceStrategyRoundRobin}
 
-	groupID := "route-example"
+	groupID := os.Getenv("EVENTS_CONSUMER_GROUP_ID")
 	consumer, err := sarama.NewConsumerGroup(brokers, groupID, config)
 	if err != nil {
 		return nil, err

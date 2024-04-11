@@ -6,7 +6,7 @@ import (
 	"github.com/Shopify/sarama"
 )
 
-func newSyncProducer(brokers []string) (sarama.SyncProducer, error) {
+func newSyncProducerKafka(brokers []string) (sarama.SyncProducer, error) {
 	syncProducerConfig := sarama.NewConfig()
 
 	syncProducerConfig.Producer.Partitioner = sarama.NewRoundRobinPartitioner
@@ -24,13 +24,13 @@ func newSyncProducer(brokers []string) (sarama.SyncProducer, error) {
 	return syncProducer, nil
 }
 
-func NewProducer(brokers []string) (*Producer, error) {
-	syncProducer, err := newSyncProducer(brokers)
+func NewSyncProducer(brokers []string) (*SyncProducer, error) {
+	syncProducer, err := newSyncProducerKafka(brokers)
 	if err != nil {
 		return nil, err
 	}
 
-	producer := &Producer{
+	producer := &SyncProducer{
 		brokers:      brokers,
 		syncProducer: syncProducer,
 	}
