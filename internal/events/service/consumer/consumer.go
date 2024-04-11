@@ -42,7 +42,8 @@ func (s *EventsConsumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim
 			newEvent := &model.Event{}
 			err := json.Unmarshal(message.Value, &newEvent)
 			if err != nil {
-				s.logger.Errorf("consumer group error: %v", err)
+				s.logger.Errorf("can not unmarshal message: %v", err)
+				continue
 			}
 
 			s.logger.Infow("New request",

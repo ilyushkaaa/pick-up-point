@@ -74,12 +74,14 @@ func main() {
 		}
 	}()
 
-	ep := eventsProducer.NewEventsProducer(syncProducer, os.Getenv("KAFKA_EVENTS_TOPIC"), logger)
+	topic := os.Getenv("KAFKA_EVENTS_TOPIC")
+	groupID := os.Getenv("EVENTS_CONSUMER_GROUP_ID")
+	ep := eventsProducer.NewEventsProducer(syncProducer, topic)
 	mw := middleware.New(logger, ep)
 	router := routes.GetRouter(dPP, dOrder, mw)
 
 	go func() {
-		err = consumer.Run(brokers, logger, ctx)
+		err = consumer.Run(brokers, logger, ctx, topic, groupID)
 		if err != nil {
 			logger.Errorf("error in consumer running")
 		}

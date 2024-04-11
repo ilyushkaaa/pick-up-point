@@ -4,6 +4,7 @@ import (
 	"github.com/Shopify/sarama"
 )
 
+//go:generate mockgen -source ./producer.go -destination=./mocks/producer.go -package=producer
 type Producer interface {
 	SendMessage(message *sarama.ProducerMessage) (partition int32, offset int64, err error)
 	Close() error

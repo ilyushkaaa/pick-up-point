@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 
 	"homework/internal/events/model"
@@ -9,10 +10,13 @@ import (
 func (mw *Middleware) AccessLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		newEvent := model.NewEvent(r.RemoteAddr, r.URL.Path, r.Method)
-		err := mw.producer.SendMessage(newEvent)
-		if err != nil {
-			mw.logger.Errorf("error in writing new event into kafka: %s", err)
+		sendResult := mw.producer.SendMessage(newEvent)
+		if sendResult.Error != nil {
+			mw.logger.Errorf("error in writing new event into kafka: %s", sendResult.Error)
+		} else {
+			mw.logger.Infof("message was sent to kafka: partition: %d, offset: %d", sendResult.Partition, sendResult.Offset)
 		}
+		fmt.Println("frfrf")
 		next.ServeHTTP(w, r)
 	})
 }

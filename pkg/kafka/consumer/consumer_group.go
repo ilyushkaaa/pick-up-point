@@ -2,16 +2,14 @@ package consumer
 
 import (
 	"context"
-	"os"
 	"sync"
 
 	"go.uber.org/zap"
 	"homework/internal/events/service/consumer"
 )
 
-func Run(brokers []string, logger *zap.SugaredLogger, ctx context.Context) error {
-	topic := os.Getenv("KAFKA_EVENTS_TOPIC")
-	client, err := newConsumerGroup(brokers)
+func Run(brokers []string, logger *zap.SugaredLogger, ctx context.Context, topic, groupID string) error {
+	client, err := newConsumerGroup(brokers, groupID)
 	if err != nil {
 		return err
 	}
