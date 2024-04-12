@@ -59,12 +59,12 @@ func TestBuildMessage(t *testing.T) {
 		// можно было проверить просто assert.Equal(expected, msg)
 		// но я посчитал что тогда тест упадет из за минимального различия в сериализации json поля Value
 		// поэтому сделал более длинную проверку, но зато с assert.JSONEq
-		valueJSON, err := expected.Value.Encode()
+		valueJSONExpected, err := expected.Value.Encode()
 		require.NoError(t, err)
-		valueJSONq, err := msg.Value.Encode()
+		valueJSONActual, err := msg.Value.Encode()
 		require.NoError(t, err)
 
-		assert.JSONEq(t, string(valueJSON), string(valueJSONq))
+		assert.JSONEq(t, string(valueJSONExpected), string(valueJSONActual))
 		assert.Equal(t, expected.Topic, msg.Topic)
 		assert.Equal(t, expected.Partition, msg.Partition)
 	})
