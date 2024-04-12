@@ -16,7 +16,7 @@ type producerFixtures struct {
 func setUp(t *testing.T) producerFixtures {
 	ctrl := gomock.NewController(t)
 	mockProducer := producerMock.NewMockProducer(ctrl)
-	eventProducer := NewEventsProducer(mockProducer, "events")
+	eventProducer := New(mockProducer, "events")
 	return producerFixtures{
 		ctrl:          ctrl,
 		mockProducer:  mockProducer,

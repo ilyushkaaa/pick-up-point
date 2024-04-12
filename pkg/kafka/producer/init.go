@@ -24,7 +24,7 @@ func newSyncProducerKafka(brokers []string) (sarama.SyncProducer, error) {
 	return syncProducer, nil
 }
 
-func NewSyncProducer(brokers []string) (*SyncProducer, error) {
+func New(brokers []string) (*SyncProducer, error) {
 	syncProducer, err := newSyncProducerKafka(brokers)
 	if err != nil {
 		return nil, err

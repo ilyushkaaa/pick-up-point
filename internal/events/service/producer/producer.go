@@ -19,7 +19,7 @@ type SendMessageResult struct {
 	Error     error
 }
 
-func NewEventsProducer(producer producer.Producer, topic string) *EventsProducer {
+func New(producer producer.Producer, topic string) *EventsProducer {
 	return &EventsProducer{
 		producer: producer,
 		topic:    topic,

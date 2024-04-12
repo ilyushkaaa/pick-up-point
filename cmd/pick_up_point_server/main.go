@@ -62,7 +62,7 @@ func main() {
 	dOrder := deliveryOrder.New(svOrder, logger)
 
 	brokers := []string{os.Getenv("KAFKA1_ADDR"), os.Getenv("KAFKA2_ADDR"), os.Getenv("KAFKA3_ADDR")}
-	syncProducer, err := producer.NewSyncProducer(brokers)
+	syncProducer, err := producer.New(brokers)
 	if err != nil {
 		logger.Fatalf("error in kafka producer create: %s", err)
 	}
@@ -76,7 +76,7 @@ func main() {
 
 	topic := os.Getenv("KAFKA_EVENTS_TOPIC")
 	groupID := os.Getenv("EVENTS_CONSUMER_GROUP_ID")
-	ep := eventsProducer.NewEventsProducer(syncProducer, topic)
+	ep := eventsProducer.New(syncProducer, topic)
 	mw := middleware.New(logger, ep)
 	router := routes.GetRouter(dPP, dOrder, mw)
 
