@@ -5,6 +5,16 @@
 make app_start
 ```
 
+#### Юнит тесты
+```bash
+make unit_tests_run
+```
+
+#### Интеграционные тесты
+```bash
+make integration_tests_run
+```
+
 ### Добавление ПВЗ
 
 
