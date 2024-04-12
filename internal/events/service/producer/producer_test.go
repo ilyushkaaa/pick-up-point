@@ -7,6 +7,7 @@ import (
 	"github.com/Shopify/sarama"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"homework/tests/fixtures"
 	"homework/tests/test_json"
 )
@@ -44,7 +45,6 @@ func TestBuildMessage(t *testing.T) {
 	t.Parallel()
 
 	t.Run("ok", func(t *testing.T) {
-		t.Parallel()
 		s := setUp(t)
 		expected := &sarama.ProducerMessage{
 			Topic:     s.eventProducer.topic,
@@ -55,6 +55,17 @@ func TestBuildMessage(t *testing.T) {
 		msg, err := s.eventProducer.BuildMessage(fixtures.Event().Valid().Value())
 
 		assert.NoError(t, err)
-		assert.Equal(t, expected, msg)
+
+		// можно было проверить просто assert.Equal(expected, msg)
+		// но я посчитал что тогда тест упадет из за минимального различия в сериализации json поля Value
+		// поэтому сделал более длинную проверку, но зато с assert.JSONEq
+		valueJSON, err := expected.Value.Encode()
+		require.NoError(t, err)
+		valueJSONq, err := msg.Value.Encode()
+		require.NoError(t, err)
+
+		assert.JSONEq(t, string(valueJSON), string(valueJSONq))
+		assert.Equal(t, expected.Topic, msg.Topic)
+		assert.Equal(t, expected.Partition, msg.Partition)
 	})
 }
