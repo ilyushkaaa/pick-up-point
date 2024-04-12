@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 
 	"homework/internal/events/model"
@@ -16,7 +15,6 @@ func (mw *Middleware) AccessLog(next http.Handler) http.Handler {
 		} else {
 			mw.logger.Infof("message was sent to kafka: partition: %d, offset: %d", sendResult.Partition, sendResult.Offset)
 		}
-		fmt.Println("frfrf")
 		next.ServeHTTP(w, r)
 	})
 }
