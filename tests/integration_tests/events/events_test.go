@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"homework/pkg/kafka"
 	"homework/pkg/kafka/consumer"
 )
 
@@ -18,7 +19,11 @@ func TestLoggingEvents(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer tearDown(t, cancel, s.syncProducer)
 	go func() {
-		err := consumer.Run(s.brokers, s.logger, ctx, "test_events", "test_group")
+		err := consumer.Run(ctx, &kafka.ConfigKafka{
+			Brokers:         s.brokers,
+			Topic:           "test_events",
+			ConsumerGroupID: "test_group",
+		}, s.logger)
 		assert.NoError(t, err)
 	}()
 

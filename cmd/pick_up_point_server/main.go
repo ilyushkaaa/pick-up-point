@@ -8,7 +8,6 @@ import (
 
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
-	eventsProducer "homework/internal/events/service/producer"
 	"homework/internal/middleware"
 	deliveryOrder "homework/internal/order/delivery/http"
 	serviceOrder "homework/internal/order/service"
@@ -19,8 +18,8 @@ import (
 	storagePP "homework/internal/pick-up_point/storage/database"
 	"homework/internal/routes"
 	database "homework/pkg/database/postgres"
+	"homework/pkg/kafka"
 	"homework/pkg/kafka/consumer"
-	"homework/pkg/kafka/producer"
 )
 
 func main() {
@@ -61,27 +60,22 @@ func main() {
 	svOrder := serviceOrder.New(stOrder, packageTypes)
 	dOrder := deliveryOrder.New(svOrder, logger)
 
-	brokers := []string{os.Getenv("KAFKA1_ADDR"), os.Getenv("KAFKA2_ADDR"), os.Getenv("KAFKA3_ADDR")}
-	syncProducer, err := producer.New(brokers)
+	cfg, err := kafka.NewConfig()
 	if err != nil {
-		logger.Fatalf("error in kafka producer create: %s", err)
+		logger.Fatalf("error in kafka config init: %v", err)
 	}
-
 	defer func() {
-		err = syncProducer.Close()
+		err = cfg.Close()
 		if err != nil {
-			logger.Errorf("error in closing sync kafka producer: %s", err)
+			logger.Errorf("error in closing sync kafka producer: %v", err)
 		}
 	}()
 
-	topic := os.Getenv("KAFKA_EVENTS_TOPIC")
-	groupID := os.Getenv("EVENTS_CONSUMER_GROUP_ID")
-	ep := eventsProducer.New(syncProducer, topic)
-	mw := middleware.New(logger, ep)
+	mw := middleware.New(logger, cfg.Producer)
 	router := routes.GetRouter(dPP, dOrder, mw)
 
 	go func() {
-		err = consumer.Run(brokers, logger, ctx, topic, groupID)
+		err = consumer.Run(ctx, cfg, logger)
 		if err != nil {
 			logger.Errorf("error in consumer running")
 		}

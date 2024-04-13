@@ -56,3 +56,7 @@ func (s *EventsProducer) BuildMessage(event model.Event) (*sarama.ProducerMessag
 		Partition: -1,
 	}, nil
 }
+
+func (s *EventsProducer) Close() error {
+	return s.producer.Close()
+}

@@ -6,10 +6,11 @@ import (
 
 	"go.uber.org/zap"
 	"homework/internal/events/service/consumer"
+	"homework/pkg/kafka"
 )
 
-func Run(brokers []string, logger *zap.SugaredLogger, ctx context.Context, topic, groupID string) error {
-	client, err := newConsumerGroup(brokers, groupID)
+func Run(ctx context.Context, cfg *kafka.ConfigKafka, logger *zap.SugaredLogger) error {
+	client, err := newConsumerGroup(cfg)
 	if err != nil {
 		return err
 	}
@@ -20,7 +21,7 @@ func Run(brokers []string, logger *zap.SugaredLogger, ctx context.Context, topic
 	go func() {
 		defer wg.Done()
 		for {
-			if err = client.Consume(ctx, []string{topic}, &eventService); err != nil {
+			if err = client.Consume(ctx, []string{cfg.Topic}, &eventService); err != nil {
 				logger.Errorf("Error from consumer: %v", err)
 			}
 			if ctx.Err() != nil {
