@@ -20,9 +20,9 @@ func TestSendMessage(t *testing.T) {
 		s := setUp(t)
 		s.mockProducer.EXPECT().SendMessage(gomock.Any()).Return(int32(1), int64(1), fmt.Errorf("error"))
 
-		msg := s.eventProducer.SendMessage(fixtures.Event().Valid().Value())
+		_, err := s.eventProducer.SendMessage(fixtures.Event().Valid().Value())
 
-		assert.Error(t, msg.Error)
+		assert.Error(t, err)
 	})
 
 	t.Run("ok", func(t *testing.T) {
@@ -31,13 +31,13 @@ func TestSendMessage(t *testing.T) {
 		expected := SendMessageResult{
 			Partition: 1,
 			Offset:    1,
-			Error:     nil,
 		}
 		s.mockProducer.EXPECT().SendMessage(gomock.Any()).Return(int32(1), int64(1), nil)
 
-		msg := s.eventProducer.SendMessage(fixtures.Event().Valid().Value())
+		msg, err := s.eventProducer.SendMessage(fixtures.Event().Valid().Value())
 
 		assert.Equal(t, expected, msg)
+		assert.NoError(t, err)
 	})
 }
 

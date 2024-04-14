@@ -16,7 +16,6 @@ type EventsProducer struct {
 type SendMessageResult struct {
 	Partition int32
 	Offset    int64
-	Error     error
 }
 
 func New(producer producer.Producer, topic string) *EventsProducer {
@@ -26,21 +25,20 @@ func New(producer producer.Producer, topic string) *EventsProducer {
 	}
 }
 
-func (s *EventsProducer) SendMessage(event model.Event) SendMessageResult {
+func (s *EventsProducer) SendMessage(event model.Event) (*SendMessageResult, error) {
 	kafkaMsg, err := s.BuildMessage(event)
 	if err != nil {
-		return SendMessageResult{Error: err}
+		return nil, err
 	}
 
 	partition, offset, err := s.producer.SendMessage(kafkaMsg)
 
 	if err != nil {
-		return SendMessageResult{Error: err}
+		return nil, err
 	}
-	return SendMessageResult{
+	return &SendMessageResult{
 		Partition: partition,
-		Offset:    offset,
-		Error:     err}
+		Offset:    offset}, nil
 }
 
 func (s *EventsProducer) BuildMessage(event model.Event) (*sarama.ProducerMessage, error) {

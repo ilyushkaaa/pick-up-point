@@ -1,6 +1,3 @@
-//go:build integration
-// +build integration
-
 package events
 
 import (
@@ -9,14 +6,19 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	eventsProducer "homework/internal/events/service/producer"
 	"homework/internal/middleware"
+	"homework/pkg/kafka"
+	"homework/pkg/kafka/consumer"
 	"homework/pkg/kafka/producer"
 )
+
+const eventsTopic = "test_events"
 
 type TestEventsFixtures struct {
 	mw           *middleware.Middleware
@@ -24,6 +26,7 @@ type TestEventsFixtures struct {
 	syncProducer *producer.SyncProducer
 	brokers      []string
 	logger       *zap.SugaredLogger
+	cancelFunc   context.CancelFunc
 }
 
 type fakeHandler struct{}
@@ -32,7 +35,7 @@ func (h *fakeHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func setUp(t *testing.T) TestEventsFixtures {
+func setUpAndConsume(t *testing.T) TestEventsFixtures {
 	t.Helper()
 
 	var buf bytes.Buffer
@@ -51,22 +54,37 @@ func setUp(t *testing.T) TestEventsFixtures {
 	syncProducer, err := producer.New(brokers)
 	require.NoError(t, err)
 
-	ep := eventsProducer.New(syncProducer, "test_events")
+	t.Cleanup(func() {
+		err = syncProducer.Close()
+		require.NoError(t, err)
+	})
+
+	ep := eventsProducer.New(syncProducer, eventsTopic)
 	mw := middleware.New(zapL, ep)
 
-	return TestEventsFixtures{
+	ctx, cancel := context.WithCancel(context.Background())
+
+	testFixtures := TestEventsFixtures{
 		mw:           mw,
 		buf:          &buf,
 		syncProducer: syncProducer,
 		brokers:      brokers,
 		logger:       zapL,
+		cancelFunc:   cancel,
 	}
+	testFixtures.GoRunConsume(t, ctx)
+
+	return testFixtures
 }
 
-func tearDown(t *testing.T, cancelFunc context.CancelFunc, syncProducer *producer.SyncProducer) {
+func (s TestEventsFixtures) GoRunConsume(t *testing.T, ctx context.Context) {
 	t.Helper()
-
-	cancelFunc()
-	err := syncProducer.Close()
-	assert.NoError(t, err)
+	go func() {
+		err := consumer.Run(ctx, &kafka.ConfigKafka{
+			Brokers:         s.brokers,
+			Topic:           eventsTopic,
+			ConsumerGroupID: uuid.New().String(),
+		}, s.logger)
+		assert.NoError(t, err)
+	}()
 }

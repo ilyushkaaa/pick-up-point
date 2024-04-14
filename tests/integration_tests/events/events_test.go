@@ -1,31 +1,16 @@
-//go:build integration
-// +build integration
-
 package events
 
 import (
-	"context"
 	"net/http/httptest"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"homework/pkg/kafka"
-	"homework/pkg/kafka/consumer"
 )
 
 func TestLoggingEvents(t *testing.T) {
-	s := setUp(t)
-	ctx, cancel := context.WithCancel(context.Background())
-	defer tearDown(t, cancel, s.syncProducer)
-	go func() {
-		err := consumer.Run(ctx, &kafka.ConfigKafka{
-			Brokers:         s.brokers,
-			Topic:           "test_events",
-			ConsumerGroupID: "test_group",
-		}, s.logger)
-		assert.NoError(t, err)
-	}()
+	s := setUpAndConsume(t)
+	defer s.cancelFunc()
 
 	t.Run("test get", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "http://127.0.0.1/pick-up-points", nil)
@@ -42,7 +27,6 @@ func TestLoggingEvents(t *testing.T) {
 	})
 
 	t.Run("test post", func(t *testing.T) {
-		s.buf.Reset()
 		req := httptest.NewRequest("POST", "http://127.0.0.1/pick-up-point", nil)
 		recorder := httptest.NewRecorder()
 		time.Sleep(time.Second)
