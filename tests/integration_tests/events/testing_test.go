@@ -6,8 +6,11 @@ package events
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"net/http"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -67,9 +70,19 @@ func setUpAndConsume(t *testing.T) TestEventsFixtures {
 	mw := middleware.New(zapL, ep)
 
 	ctx, cancel := context.WithCancel(context.Background())
-
 	waitChan := make(chan struct{})
-	GoHelperRun(t, helper{waitChan: waitChan}, brokers, ctx)
+
+	go func() {
+		ticker := time.Tick(time.Second)
+		for range ticker {
+			content := buf.String()
+			fmt.Println(content)
+			if strings.Contains(content, "New") {
+				waitChan <- struct{}{}
+				return
+			}
+		}
+	}()
 
 	testFixtures := TestEventsFixtures{
 		mw:           mw,
@@ -80,19 +93,19 @@ func setUpAndConsume(t *testing.T) TestEventsFixtures {
 		cancel:       cancel,
 		waitChan:     waitChan,
 	}
-	testFixtures.GoRunConsume(t, ctx)
+	testFixtures.GoRunConsume(ctx, t, waitChan)
 
 	return testFixtures
 }
 
-func (s TestEventsFixtures) GoRunConsume(t *testing.T, ctx context.Context) {
+func (s TestEventsFixtures) GoRunConsume(ctx context.Context, t *testing.T, waitChan chan struct{}) {
 	t.Helper()
 	go func() {
 		err := consumer.Run(ctx, &kafka.ConfigKafka{
 			Brokers:         s.brokers,
 			Topic:           eventsTopic,
 			ConsumerGroupID: uuid.New().String(),
-		}, s.logger)
+		}, s.logger, waitChan)
 		assert.NoError(t, err)
 	}()
 }

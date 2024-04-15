@@ -74,12 +74,13 @@ func main() {
 	mw := middleware.New(logger, cfg.Producer)
 	router := routes.GetRouter(dPP, dOrder, mw)
 
-	go func() {
-		err = consumer.Run(ctx, cfg, logger)
-		if err != nil {
-			logger.Errorf("error in consumer running")
-		}
-	}()
+	waitChan := make(chan struct{})
+
+	consumer.GoRunConsumer(ctx, cfg, logger, waitChan)
+	err = consumer.WaitForConsumerReady(waitChan)
+	if err != nil {
+		logger.Fatal(err)
+	}
 
 	port := os.Getenv("APP_PORT")
 	addr := ":" + port

@@ -2,14 +2,18 @@ package consumer
 
 import (
 	"context"
+	"fmt"
 	"sync"
+	"time"
 
 	"go.uber.org/zap"
 	"homework/internal/events/service/consumer"
 	"homework/pkg/kafka"
 )
 
-func Run(ctx context.Context, cfg *kafka.ConfigKafka, logger *zap.SugaredLogger) error {
+const consumerStartTimeout = time.Second * 5
+
+func Run(ctx context.Context, cfg *kafka.ConfigKafka, logger *zap.SugaredLogger, waitChan chan struct{}) error {
 	client, err := newConsumerGroup(cfg)
 	if err != nil {
 		return err
@@ -32,6 +36,7 @@ func Run(ctx context.Context, cfg *kafka.ConfigKafka, logger *zap.SugaredLogger)
 
 	<-eventService.Ready()
 	logger.Info("Sarama consumer up and running!...")
+	waitChan <- struct{}{}
 
 	wg.Wait()
 
@@ -39,4 +44,22 @@ func Run(ctx context.Context, cfg *kafka.ConfigKafka, logger *zap.SugaredLogger)
 		return err
 	}
 	return nil
+}
+
+func GoRunConsumer(ctx context.Context, cfg *kafka.ConfigKafka, logger *zap.SugaredLogger, waitChan chan struct{}) {
+	go func() {
+		err := Run(ctx, cfg, logger, waitChan)
+		if err != nil {
+			logger.Errorf("error in consumer running")
+		}
+	}()
+}
+
+func WaitForConsumerReady(waitChan chan struct{}) error {
+	select {
+	case <-time.After(consumerStartTimeout):
+		return fmt.Errorf("timout for consumer start working")
+	case <-waitChan:
+		return nil
+	}
 }

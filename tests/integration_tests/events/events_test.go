@@ -9,7 +9,11 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"homework/pkg/kafka/consumer"
 )
+
+const testTimeout = time.Second * 7
 
 func TestLoggingEvents(t *testing.T) {
 
@@ -18,15 +22,17 @@ func TestLoggingEvents(t *testing.T) {
 		defer s.cancel()
 		req := httptest.NewRequest("GET", "http://127.0.0.1/pick-up-points", nil)
 		recorder := httptest.NewRecorder()
-		time.Sleep(time.Second * 5)
+		require.NoError(t, consumer.WaitForConsumerReady(s.waitChan))
 
 		s.mw.AccessLog(&fakeHandler{}).ServeHTTP(recorder, req)
-		<-s.waitChan
-		time.Sleep(time.Second)
 
-		assert.Contains(t, s.buf.String(), "New request")
-		assert.Contains(t, s.buf.String(), `"method": "GET"`)
-		assert.Contains(t, s.buf.String(), `"url": "/pick-up-points"`)
+		select {
+		case <-s.waitChan:
+			assert.Contains(t, s.buf.String(), `"method": "GET"`)
+			assert.Contains(t, s.buf.String(), `"url": "/pick-up-points"`)
+		case <-time.After(testTimeout):
+			t.Error("Timeout occurred")
+		}
 
 	})
 
@@ -35,16 +41,17 @@ func TestLoggingEvents(t *testing.T) {
 		defer s.cancel()
 		req := httptest.NewRequest("POST", "http://127.0.0.1/pick-up-point", nil)
 		recorder := httptest.NewRecorder()
-		time.Sleep(time.Second * 5)
+		require.NoError(t, consumer.WaitForConsumerReady(s.waitChan))
 
 		s.mw.AccessLog(&fakeHandler{}).ServeHTTP(recorder, req)
-		<-s.waitChan
-		time.Sleep(time.Second)
 
-		assert.Contains(t, s.buf.String(), "New request")
-		assert.Contains(t, s.buf.String(), `"method": "POST"`)
-		assert.Contains(t, s.buf.String(), `"url": "/pick-up-point"`)
-
+		select {
+		case <-s.waitChan:
+			assert.Contains(t, s.buf.String(), `"method": "POST"`)
+			assert.Contains(t, s.buf.String(), `"url": "/pick-up-point"`)
+		case <-time.After(testTimeout):
+			t.Error("Timeout occurred")
+		}
 	})
 
 }
