@@ -1,3 +1,6 @@
+//go:build integration
+// +build integration
+
 package events
 
 import (
@@ -26,7 +29,8 @@ type TestEventsFixtures struct {
 	syncProducer *producer.SyncProducer
 	brokers      []string
 	logger       *zap.SugaredLogger
-	cancelFunc   context.CancelFunc
+	cancel       context.CancelFunc
+	waitChan     chan struct{}
 }
 
 type fakeHandler struct{}
@@ -64,13 +68,17 @@ func setUpAndConsume(t *testing.T) TestEventsFixtures {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
+	waitChan := make(chan struct{})
+	GoHelperRun(t, helper{waitChan: waitChan}, brokers, ctx)
+
 	testFixtures := TestEventsFixtures{
 		mw:           mw,
 		buf:          &buf,
 		syncProducer: syncProducer,
 		brokers:      brokers,
 		logger:       zapL,
-		cancelFunc:   cancel,
+		cancel:       cancel,
+		waitChan:     waitChan,
 	}
 	testFixtures.GoRunConsume(t, ctx)
 
