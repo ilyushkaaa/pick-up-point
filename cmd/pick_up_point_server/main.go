@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 	"homework/internal/middleware"
 	deliveryOrder "homework/internal/order/delivery/http"
@@ -17,6 +18,8 @@ import (
 	storagePP "homework/internal/pick-up_point/storage/database"
 	"homework/internal/routes"
 	database "homework/pkg/database/postgres"
+	"homework/pkg/kafka"
+	"homework/pkg/kafka/consumer"
 )
 
 func main() {
@@ -31,6 +34,10 @@ func main() {
 			log.Printf("error in logger sync: %v", err)
 		}
 	}()
+	err = godotenv.Load(".env")
+	if err != nil {
+		logger.Fatalf("error in getting env: %s", err)
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	db, err := database.New(ctx)
@@ -53,8 +60,27 @@ func main() {
 	svOrder := serviceOrder.New(stOrder, packageTypes)
 	dOrder := deliveryOrder.New(svOrder, logger)
 
-	mw := middleware.New(logger)
+	cfg, err := kafka.NewConfig()
+	if err != nil {
+		logger.Fatalf("error in kafka config init: %v", err)
+	}
+	defer func() {
+		err = cfg.Close()
+		if err != nil {
+			logger.Errorf("error in closing sync kafka producer: %v", err)
+		}
+	}()
+
+	mw := middleware.New(logger, cfg.Producer)
 	router := routes.GetRouter(dPP, dOrder, mw)
+
+	waitChan := make(chan struct{})
+
+	consumer.GoRunConsumer(ctx, cfg, logger, waitChan)
+	err = consumer.WaitForConsumerReady(waitChan)
+	if err != nil {
+		logger.Fatal(err)
+	}
 
 	port := os.Getenv("APP_PORT")
 	addr := ":" + port
@@ -62,5 +88,6 @@ func main() {
 		"type", "START",
 		"addr", addr,
 	)
+
 	logger.Fatal(http.ListenAndServeTLS(addr, "./server.crt", "./server.key", router))
 }

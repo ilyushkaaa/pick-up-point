@@ -6,7 +6,9 @@ MIGRATION_FOLDER=$(CURDIR)/pkg/database/migrations
 
 .PHONY: app_start
 app_start:
-	docker-compose up --build
+	docker-compose up -d zookeeper kafka1 kafka2 kafka3 postgres
+	go run $(CURDIR)/cmd/pick_up_point_server/main.go
+
 
 .PHONY: migration-create
 migration-create:
@@ -28,9 +30,10 @@ build:
 integration_tests_run:
 	docker-compose -f $(CURDIR)/tests/integration_tests/docker-compose.yml up -d
 	make migration-up DB_HOST=localhost DB_USER=postgres DB_PASS=test DB_NAME=test_postgres DB_PORT=5433
-	DB_HOST=localhost DB_USER=postgres DB_PASS=test DB_NAME=test_postgres DB_PORT=5433 go test -tags=integration /home/ilyushka/GolandProjects/homework/tests/integration_tests/pick-up-points/...
+	DB_HOST=localhost DB_USER=postgres DB_PASS=test DB_NAME=test_postgres DB_PORT=5433 go test -tags=integration $(CURDIR)/tests/integration_tests/...
 	docker-compose -f $(CURDIR)/tests/integration_tests/docker-compose.yml down
 
 .PHONY: unit_tests_run
 unit_tests_run:
 	go test ./...
+
