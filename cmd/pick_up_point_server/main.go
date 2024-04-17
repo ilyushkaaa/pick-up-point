@@ -17,7 +17,8 @@ import (
 	servicePP "homework/internal/pick-up_point/service"
 	storagePP "homework/internal/pick-up_point/storage/database"
 	"homework/internal/routes"
-	"homework/pkg/database/postgres"
+	database "homework/pkg/database/postgres"
+	"homework/pkg/database/postgres/transaction_manager"
 	"homework/pkg/kafka"
 	"homework/pkg/kafka/consumer"
 )
@@ -40,7 +41,13 @@ func main() {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	db, err := database.New(ctx)
+
+	tm, err := transaction_manager.New(ctx)
+	if err != nil {
+		logger.Fatalf("error in creating transaction manager: %v", err)
+	}
+
+	db := database.New(tm)
 	if err != nil {
 		logger.Fatalf("error in database init: %v", err)
 	}
@@ -53,11 +60,11 @@ func main() {
 	stPP := storagePP.New(db)
 	stOrder := storageOrder.New(db)
 
-	svPP := servicePP.New(stPP, stOrder)
+	svPP := servicePP.New(stPP, stOrder, tm)
 	dPP := deliveryPP.New(svPP, logger)
 
 	packageTypes := packages.Init()
-	svOrder := serviceOrder.New(stOrder, stPP, packageTypes)
+	svOrder := serviceOrder.New(stOrder, stPP, packageTypes, tm)
 	dOrder := deliveryOrder.New(svOrder, logger)
 
 	cfg, err := kafka.NewConfig()

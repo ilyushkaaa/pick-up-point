@@ -14,18 +14,21 @@ import (
 	"homework/internal/pick-up_point/service"
 	storagePP "homework/internal/pick-up_point/storage/database"
 	"homework/pkg/database/postgres"
+	"homework/pkg/database/postgres/transaction_manager"
 )
 
 func initTest(t *testing.T) (*delivery.PPDelivery, database.Database) {
 	t.Helper()
 
-	db, err := database.New(context.Background())
+	tm, err := transaction_manager.New(context.Background())
 
 	require.NoError(t, err)
 
+	db := database.New(tm)
+
 	stPP := storagePP.New(db)
 	stOrder := storageOrder.New(db)
-	srv := service.New(stPP, stOrder)
+	srv := service.New(stPP, stOrder, tm)
 	dev := delivery.New(srv, zap.NewNop().Sugar())
 	return dev, db
 }

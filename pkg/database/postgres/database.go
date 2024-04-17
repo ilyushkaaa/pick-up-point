@@ -21,7 +21,7 @@ type PgxDatabase struct {
 	transaction_manager.QueryEngineProvider
 }
 
-func NewDatabase(qp transaction_manager.QueryEngineProvider) *PgxDatabase {
+func New(qp transaction_manager.QueryEngineProvider) *PgxDatabase {
 	return &PgxDatabase{
 		QueryEngineProvider: qp,
 	}

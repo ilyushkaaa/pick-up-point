@@ -17,22 +17,26 @@ func (op *OrderServicePP) AddOrder(ctx context.Context, order model.Order) error
 	if err == nil {
 		return ErrOrderAlreadyInPickUpPoint
 	}
-	_, err = op.ppStorage.GetPickUpPointByID(ctx, order.PickUpPointID)
-	if err != nil {
-		return err
-	}
-	if order.PackageType != "" {
-		chosenPackage, exists := op.packages[order.PackageType]
-		if !exists {
-			return ErrUnknownPackage
-		}
-		if chosenPackage.MaxWeight != 0 && chosenPackage.MaxWeight < order.Weight {
-			return ErrPackageCanNotBeApplied
-		}
-		order.Price += chosenPackage.Price
-	}
-	if time.Now().After(order.StorageExpirationDate) {
-		return ErrShelfTimeExpired
-	}
-	return op.orderStorage.AddOrder(ctx, order)
+	return op.transactionManager.RunRepeatableRead(ctx,
+		func(ctxTX context.Context) error {
+			_, err = op.ppStorage.GetPickUpPointByID(ctx, order.PickUpPointID)
+			if err != nil {
+				return err
+			}
+			if order.PackageType != "" {
+				chosenPackage, exists := op.packages[order.PackageType]
+				if !exists {
+					return ErrUnknownPackage
+				}
+				if chosenPackage.MaxWeight != 0 && chosenPackage.MaxWeight < order.Weight {
+					return ErrPackageCanNotBeApplied
+				}
+				order.Price += chosenPackage.Price
+			}
+			if time.Now().After(order.StorageExpirationDate) {
+				return ErrShelfTimeExpired
+			}
+			return op.orderStorage.AddOrder(ctx, order)
+
+		})
 }

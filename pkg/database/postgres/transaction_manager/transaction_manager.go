@@ -23,7 +23,7 @@ type TransactionManagerPGX struct {
 	pool *pgxpool.Pool
 }
 
-func New(ctx context.Context, dsn string) (*TransactionManagerPGX, error) {
+func NewTM(ctx context.Context, dsn string) (*TransactionManagerPGX, error) {
 	pool, err := pgxpool.Connect(ctx, dsn)
 	if err != nil {
 		return nil, err

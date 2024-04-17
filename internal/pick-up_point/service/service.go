@@ -6,6 +6,7 @@ import (
 	orderStorage "homework/internal/order/storage"
 	"homework/internal/pick-up_point/model"
 	ppStorage "homework/internal/pick-up_point/storage"
+	"homework/pkg/database/postgres/transaction_manager"
 )
 
 //go:generate mockgen -source ./service.go -destination=./mocks/service.go -package=mock_service
@@ -18,13 +19,16 @@ type PickUpPointService interface {
 }
 
 type PPService struct {
-	orderStorage orderStorage.OrderStorage
-	ppStorage    ppStorage.PPStorage
+	orderStorage       orderStorage.OrderStorage
+	ppStorage          ppStorage.PPStorage
+	transactionManager transaction_manager.TransactionManager
 }
 
-func New(storage ppStorage.PPStorage, orderStorage orderStorage.OrderStorage) *PPService {
+func New(storage ppStorage.PPStorage, orderStorage orderStorage.OrderStorage,
+	transactionManager transaction_manager.TransactionManager) *PPService {
 	return &PPService{
-		ppStorage:    storage,
-		orderStorage: orderStorage,
+		ppStorage:          storage,
+		orderStorage:       orderStorage,
+		transactionManager: transactionManager,
 	}
 }

@@ -1,20 +1,14 @@
-package database
+package transaction_manager
 
 import (
 	"context"
 	"fmt"
-
-	"homework/pkg/database/postgres/transaction_manager"
 )
 
-func New(ctx context.Context) (Database, error) {
+func New(ctx context.Context) (*TransactionManagerPGX, error) {
 	dsn := generateDsn()
+	return NewTM(ctx, dsn)
 
-	qp, err := transaction_manager.New(ctx, dsn)
-	if err != nil {
-		return nil, err
-	}
-	return NewDatabase(qp), nil
 }
 
 func generateDsn() string {

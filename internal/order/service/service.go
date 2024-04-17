@@ -8,6 +8,7 @@ import (
 	"homework/internal/order/service/packages"
 	orderStorage "homework/internal/order/storage"
 	ppStorage "homework/internal/pick-up_point/storage"
+	"homework/pkg/database/postgres/transaction_manager"
 )
 
 type OrderService interface {
@@ -22,15 +23,18 @@ type OrderService interface {
 // PP - pick-up point
 
 type OrderServicePP struct {
-	orderStorage orderStorage.OrderStorage
-	ppStorage    ppStorage.PPStorage
-	packages     map[string]*packages.Package
+	orderStorage       orderStorage.OrderStorage
+	ppStorage          ppStorage.PPStorage
+	packages           map[string]*packages.Package
+	transactionManager transaction_manager.TransactionManager
 }
 
-func New(storage orderStorage.OrderStorage, ppStorage ppStorage.PPStorage, packages map[string]*packages.Package) *OrderServicePP {
+func New(storage orderStorage.OrderStorage, ppStorage ppStorage.PPStorage, packages map[string]*packages.Package,
+	transactionManager transaction_manager.TransactionManager) *OrderServicePP {
 	return &OrderServicePP{
-		orderStorage: storage,
-		ppStorage:    ppStorage,
-		packages:     packages,
+		orderStorage:       storage,
+		ppStorage:          ppStorage,
+		packages:           packages,
+		transactionManager: transactionManager,
 	}
 }
