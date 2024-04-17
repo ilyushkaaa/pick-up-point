@@ -10,5 +10,6 @@ func ConvertToOrder(o OrderFromCourierInputData) model.Order {
 		Price:                 o.Price,
 		StorageExpirationDate: o.StorageExpirationDate,
 		PackageType:           o.PackageType,
+		PickUpPointID:         o.PickUpPointID,
 	}
 }

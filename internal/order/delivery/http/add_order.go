@@ -8,6 +8,7 @@ import (
 
 	"homework/internal/order/delivery/dto"
 	"homework/internal/order/service"
+	"homework/internal/pick-up_point/storage"
 	"homework/pkg/response"
 )
 
@@ -53,6 +54,11 @@ func (d *OrderDelivery) AddOrder(w http.ResponseWriter, r *http.Request) {
 		if errors.Is(err, service.ErrOrderAlreadyInPickUpPoint) {
 			d.logger.Errorf("order with id %d already in pick-up point", order.ID)
 			response.WriteResponse(w, response.Result{Res: err.Error()}, http.StatusBadRequest, d.logger)
+			return
+		}
+		if errors.Is(err, storage.ErrPickUpPointNotFound) {
+			d.logger.Errorf("no pick-up points with id %d", order.PickUpPointID)
+			response.WriteResponse(w, response.Result{Res: err.Error()}, http.StatusNotFound, d.logger)
 			return
 		}
 		if errors.Is(err, service.ErrShelfTimeExpired) {

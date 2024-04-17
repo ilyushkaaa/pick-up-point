@@ -6,7 +6,8 @@ import (
 	filtermodel "homework/internal/filters/model"
 	ordermodel "homework/internal/order/model"
 	"homework/internal/order/service/packages"
-	"homework/internal/order/storage"
+	orderStorage "homework/internal/order/storage"
+	ppStorage "homework/internal/pick-up_point/storage"
 )
 
 type OrderService interface {
@@ -21,13 +22,15 @@ type OrderService interface {
 // PP - pick-up point
 
 type OrderServicePP struct {
-	storage  storage.OrderStorage
-	packages map[string]*packages.Package
+	orderStorage orderStorage.OrderStorage
+	ppStorage    ppStorage.PPStorage
+	packages     map[string]*packages.Package
 }
 
-func New(storage storage.OrderStorage, packages map[string]*packages.Package) *OrderServicePP {
+func New(storage orderStorage.OrderStorage, ppStorage ppStorage.PPStorage, packages map[string]*packages.Package) *OrderServicePP {
 	return &OrderServicePP{
-		storage:  storage,
-		packages: packages,
+		orderStorage: storage,
+		ppStorage:    ppStorage,
+		packages:     packages,
 	}
 }

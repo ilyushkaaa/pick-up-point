@@ -7,7 +7,7 @@ import (
 )
 
 func (op *OrderServicePP) GetOrderReturns(ctx context.Context, maxOrdersPerPage, pageNum uint64) ([]model.Order, error) {
-	orders, err := op.storage.GetOrderReturns(ctx)
+	orders, err := op.orderStorage.GetOrderReturns(ctx)
 	if err != nil {
 		return nil, err
 	}

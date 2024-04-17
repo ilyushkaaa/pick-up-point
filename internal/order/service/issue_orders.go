@@ -3,7 +3,7 @@ package service
 import "context"
 
 func (op *OrderServicePP) IssueOrders(ctx context.Context, orderIDs map[uint64]struct{}) error {
-	orders, err := op.storage.GetOrders(ctx)
+	orders, err := op.orderStorage.GetOrders(ctx)
 	if err != nil {
 		return err
 	}
@@ -27,6 +27,6 @@ func (op *OrderServicePP) IssueOrders(ctx context.Context, orderIDs map[uint64]s
 	if len(orderIDs) != ordersCount {
 		return ErrNotAllOrdersWereFound
 	}
-	return op.storage.IssueOrders(ctx, orderIDs)
+	return op.orderStorage.IssueOrders(ctx, orderIDs)
 
 }

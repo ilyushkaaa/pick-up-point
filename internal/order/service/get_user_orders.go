@@ -8,7 +8,7 @@ import (
 )
 
 func (op *OrderServicePP) GetUserOrders(ctx context.Context, clientID uint64, filters filtermodel.Filters) ([]ordermodel.Order, error) {
-	orders, err := op.storage.GetUserOrders(ctx, clientID)
+	orders, err := op.orderStorage.GetUserOrders(ctx, clientID)
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,8 @@
 package dto
 
-import "homework/internal/order/model"
+import (
+	"homework/internal/order/model"
+)
 
 func ConvertToOrder(o OrderDB) model.Order {
 	order := model.Order{
@@ -10,6 +12,7 @@ func ConvertToOrder(o OrderDB) model.Order {
 		Price:                 o.Price,
 		StorageExpirationDate: o.StorageExpirationDate,
 		IsReturned:            o.IsReturned,
+		PickUpPointID:         o.PickUpPointID,
 	}
 	if o.OrderIssueDate.Valid {
 		order.OrderIssueDate = o.OrderIssueDate.Time

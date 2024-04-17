@@ -6,12 +6,12 @@ import (
 )
 
 func (op *OrderServicePP) DeleteOrder(ctx context.Context, orderID uint64) error {
-	order, err := op.storage.GetOrderByID(ctx, orderID)
+	order, err := op.orderStorage.GetOrderByID(ctx, orderID)
 	if err != nil {
 		return err
 	}
 	if order.IsReturned {
-		return op.storage.DeleteOrder(ctx, orderID)
+		return op.orderStorage.DeleteOrder(ctx, orderID)
 	}
 	if order.IsIssued {
 		return ErrOrderAlreadyIssued
@@ -19,6 +19,6 @@ func (op *OrderServicePP) DeleteOrder(ctx context.Context, orderID uint64) error
 	if order.StorageExpirationDate.After(time.Now()) {
 		return ErrOrderShelfLifeNotExpired
 	}
-	return op.storage.DeleteOrder(ctx, orderID)
+	return op.orderStorage.DeleteOrder(ctx, orderID)
 
 }

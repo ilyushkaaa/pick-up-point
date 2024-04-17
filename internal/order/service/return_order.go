@@ -6,7 +6,7 @@ import (
 )
 
 func (op *OrderServicePP) ReturnOrder(ctx context.Context, clientID, orderID uint64) error {
-	order, err := op.storage.GetOrderByID(ctx, orderID)
+	order, err := op.orderStorage.GetOrderByID(ctx, orderID)
 	if err != nil {
 		return err
 	}
@@ -23,5 +23,5 @@ func (op *OrderServicePP) ReturnOrder(ctx context.Context, clientID, orderID uin
 	if maxReturnTime.Before(time.Now()) {
 		return ErrReturnTimeExpired
 	}
-	return op.storage.ReturnOrder(ctx, clientID, orderID)
+	return op.orderStorage.ReturnOrder(ctx, clientID, orderID)
 }

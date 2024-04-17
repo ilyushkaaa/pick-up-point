@@ -7,7 +7,7 @@ import (
 )
 
 func (ps *PPService) GetPickUpPointByID(ctx context.Context, id uint64) (*model.PickUpPoint, error) {
-	pickUpPoint, err := ps.storage.GetPickUpPointByID(ctx, id)
+	pickUpPoint, err := ps.ppStorage.GetPickUpPointByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}

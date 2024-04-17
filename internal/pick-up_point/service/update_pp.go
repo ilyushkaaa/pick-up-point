@@ -7,5 +7,5 @@ import (
 )
 
 func (ps *PPService) UpdatePickUpPoint(ctx context.Context, point model.PickUpPoint) error {
-	return ps.storage.UpdatePickUpPoint(ctx, point)
+	return ps.ppStorage.UpdatePickUpPoint(ctx, point)
 }

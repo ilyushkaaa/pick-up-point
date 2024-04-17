@@ -17,7 +17,7 @@ import (
 	servicePP "homework/internal/pick-up_point/service"
 	storagePP "homework/internal/pick-up_point/storage/database"
 	"homework/internal/routes"
-	database "homework/pkg/database/postgres"
+	"homework/pkg/database/postgres"
 	"homework/pkg/kafka"
 	"homework/pkg/kafka/consumer"
 )
@@ -51,13 +51,13 @@ func main() {
 		}
 	}()
 	stPP := storagePP.New(db)
-	svPP := servicePP.New(stPP)
-	dPP := deliveryPP.New(svPP, logger)
-
 	stOrder := storageOrder.New(db)
 
+	svPP := servicePP.New(stPP, stOrder)
+	dPP := deliveryPP.New(svPP, logger)
+
 	packageTypes := packages.Init()
-	svOrder := serviceOrder.New(stOrder, packageTypes)
+	svOrder := serviceOrder.New(stOrder, stPP, packageTypes)
 	dOrder := deliveryOrder.New(svOrder, logger)
 
 	cfg, err := kafka.NewConfig()

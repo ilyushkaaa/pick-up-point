@@ -9,10 +9,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
+	storageOrder "homework/internal/order/storage/database"
 	delivery "homework/internal/pick-up_point/delivery/http"
 	"homework/internal/pick-up_point/service"
-	storage "homework/internal/pick-up_point/storage/database"
-	database "homework/pkg/database/postgres"
+	storagePP "homework/internal/pick-up_point/storage/database"
+	"homework/pkg/database/postgres"
 )
 
 func initTest(t *testing.T) (*delivery.PPDelivery, database.Database) {
@@ -22,8 +23,9 @@ func initTest(t *testing.T) (*delivery.PPDelivery, database.Database) {
 
 	require.NoError(t, err)
 
-	st := storage.New(db)
-	srv := service.New(st)
+	stPP := storagePP.New(db)
+	stOrder := storageOrder.New(db)
+	srv := service.New(stPP, stOrder)
 	dev := delivery.New(srv, zap.NewNop().Sugar())
 	return dev, db
 }
