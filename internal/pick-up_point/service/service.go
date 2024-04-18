@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	"homework/internal/cache"
 	orderStorage "homework/internal/order/storage"
 	"homework/internal/pick-up_point/model"
 	ppStorage "homework/internal/pick-up_point/storage"
@@ -22,13 +23,15 @@ type PPService struct {
 	orderStorage       orderStorage.OrderStorage
 	ppStorage          ppStorage.PPStorage
 	transactionManager transaction_manager.TransactionManager
+	cache              cache.Cache
 }
 
 func New(storage ppStorage.PPStorage, orderStorage orderStorage.OrderStorage,
-	transactionManager transaction_manager.TransactionManager) *PPService {
+	transactionManager transaction_manager.TransactionManager, cache cache.Cache) *PPService {
 	return &PPService{
 		ppStorage:          storage,
 		orderStorage:       orderStorage,
 		transactionManager: transactionManager,
+		cache:              cache,
 	}
 }

@@ -8,6 +8,8 @@ import (
 
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
+	cacheInMemory "homework/internal/cache/in_memory"
+	cacheRedis "homework/internal/cache/redis"
 	"homework/internal/middleware"
 	deliveryOrder "homework/internal/order/delivery/http"
 	serviceOrder "homework/internal/order/service"
@@ -57,14 +59,24 @@ func main() {
 			logger.Errorf("error in closing db")
 		}
 	}()
+	redisCache := cacheRedis.New(logger)
+	defer func() {
+		err = redisCache.Close()
+		if err != nil {
+			logger.Errorf("error in closing redis cache: %v", err)
+		}
+	}()
+
+	imMemoryCache := cacheInMemory.New()
+
 	stPP := storagePP.New(db)
 	stOrder := storageOrder.New(db)
 
-	svPP := servicePP.New(stPP, stOrder, tm)
-	dPP := deliveryPP.New(svPP, logger)
+	svPP := servicePP.New(stPP, stOrder, tm, imMemoryCache)
+	dPP := deliveryPP.New(redisCache, svPP, logger)
 
 	packageTypes := packages.Init()
-	svOrder := serviceOrder.New(stOrder, stPP, packageTypes, tm)
+	svOrder := serviceOrder.New(stOrder, stPP, packageTypes, tm, imMemoryCache)
 	dOrder := deliveryOrder.New(svOrder, logger)
 
 	cfg, err := kafka.NewConfig()
