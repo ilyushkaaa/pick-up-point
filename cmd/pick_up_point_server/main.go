@@ -67,7 +67,7 @@ func main() {
 		}
 	}()
 
-	imMemoryCache := cacheInMemory.New()
+	imMemoryCache := cacheInMemory.New(logger)
 
 	stPP := storagePP.New(db)
 	stOrder := storageOrder.New(db)
