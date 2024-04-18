@@ -65,7 +65,7 @@ curl -k -X GET   https://127.0.0.1:9000/pick-up-points   -H 'Authorization: Basi
 
 ```bash
 curl -k -X GET \
-  https://127.0.0.1:9000/pick-up-point/1 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
+  https://127.0.0.1:9010/pick-up-point/1 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
 ```
 
 ### Удаление ПВЗ

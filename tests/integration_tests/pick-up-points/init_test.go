@@ -7,8 +7,11 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
+	cacheInMemory "homework/internal/cache/in_memory"
+	cacheRedis "homework/internal/cache/redis"
 	storageOrder "homework/internal/order/storage/database"
 	delivery "homework/internal/pick-up_point/delivery/http"
 	"homework/internal/pick-up_point/service"
@@ -28,7 +31,14 @@ func initTest(t *testing.T) (*delivery.PPDelivery, database.Database) {
 
 	stPP := storagePP.New(db)
 	stOrder := storageOrder.New(db)
-	srv := service.New(stPP, stOrder, tm)
-	dev := delivery.New(srv, zap.NewNop().Sugar())
+	logger := zap.NewNop().Sugar()
+	redisCache := cacheRedis.New(logger)
+	t.Cleanup(func() {
+		err = redisCache.Close()
+		assert.NoError(t, err)
+	})
+	imMemoryCache := cacheInMemory.New(logger)
+	srv := service.New(stPP, stOrder, tm, imMemoryCache)
+	dev := delivery.New(redisCache, srv, logger)
 	return dev, db
 }
