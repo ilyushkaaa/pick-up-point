@@ -22,10 +22,14 @@ func (op *OrderServicePP) DeleteOrder(ctx context.Context, orderID uint64) error
 				if err != nil {
 					return err
 				}
+				op.cache.GoAddToCache(context.Background(), fmt.Sprintf("order_%d", orderID), order)
 			}
 			if order.IsReturned {
-				op.cache.GoDeleteFromCache(context.Background(), fmt.Sprintf("order_%d", orderID))
-				return op.orderStorage.DeleteOrder(ctx, orderID)
+				err = op.orderStorage.DeleteOrder(ctx, orderID)
+				if err != nil {
+					op.cache.GoDeleteFromCache(context.Background(), fmt.Sprintf("order_%d", orderID))
+				}
+				return err
 			}
 			if order.IsIssued {
 				return ErrOrderAlreadyIssued

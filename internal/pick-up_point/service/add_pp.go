@@ -9,7 +9,6 @@ import (
 )
 
 func (ps *PPService) AddPickUpPoint(ctx context.Context, point model.PickUpPoint) (*model.PickUpPoint, error) {
-
 	pp, err := ps.ppStorage.GetPickUpPointByName(ctx, point.Name)
 	if err != nil {
 		if !errors.Is(err, storage.ErrPickUpPointNotFound) {

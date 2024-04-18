@@ -26,10 +26,10 @@ type PPService struct {
 	cache              cache.Cache
 }
 
-func New(storage ppStorage.PPStorage, orderStorage orderStorage.OrderStorage,
+func New(ppStorage ppStorage.PPStorage, orderStorage orderStorage.OrderStorage,
 	transactionManager transaction_manager.TransactionManager, cache cache.Cache) *PPService {
 	return &PPService{
-		ppStorage:          storage,
+		ppStorage:          ppStorage,
 		orderStorage:       orderStorage,
 		transactionManager: transactionManager,
 		cache:              cache,

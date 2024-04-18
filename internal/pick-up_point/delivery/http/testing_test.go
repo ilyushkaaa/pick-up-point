@@ -4,7 +4,9 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
+	cacheRedis "homework/internal/cache/redis"
 	mock_service "homework/internal/pick-up_point/service/mocks"
 )
 
@@ -18,7 +20,12 @@ func setUp(t *testing.T) pickUpPointDeliveryFixtures {
 	ctrl := gomock.NewController(t)
 	mockPPService := mock_service.NewMockPickUpPointService(ctrl)
 	logger := zap.NewNop().Sugar()
-	del := PPDelivery{logger, mockPPService}
+	redisCache := cacheRedis.New(logger)
+	t.Cleanup(func() {
+		err := redisCache.Close()
+		assert.NoError(t, err)
+	})
+	del := PPDelivery{redisCache, logger, mockPPService}
 	return pickUpPointDeliveryFixtures{
 		ctrl:        ctrl,
 		del:         del,

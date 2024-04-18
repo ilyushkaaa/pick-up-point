@@ -20,6 +20,7 @@ func (op *OrderServicePP) GetUserOrders(ctx context.Context, clientID uint64, fi
 		if err != nil {
 			return nil, err
 		}
+		op.cache.GoAddToCache(context.Background(), fmt.Sprintf("user_%d", clientID), orders)
 	}
 	if filters.Limit == 0 {
 		filters.Limit = len(orders)

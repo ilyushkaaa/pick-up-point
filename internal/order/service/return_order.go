@@ -22,6 +22,7 @@ func (op *OrderServicePP) ReturnOrder(ctx context.Context, clientID, orderID uin
 				if err != nil {
 					return err
 				}
+				op.cache.GoAddToCache(context.Background(), fmt.Sprintf("order_%d", orderID), order)
 			}
 			if order.ClientID != clientID {
 				return ErrClientOrderNotFound

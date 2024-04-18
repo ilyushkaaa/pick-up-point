@@ -30,6 +30,7 @@ func (op *OrderServicePP) AddOrder(ctx context.Context, order model.Order) error
 				if err != nil {
 					return err
 				}
+				op.cache.GoAddToCache(context.Background(), fmt.Sprintf("pp_%d", order.PickUpPointID), order)
 			}
 			if order.PackageType != "" {
 				chosenPackage, exists := op.packages[order.PackageType]
