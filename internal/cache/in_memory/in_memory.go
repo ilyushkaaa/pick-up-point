@@ -161,7 +161,7 @@ func (r *InMemoryCache) getOrdersByID(key string) (interface{}, error) {
 	defer r.orderMu.RUnlock()
 	res, ok := r.ordersByID[key]
 	if !ok {
-		return nil, errors.New("no pick-up points with such id in cache")
+		return nil, errors.New("no orders with such id in cache")
 	}
 	return res, nil
 }
@@ -171,7 +171,7 @@ func (r *InMemoryCache) getOrdersByClientID(key string) (interface{}, error) {
 	defer r.ordersByClientMu.RUnlock()
 	res, ok := r.ordersByClientID[key]
 	if !ok {
-		return nil, errors.New("no pick-up points with such id in cache")
+		return nil, errors.New("no orders for client with such id")
 	}
 	return res, nil
 }
