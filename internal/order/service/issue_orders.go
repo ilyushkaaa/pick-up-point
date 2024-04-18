@@ -2,9 +2,14 @@ package service
 
 import (
 	"context"
+	"fmt"
 )
 
-func (op *OrderServicePP) IssueOrders(ctx context.Context, orderIDs map[uint64]struct{}) error {
+func (op *OrderServicePP) IssueOrders(ctx context.Context, orderIDs []uint64) error {
+	orderIDsMap := make(map[uint64]struct{}, len(orderIDs))
+	for _, id := range orderIDs {
+		orderIDsMap[id] = struct{}{}
+	}
 	return op.transactionManager.RunRepeatableRead(ctx,
 		func(ctxTX context.Context) error {
 			orders, err := op.orderStorage.GetOrders(ctx)
@@ -15,7 +20,7 @@ func (op *OrderServicePP) IssueOrders(ctx context.Context, orderIDs map[uint64]s
 			clientID := uint64(0)
 			clientIDWasSet := false
 			for _, order := range orders {
-				if _, exists := orderIDs[order.ID]; !exists {
+				if _, exists := orderIDsMap[order.ID]; !exists {
 					continue
 				}
 				if clientIDWasSet && clientID != order.ClientID {
@@ -31,6 +36,18 @@ func (op *OrderServicePP) IssueOrders(ctx context.Context, orderIDs map[uint64]s
 			if len(orderIDs) != ordersCount {
 				return ErrNotAllOrdersWereFound
 			}
-			return op.orderStorage.IssueOrders(ctx, orderIDs)
+			err = op.orderStorage.IssueOrders(ctx, orderIDs)
+			if err != nil {
+				op.cache.GoDeleteFromCache(context.Background(), getKeysOrderKeys(orderIDs)...)
+			}
+			return err
 		})
+}
+
+func getKeysOrderKeys(IDs []uint64) []string {
+	keys := make([]string, 0, len(IDs))
+	for _, id := range IDs {
+		keys = append(keys, fmt.Sprintf("order_%d", id))
+	}
+	return keys
 }

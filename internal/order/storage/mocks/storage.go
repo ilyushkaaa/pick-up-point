@@ -138,7 +138,7 @@ func (mr *MockOrderStorageMockRecorder) GetUserOrders(ctx, clientID interface{})
 }
 
 // IssueOrders mocks base method.
-func (m *MockOrderStorage) IssueOrders(ctx context.Context, orderIDs map[uint64]struct{}) error {
+func (m *MockOrderStorage) IssueOrders(ctx context.Context, orderIDs []uint64) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "IssueOrders", ctx, orderIDs)
 	ret0, _ := ret[0].(error)

@@ -47,11 +47,7 @@ func (d *OrderDelivery) IssueOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orderIDs := make(map[uint64]struct{}, len(ordersToIssue.OrdersIDs))
-	for _, id := range ordersToIssue.OrdersIDs {
-		orderIDs[id] = struct{}{}
-	}
-	err = d.service.IssueOrders(r.Context(), orderIDs)
+	err = d.service.IssueOrders(r.Context(), ordersToIssue.OrdersIDs)
 	if err != nil {
 		if errors.Is(err, service.ErrOrdersOfDifferentClients) {
 			d.logger.Error("passed orders belong to different clients")

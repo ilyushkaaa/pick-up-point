@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"homework/internal/order/model"
@@ -19,9 +20,16 @@ func (op *OrderServicePP) AddOrder(ctx context.Context, order model.Order) error
 	}
 	return op.transactionManager.RunRepeatableRead(ctx,
 		func(ctxTX context.Context) error {
-			_, err = op.ppStorage.GetPickUpPointByID(ctx, order.PickUpPointID)
-			if err != nil {
-				return err
+			gotFromCache := false
+			_, err := op.cache.GetFromCache(ctx, fmt.Sprintf("pp_%d", order.PickUpPointID))
+			if err == nil {
+				gotFromCache = true
+			}
+			if !gotFromCache {
+				_, err = op.ppStorage.GetPickUpPointByID(ctx, order.PickUpPointID)
+				if err != nil {
+					return err
+				}
 			}
 			if order.PackageType != "" {
 				chosenPackage, exists := op.packages[order.PackageType]
