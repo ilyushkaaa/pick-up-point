@@ -109,6 +109,8 @@ func (r *InMemoryCache) Close() error {
 	return nil
 }
 
+// в перспективе разрастания приложения нужно будет поменять такой метод, так как будет много
+// памяти уходить на все эти созданные горутины каждой записью
 func (r *InMemoryCache) goDeleteByExpirationTime(key string) {
 	go func() {
 		<-time.After(r.expireTime)
