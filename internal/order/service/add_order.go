@@ -11,11 +11,16 @@ import (
 )
 
 func (op *OrderServicePP) AddOrder(ctx context.Context, order model.Order) error {
-	_, err := op.orderStorage.GetOrderByID(ctx, order.ID)
+	_, err := op.cache.GetFromCache(ctx, fmt.Sprintf("order_%d", order.ID))
+	if err == nil {
+		return ErrOrderAlreadyInPickUpPoint
+	}
+	orderByID, err := op.orderStorage.GetOrderByID(ctx, order.ID)
 	if err != nil && !errors.Is(err, storage.ErrOrderNotFound) {
 		return err
 	}
 	if err == nil {
+		op.cache.GoAddToCache(context.Background(), fmt.Sprintf("order_%d", order.ID), orderByID)
 		return ErrOrderAlreadyInPickUpPoint
 	}
 	return op.transactionManager.RunRepeatableRead(ctx,

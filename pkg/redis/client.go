@@ -8,7 +8,6 @@ import (
 
 func Connect(host, port string) *redis.Client {
 	redisAddr := fmt.Sprintf("%s:%s", host, port)
-	fmt.Println(redisAddr)
 	client := redis.NewClient(&redis.Options{
 		Addr:     redisAddr,
 		Password: "",

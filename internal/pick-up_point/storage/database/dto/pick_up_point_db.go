@@ -21,7 +21,7 @@ func NewPickUpPointDB(p model.PickUpPoint) PickUpPointDB {
 		PhoneNumber: p.PhoneNumber,
 		Region:      p.Address.Region,
 		City:        p.Address.City,
-		Street:      p.Address.City,
+		Street:      p.Address.Street,
 		HouseNum:    p.Address.HouseNum,
 	}
 }

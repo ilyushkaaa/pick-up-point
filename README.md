@@ -38,7 +38,7 @@ curl -k -X POST \
 
 ```bash
 curl -k -X PUT \
-  https://127.0.0.1:9000/pick-up-point \
+  https://127.0.0.1:9010/pick-up-point \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx' \
   -d '{
@@ -78,7 +78,7 @@ curl -k -X DELETE \
 ### Принять заказ от курьера (добавить на ПВЗ)
 ```
 curl -k -X POST \
-https://127.0.0.1:9000/order \
+https://127.0.0.1:9010/order \
 -H 'Content-Type: application/json' \
 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx' \
 -d '{
@@ -86,8 +86,9 @@ https://127.0.0.1:9000/order \
     "client_id": 67890,
     "weight": 12.1,
     "price": 50.99,
-    "storage_expiration_date": "2024-03-29T12:00:00Z",
-    "package_type": "box"
+    "storage_expiration_date": "2024-04-29T12:00:00Z",
+    "package_type": "box",
+    "pick_up_point_id": 1
 }'
 ```
 
