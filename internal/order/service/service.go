@@ -9,7 +9,7 @@ import (
 	"homework/internal/order/service/packages"
 	orderStorage "homework/internal/order/storage"
 	ppStorage "homework/internal/pick-up_point/storage"
-	"homework/pkg/database/postgres/transaction_manager"
+	"homework/pkg/infrastructure/database/postgres/transaction_manager"
 )
 
 type OrderService interface {

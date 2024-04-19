@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 
 	"go.uber.org/zap"
-	"homework/pkg/redis"
+	"homework/pkg/infrastructure/redis"
 )
 
 type RedisCache struct {

@@ -1,7 +1,7 @@
 package storage
 
 import (
-	database "homework/pkg/database/postgres"
+	"homework/pkg/infrastructure/database/postgres"
 )
 
 type PPStorageDB struct {

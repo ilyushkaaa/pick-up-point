@@ -8,7 +8,7 @@ import (
 
 	"go.uber.org/zap"
 	"homework/internal/events/service/consumer"
-	"homework/pkg/kafka"
+	"homework/pkg/infrastructure/kafka"
 )
 
 const consumerStartTimeout = time.Second * 60

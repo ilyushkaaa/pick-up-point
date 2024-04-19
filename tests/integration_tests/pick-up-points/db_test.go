@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	database "homework/pkg/database/postgres"
+	"homework/pkg/infrastructure/database/postgres"
 	"homework/tests/fixtures"
 	"homework/tests/states"
 )

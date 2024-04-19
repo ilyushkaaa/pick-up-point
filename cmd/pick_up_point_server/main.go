@@ -19,10 +19,10 @@ import (
 	servicePP "homework/internal/pick-up_point/service"
 	storagePP "homework/internal/pick-up_point/storage/database"
 	"homework/internal/routes"
-	database "homework/pkg/database/postgres"
-	"homework/pkg/database/postgres/transaction_manager"
-	"homework/pkg/kafka"
-	"homework/pkg/kafka/consumer"
+	"homework/pkg/infrastructure/database/postgres"
+	"homework/pkg/infrastructure/database/postgres/transaction_manager"
+	"homework/pkg/infrastructure/kafka"
+	"homework/pkg/infrastructure/kafka/consumer"
 )
 
 func main() {

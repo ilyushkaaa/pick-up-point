@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"homework/pkg/database/postgres"
+	"homework/pkg/infrastructure/database/postgres"
 )
 
 type OrderStoragePG struct {

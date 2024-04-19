@@ -2,7 +2,7 @@ include .env
 export
 
 
-MIGRATION_FOLDER=$(CURDIR)/pkg/database/migrations
+MIGRATION_FOLDER=$(CURDIR)/pkg/infrastructure/database/migrations
 
 .PHONY: app_start
 app_start:

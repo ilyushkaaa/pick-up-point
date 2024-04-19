@@ -16,8 +16,8 @@ import (
 	delivery "homework/internal/pick-up_point/delivery/http"
 	"homework/internal/pick-up_point/service"
 	storagePP "homework/internal/pick-up_point/storage/database"
-	"homework/pkg/database/postgres"
-	"homework/pkg/database/postgres/transaction_manager"
+	"homework/pkg/infrastructure/database/postgres"
+	"homework/pkg/infrastructure/database/postgres/transaction_manager"
 )
 
 func initTest(t *testing.T) (*delivery.PPDelivery, database.Database) {

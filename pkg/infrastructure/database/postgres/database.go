@@ -6,7 +6,7 @@ import (
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
-	"homework/pkg/database/postgres/transaction_manager"
+	"homework/pkg/infrastructure/database/postgres/transaction_manager"
 )
 
 type Database interface {

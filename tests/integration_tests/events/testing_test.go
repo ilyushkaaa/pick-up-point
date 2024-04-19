@@ -19,9 +19,9 @@ import (
 	"go.uber.org/zap/zapcore"
 	eventsProducer "homework/internal/events/service/producer"
 	"homework/internal/middleware"
-	"homework/pkg/kafka"
-	"homework/pkg/kafka/consumer"
-	"homework/pkg/kafka/producer"
+	"homework/pkg/infrastructure/kafka"
+	"homework/pkg/infrastructure/kafka/consumer"
+	producer2 "homework/pkg/infrastructure/kafka/producer"
 )
 
 const eventsTopic = "test_events"
@@ -29,7 +29,7 @@ const eventsTopic = "test_events"
 type TestEventsFixtures struct {
 	mw           *middleware.Middleware
 	buf          *bytes.Buffer
-	syncProducer *producer.SyncProducer
+	syncProducer *producer2.SyncProducer
 	brokers      []string
 	logger       *zap.SugaredLogger
 	cancel       context.CancelFunc
@@ -58,7 +58,7 @@ func setUpAndConsume(t *testing.T) TestEventsFixtures {
 	zapL := logger.Sugar()
 
 	brokers := []string{"127.0.0.1:8004", "127.0.0.1:8005", "127.0.0.1:8006"}
-	syncProducer, err := producer.New(brokers)
+	syncProducer, err := producer2.New(brokers)
 	require.NoError(t, err)
 
 	t.Cleanup(func() {

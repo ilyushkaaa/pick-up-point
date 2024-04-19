@@ -7,7 +7,7 @@ import (
 	orderStorage "homework/internal/order/storage"
 	"homework/internal/pick-up_point/model"
 	ppStorage "homework/internal/pick-up_point/storage"
-	"homework/pkg/database/postgres/transaction_manager"
+	"homework/pkg/infrastructure/database/postgres/transaction_manager"
 )
 
 //go:generate mockgen -source ./service.go -destination=./mocks/service.go -package=mock_service
