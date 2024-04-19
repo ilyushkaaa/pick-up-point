@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
+
+	cache "homework/internal/cache/in_memory"
 )
 
 func (ps *PPService) DeletePickUpPoint(ctx context.Context, id uint64) error {
@@ -15,7 +17,7 @@ func (ps *PPService) DeletePickUpPoint(ctx context.Context, id uint64) error {
 			return ps.orderStorage.DeleteOrdersByPPID(ctx, id)
 		})
 	if err != nil {
-		ps.cache.GoDeleteFromCache(context.Background(), fmt.Sprintf("pp_%d", id))
+		ps.cache.GoDeleteFromCache(context.Background(), fmt.Sprintf("%s_%d", cache.PrefixPPByID, id))
 	}
 	return err
 

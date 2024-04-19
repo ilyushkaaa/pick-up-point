@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
+
+	cache "homework/internal/cache/in_memory"
 )
 
 func (op *OrderServicePP) IssueOrders(ctx context.Context, orderIDs []uint64) error {
@@ -47,7 +49,7 @@ func (op *OrderServicePP) IssueOrders(ctx context.Context, orderIDs []uint64) er
 func getKeysOrderKeys(IDs []uint64) []string {
 	keys := make([]string, 0, len(IDs))
 	for _, id := range IDs {
-		keys = append(keys, fmt.Sprintf("order_%d", id))
+		keys = append(keys, fmt.Sprintf("%s_%d", cache.PrefixOrderByID, id))
 	}
 	return keys
 }

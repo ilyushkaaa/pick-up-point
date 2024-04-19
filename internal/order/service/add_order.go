@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"time"
 
+	cache "homework/internal/cache/in_memory"
 	"homework/internal/order/model"
 	"homework/internal/order/storage"
 )
 
 func (op *OrderServicePP) AddOrder(ctx context.Context, order model.Order) error {
-	_, err := op.cache.GetFromCache(ctx, fmt.Sprintf("order_%d", order.ID))
+	_, err := op.cache.GetFromCache(ctx, fmt.Sprintf("%s_%d", cache.PrefixOrderByID, order.ID))
 	if err == nil {
 		return ErrOrderAlreadyInPickUpPoint
 	}
@@ -20,13 +21,13 @@ func (op *OrderServicePP) AddOrder(ctx context.Context, order model.Order) error
 		return err
 	}
 	if err == nil {
-		op.cache.GoAddToCache(context.Background(), fmt.Sprintf("order_%d", order.ID), orderByID)
+		op.cache.GoAddToCache(context.Background(), fmt.Sprintf("%s_%d", cache.PrefixOrderByID, order.ID), orderByID)
 		return ErrOrderAlreadyInPickUpPoint
 	}
 	return op.transactionManager.RunRepeatableRead(ctx,
 		func(ctxTX context.Context) error {
 			gotFromCache := false
-			_, err := op.cache.GetFromCache(ctx, fmt.Sprintf("pp_%d", order.PickUpPointID))
+			_, err := op.cache.GetFromCache(ctx, fmt.Sprintf("%s_%d", cache.PrefixPPByID, order.PickUpPointID))
 			if err == nil {
 				gotFromCache = true
 			}
@@ -35,7 +36,7 @@ func (op *OrderServicePP) AddOrder(ctx context.Context, order model.Order) error
 				if err != nil {
 					return err
 				}
-				op.cache.GoAddToCache(context.Background(), fmt.Sprintf("pp_%d", order.PickUpPointID), order)
+				op.cache.GoAddToCache(context.Background(), fmt.Sprintf("%s_%d", cache.PrefixPPByID, order.PickUpPointID), order)
 			}
 			if order.PackageType != "" {
 				chosenPackage, exists := op.packages[order.PackageType]

@@ -10,6 +10,12 @@ import (
 	"go.uber.org/zap"
 )
 
+const (
+	PrefixPPByID      = "pp"
+	PrefixOrderByID   = "order"
+	PrefixOrderByUser = "user"
+)
+
 type InMemoryCache struct {
 	pickUpPointsByID map[string]interface{}
 	ppMu             *sync.RWMutex
@@ -41,21 +47,21 @@ func New(logger *zap.SugaredLogger) *InMemoryCache {
 		logger:           logger,
 	}
 	deleteFunctions := map[string]func(string){
-		"pp":    cache.deleteFromPickUpPointsByID,
-		"order": cache.deleteFromOrdersByID,
-		"user":  cache.deleteOrdersByClientID,
+		PrefixPPByID:      cache.deleteFromPickUpPointsByID,
+		PrefixOrderByID:   cache.deleteFromOrdersByID,
+		PrefixOrderByUser: cache.deleteOrdersByClientID,
 	}
 
 	addFunctions := map[string]func(string, interface{}){
-		"pp":    cache.addPickUpPointsByID,
-		"order": cache.addOrdersByID,
-		"user":  cache.addOrdersByClientID,
+		PrefixPPByID:      cache.addPickUpPointsByID,
+		PrefixOrderByID:   cache.addOrdersByID,
+		PrefixOrderByUser: cache.addOrdersByClientID,
 	}
 
 	getFunctions := map[string]func(string) (interface{}, error){
-		"pp":    cache.getPickUpPointsByID,
-		"order": cache.getOrdersByID,
-		"user":  cache.getOrdersByClientID,
+		PrefixPPByID:      cache.getPickUpPointsByID,
+		PrefixOrderByID:   cache.getOrdersByID,
+		PrefixOrderByUser: cache.getOrdersByClientID,
 	}
 
 	cache.deleteFunctions = deleteFunctions
