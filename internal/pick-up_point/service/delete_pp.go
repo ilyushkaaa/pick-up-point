@@ -14,7 +14,7 @@ func (ps *PPService) DeletePickUpPoint(ctx context.Context, id uint64) error {
 			}
 			return ps.orderStorage.DeleteOrdersByPPID(ctx, id)
 		})
-	if err != nil {
+	if err == nil {
 		ps.cache.GoDeleteFromCache(context.Background(), strconv.FormatUint(id, 10))
 	}
 	return err

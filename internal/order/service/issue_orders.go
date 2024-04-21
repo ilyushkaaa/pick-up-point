@@ -37,7 +37,7 @@ func (op *OrderServicePP) IssueOrders(ctx context.Context, orderIDs []uint64) er
 				return ErrNotAllOrdersWereFound
 			}
 			err = op.orderStorage.IssueOrders(ctx, orderIDs)
-			if err != nil {
+			if err == nil {
 				op.cacheOrderByID.GoDeleteFromCache(context.Background(), getKeysOrderKeys(orderIDs)...)
 			}
 			return err

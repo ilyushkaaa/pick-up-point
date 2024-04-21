@@ -39,7 +39,7 @@ func (op *OrderServicePP) ReturnOrder(ctx context.Context, clientID, orderID uin
 			}
 
 			err = op.orderStorage.ReturnOrder(ctx, clientID, orderID)
-			if err != nil {
+			if err == nil {
 				op.cacheOrderByID.GoDeleteFromCache(context.Background(), strconv.FormatUint(order.ID, 10))
 			}
 			return err

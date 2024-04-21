@@ -26,7 +26,7 @@ func (op *OrderServicePP) DeleteOrder(ctx context.Context, orderID uint64) error
 			}
 			if order.IsReturned {
 				err = op.orderStorage.DeleteOrder(ctx, orderID)
-				if err != nil {
+				if err == nil {
 					op.cacheOrderByID.GoDeleteFromCache(context.Background(), strconv.FormatUint(order.ID, 10))
 				}
 				return err
@@ -38,7 +38,7 @@ func (op *OrderServicePP) DeleteOrder(ctx context.Context, orderID uint64) error
 				return ErrOrderShelfLifeNotExpired
 			}
 			err = op.orderStorage.DeleteOrder(ctx, orderID)
-			if err != nil {
+			if err == nil {
 				op.cacheOrderByID.GoDeleteFromCache(context.Background(), strconv.FormatUint(order.ID, 10))
 			}
 			return err
