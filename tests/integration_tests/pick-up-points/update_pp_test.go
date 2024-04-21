@@ -16,11 +16,9 @@ import (
 )
 
 func TestUpdatePickUpPoint(t *testing.T) {
-	del, db := initTest(t)
 
 	t.Run("error pick-up point with such id was not found", func(t *testing.T) {
-		setUp(t, db, tableName)
-		fillDataBase(t, db)
+		del := setUp(t, tableName)
 		request := httptest.NewRequest(http.MethodPut, "/pick-up-point", strings.NewReader(test_json.ValidPPUpdateRequestNotExists))
 		respWriter := httptest.NewRecorder()
 
@@ -36,8 +34,7 @@ func TestUpdatePickUpPoint(t *testing.T) {
 	})
 
 	t.Run("error pick-up point with such name already exists", func(t *testing.T) {
-		setUp(t, db, tableName)
-		fillDataBase(t, db)
+		del := setUp(t, tableName)
 		request := httptest.NewRequest(http.MethodPut, "/pick-up-point", strings.NewReader(test_json.ValidPPUpdateRequestNameAlreadyExists))
 		respWriter := httptest.NewRecorder()
 
@@ -53,8 +50,7 @@ func TestUpdatePickUpPoint(t *testing.T) {
 	})
 
 	t.Run("ok", func(t *testing.T) {
-		setUp(t, db, tableName)
-		fillDataBase(t, db)
+		del := setUp(t, tableName)
 		request := httptest.NewRequest(http.MethodPut, "/pick-up-point", strings.NewReader(test_json.ValidPPUpdateRequest))
 		respWriter := httptest.NewRecorder()
 

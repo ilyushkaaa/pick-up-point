@@ -18,11 +18,9 @@ import (
 const tableName = "pick_up_points"
 
 func TestAddPickUpPoint(t *testing.T) {
-	del, db := initTest(t)
 
 	t.Run("error pick-up point with such name already exists", func(t *testing.T) {
-		setUp(t, db, tableName)
-		fillDataBase(t, db)
+		del := setUp(t, tableName)
 		request := httptest.NewRequest(http.MethodPost, "/pick-up-point", strings.NewReader(test_json.ValidPPAddRequest))
 		respWriter := httptest.NewRecorder()
 
@@ -38,8 +36,7 @@ func TestAddPickUpPoint(t *testing.T) {
 	})
 
 	t.Run("ok", func(t *testing.T) {
-		setUp(t, db, tableName)
-		fillDataBase(t, db)
+		del := setUp(t, tableName)
 		request := httptest.NewRequest(http.MethodPost, "/pick-up-point", strings.NewReader(test_json.ValidPPAddRequestUnique))
 		respWriter := httptest.NewRecorder()
 

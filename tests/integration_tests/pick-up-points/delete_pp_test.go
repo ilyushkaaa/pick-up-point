@@ -16,11 +16,9 @@ import (
 )
 
 func TestDeletePickUpPointBy(t *testing.T) {
-	del, db := initTest(t)
 
 	t.Run("error no pick-up points with such id", func(t *testing.T) {
-		setUp(t, db, tableName)
-		fillDataBase(t, db)
+		del := setUp(t, tableName)
 		request := httptest.NewRequest(http.MethodDelete, "/pick-up-point/5020", nil)
 		request = mux.SetURLVars(request, map[string]string{"PP_ID": "5020"})
 		respWriter := httptest.NewRecorder()
@@ -37,8 +35,7 @@ func TestDeletePickUpPointBy(t *testing.T) {
 	})
 
 	t.Run("ok", func(t *testing.T) {
-		setUp(t, db, tableName)
-		fillDataBase(t, db)
+		del := setUp(t, tableName)
 		request := httptest.NewRequest(http.MethodDelete, "/pick-up-point/5000", nil)
 		request = mux.SetURLVars(request, map[string]string{"PP_ID": "5000"})
 		respWriter := httptest.NewRecorder()

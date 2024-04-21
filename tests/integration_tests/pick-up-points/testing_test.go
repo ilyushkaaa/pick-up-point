@@ -8,18 +8,48 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
+	cacheInMemory "homework/internal/cache/in_memory"
+	cacheRedis "homework/internal/cache/redis"
+	storageOrder "homework/internal/order/storage/database"
+	delivery "homework/internal/pick-up_point/delivery/http"
+	"homework/internal/pick-up_point/service"
+	storagePP "homework/internal/pick-up_point/storage/database"
 	"homework/pkg/infrastructure/database/postgres"
+	"homework/pkg/infrastructure/database/postgres/transaction_manager"
 	"homework/tests/fixtures"
 	"homework/tests/states"
 )
 
-func setUp(t *testing.T, db database.Database, tableName string) {
+func setUp(t *testing.T, tableName string) *delivery.PPDelivery {
 	t.Helper()
 	ctx := context.Background()
 
-	err := truncateTable(ctx, db, tableName)
+	tm, err := transaction_manager.New(context.Background())
+
 	require.NoError(t, err)
+
+	db := database.New(tm)
+
+	stPP := storagePP.New(db)
+	stOrder := storageOrder.New(db)
+	logger := zap.NewNop().Sugar()
+	redisCache := cacheRedis.New(logger)
+	t.Cleanup(func() {
+		err = redisCache.Close()
+		assert.NoError(t, err)
+	})
+	imMemoryCache := cacheInMemory.New(logger)
+	srv := service.New(stPP, stOrder, tm, imMemoryCache)
+	del := delivery.New(redisCache, srv, logger)
+
+	err = truncateTable(ctx, db, tableName)
+	require.NoError(t, err)
+
+	fillDataBase(t, db)
+	return del
 }
 
 func truncateTable(ctx context.Context, db database.Database, tableName string) error {
