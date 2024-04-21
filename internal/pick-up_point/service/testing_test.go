@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 	"go.uber.org/zap"
@@ -23,7 +24,7 @@ func setUp(t *testing.T) pickUpPointServiceFixtures {
 	mockOrderStorage := mockStorageOrder.NewMockOrderStorage(ctrl)
 	tm := &fakeTransactionManager{}
 	logger := zap.NewNop().Sugar()
-	imMemoryCache := cacheInMemory.New(logger)
+	imMemoryCache := cacheInMemory.New(logger, time.Minute)
 	srv := New(mockPPStorage, mockOrderStorage, tm, imMemoryCache)
 
 	return pickUpPointServiceFixtures{

@@ -24,20 +24,24 @@ type OrderService interface {
 // PP - pick-up point
 
 type OrderServicePP struct {
-	orderStorage       orderStorage.OrderStorage
-	ppStorage          ppStorage.PPStorage
-	packages           map[string]*packages.Package
-	transactionManager transaction_manager.TransactionManager
-	cache              cache.Cache
+	orderStorage        orderStorage.OrderStorage
+	ppStorage           ppStorage.PPStorage
+	packages            map[string]*packages.Package
+	transactionManager  transaction_manager.TransactionManager
+	cacheOrderByID      cache.Cache
+	cacheOrdersByClient cache.Cache
+	cachePPByID         cache.Cache
 }
 
 func New(storage orderStorage.OrderStorage, ppStorage ppStorage.PPStorage, packages map[string]*packages.Package,
-	transactionManager transaction_manager.TransactionManager, cache cache.Cache) *OrderServicePP {
+	transactionManager transaction_manager.TransactionManager, cacheOrderByID, cacheOrdersByClient, cachePPByID cache.Cache) *OrderServicePP {
 	return &OrderServicePP{
-		orderStorage:       storage,
-		ppStorage:          ppStorage,
-		packages:           packages,
-		transactionManager: transactionManager,
-		cache:              cache,
+		orderStorage:        storage,
+		ppStorage:           ppStorage,
+		packages:            packages,
+		transactionManager:  transactionManager,
+		cacheOrderByID:      cacheOrderByID,
+		cacheOrdersByClient: cacheOrdersByClient,
+		cachePPByID:         cachePPByID,
 	}
 }

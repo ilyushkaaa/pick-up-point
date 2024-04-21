@@ -8,6 +8,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
+	"homework/internal/cache"
 	cacheInMemory "homework/internal/cache/in_memory"
 	cacheRedis "homework/internal/cache/redis"
 	"homework/internal/middleware"
@@ -59,6 +60,12 @@ func main() {
 			logger.Errorf("error in closing db")
 		}
 	}()
+
+	cacheConfig, err := cache.GetConfig()
+	if err != nil {
+		logger.Fatalf("error in getting cache config: %v", err)
+	}
+
 	redisCache := cacheRedis.New(logger)
 	defer func() {
 		err = redisCache.Close()
@@ -67,16 +74,18 @@ func main() {
 		}
 	}()
 
-	imMemoryCache := cacheInMemory.New(logger)
+	orderByIDCache := cacheInMemory.New(logger, cacheConfig.OrderByIDTTl)
+	ppByIDCache := cacheInMemory.New(logger, cacheConfig.PPByIDTTl)
+	ordersByClientCache := cacheInMemory.New(logger, cacheConfig.OrdersByClientTTl)
 
 	stPP := storagePP.New(db)
 	stOrder := storageOrder.New(db)
 
-	svPP := servicePP.New(stPP, stOrder, tm, imMemoryCache)
+	svPP := servicePP.New(stPP, stOrder, tm, ppByIDCache)
 	dPP := deliveryPP.New(redisCache, svPP, logger)
 
 	packageTypes := packages.Init()
-	svOrder := serviceOrder.New(stOrder, stPP, packageTypes, tm, imMemoryCache)
+	svOrder := serviceOrder.New(stOrder, stPP, packageTypes, tm, orderByIDCache, ordersByClientCache, ppByIDCache)
 	dOrder := deliveryOrder.New(svOrder, logger)
 
 	cfg, err := kafka.NewConfig()

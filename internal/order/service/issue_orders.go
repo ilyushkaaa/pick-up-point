@@ -2,9 +2,7 @@ package service
 
 import (
 	"context"
-	"fmt"
-
-	cache "homework/internal/cache/in_memory"
+	"strconv"
 )
 
 func (op *OrderServicePP) IssueOrders(ctx context.Context, orderIDs []uint64) error {
@@ -40,7 +38,7 @@ func (op *OrderServicePP) IssueOrders(ctx context.Context, orderIDs []uint64) er
 			}
 			err = op.orderStorage.IssueOrders(ctx, orderIDs)
 			if err != nil {
-				op.cache.GoDeleteFromCache(context.Background(), getKeysOrderKeys(orderIDs)...)
+				op.cacheOrderByID.GoDeleteFromCache(context.Background(), getKeysOrderKeys(orderIDs)...)
 			}
 			return err
 		})
@@ -49,7 +47,7 @@ func (op *OrderServicePP) IssueOrders(ctx context.Context, orderIDs []uint64) er
 func getKeysOrderKeys(IDs []uint64) []string {
 	keys := make([]string, 0, len(IDs))
 	for _, id := range IDs {
-		keys = append(keys, fmt.Sprintf("%s_%d", cache.PrefixOrderByID, id))
+		keys = append(keys, strconv.FormatUint(id, 10))
 	}
 	return keys
 }

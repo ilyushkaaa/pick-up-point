@@ -2,9 +2,8 @@ package service
 
 import (
 	"context"
-	"fmt"
+	"strconv"
 
-	cache "homework/internal/cache/in_memory"
 	filtermodel "homework/internal/filters/model"
 	ordermodel "homework/internal/order/model"
 )
@@ -12,7 +11,7 @@ import (
 func (op *OrderServicePP) GetUserOrders(ctx context.Context, clientID uint64, filters filtermodel.Filters) ([]ordermodel.Order, error) {
 	gotFromCache := false
 	var orders []ordermodel.Order
-	data, err := op.cache.GetFromCache(ctx, fmt.Sprintf("%s_%d", cache.PrefixOrderByUser, clientID))
+	data, err := op.cacheOrdersByClient.GetFromCache(ctx, strconv.FormatUint(clientID, 10))
 	if err == nil {
 		orders, gotFromCache = data.([]ordermodel.Order)
 	}
@@ -21,7 +20,7 @@ func (op *OrderServicePP) GetUserOrders(ctx context.Context, clientID uint64, fi
 		if err != nil {
 			return nil, err
 		}
-		op.cache.GoAddToCache(context.Background(), fmt.Sprintf("%s_%d", cache.PrefixOrderByUser, clientID), orders)
+		op.cacheOrdersByClient.GoAddToCache(context.Background(), strconv.FormatUint(clientID, 10), orders)
 	}
 	if filters.Limit == 0 {
 		filters.Limit = len(orders)
@@ -42,6 +41,6 @@ func (op *OrderServicePP) GetUserOrders(ctx context.Context, clientID uint64, fi
 			break
 		}
 	}
-	op.cache.GoAddToCache(context.Background(), fmt.Sprintf("%s_%d", cache.PrefixOrderByUser, clientID), ordersToReturn)
+	op.cacheOrdersByClient.GoAddToCache(context.Background(), strconv.FormatUint(clientID, 10), ordersToReturn)
 	return ordersToReturn, nil
 }

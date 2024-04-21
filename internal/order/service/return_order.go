@@ -2,10 +2,9 @@ package service
 
 import (
 	"context"
-	"fmt"
+	"strconv"
 	"time"
 
-	cache "homework/internal/cache/in_memory"
 	"homework/internal/order/model"
 )
 
@@ -14,7 +13,7 @@ func (op *OrderServicePP) ReturnOrder(ctx context.Context, clientID, orderID uin
 		func(ctxTX context.Context) error {
 			gotFromCache := false
 			var order *model.Order
-			data, err := op.cache.GetFromCache(ctx, fmt.Sprintf("%s_%d", cache.PrefixOrderByID, order.ID))
+			data, err := op.cacheOrderByID.GetFromCache(ctx, strconv.FormatUint(order.ID, 10))
 			if err == nil {
 				order, gotFromCache = data.(*model.Order)
 			}
@@ -23,7 +22,7 @@ func (op *OrderServicePP) ReturnOrder(ctx context.Context, clientID, orderID uin
 				if err != nil {
 					return err
 				}
-				op.cache.GoAddToCache(context.Background(), fmt.Sprintf("%s_%d", cache.PrefixOrderByID, order.ID), order)
+				op.cacheOrderByID.GoAddToCache(context.Background(), strconv.FormatUint(order.ID, 10), order)
 			}
 			if order.ClientID != clientID {
 				return ErrClientOrderNotFound
@@ -41,7 +40,7 @@ func (op *OrderServicePP) ReturnOrder(ctx context.Context, clientID, orderID uin
 
 			err = op.orderStorage.ReturnOrder(ctx, clientID, orderID)
 			if err != nil {
-				op.cache.GoDeleteFromCache(context.Background(), fmt.Sprintf("%s_%d", cache.PrefixOrderByID, order.ID))
+				op.cacheOrderByID.GoDeleteFromCache(context.Background(), strconv.FormatUint(order.ID, 10))
 			}
 			return err
 		})

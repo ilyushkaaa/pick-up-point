@@ -1,12 +1,10 @@
-//go:build integration
-// +build integration
-
 package pick_up_points
 
 import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -41,7 +39,7 @@ func setUp(t *testing.T, tableName string) *delivery.PPDelivery {
 		err = redisCache.Close()
 		assert.NoError(t, err)
 	})
-	imMemoryCache := cacheInMemory.New(logger)
+	imMemoryCache := cacheInMemory.New(logger, time.Minute)
 	srv := service.New(stPP, stOrder, tm, imMemoryCache)
 	del := delivery.New(redisCache, srv, logger)
 
