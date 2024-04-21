@@ -35,7 +35,7 @@ func Test_GetPickUpPointByID(t *testing.T) {
 		defer resp.Body.Close()
 
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-		assert.JSONEq(t, `{"result":"pick-up point ID must be positive integer"}`, string(body))
+		assert.JSONEq(t, `{"error":"pick-up point ID must be positive integer"}`, string(body))
 	})
 
 	t.Run("pick-up point with such id was not found", func(t *testing.T) {
@@ -54,7 +54,7 @@ func Test_GetPickUpPointByID(t *testing.T) {
 		defer resp.Body.Close()
 
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
-		assert.JSONEq(t, `{"result":"no pick-up points with such id"}`, string(body))
+		assert.JSONEq(t, `{"error":"no pick-up points with such id"}`, string(body))
 	})
 
 	t.Run("internal error", func(t *testing.T) {

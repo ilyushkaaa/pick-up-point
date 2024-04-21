@@ -15,7 +15,7 @@ func (d *PPDelivery) AddPickUpPoint(w http.ResponseWriter, r *http.Request) {
 	rBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		d.logger.Errorf("error in reading request body: %v", err)
-		response.MarshallAndWriteResponse(w, response.Result{Res: response.ErrInternal.Error()}, http.StatusInternalServerError, d.logger)
+		response.MarshallAndWriteResponse(w, response.Error{Err: response.ErrInternal.Error()}, http.StatusInternalServerError, d.logger)
 		return
 	}
 
@@ -32,18 +32,18 @@ func (d *PPDelivery) AddPickUpPoint(w http.ResponseWriter, r *http.Request) {
 		var jsonErr *json.SyntaxError
 		if errors.As(err, &jsonErr) {
 			d.logger.Errorf("invalid json: %s", string(rBody))
-			response.MarshallAndWriteResponse(w, response.Result{Res: response.ErrInvalidJSON.Error()}, http.StatusBadRequest, d.logger)
+			response.MarshallAndWriteResponse(w, response.Error{Err: response.ErrInvalidJSON.Error()}, http.StatusBadRequest, d.logger)
 			return
 		}
 		d.logger.Errorf("error in response body unmarshalling: %v", err)
-		response.MarshallAndWriteResponse(w, response.Result{Res: response.ErrInternal.Error()}, http.StatusInternalServerError, d.logger)
+		response.MarshallAndWriteResponse(w, response.Error{Err: response.ErrInternal.Error()}, http.StatusInternalServerError, d.logger)
 		return
 	}
 
 	err = pickUpPointDTO.Validate()
 	if err != nil {
 		d.logger.Errorf("validation errors in adding pick-up point: %v", err)
-		response.MarshallAndWriteResponse(w, response.Result{Res: err.Error()}, http.StatusBadRequest, d.logger)
+		response.MarshallAndWriteResponse(w, response.Error{Err: err.Error()}, http.StatusBadRequest, d.logger)
 		return
 	}
 
@@ -52,11 +52,11 @@ func (d *PPDelivery) AddPickUpPoint(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, service.ErrPickUpPointAlreadyExists) {
 			d.logger.Errorf("pick-up point with name %s already exists", pickUpPointDTO.Name)
-			response.MarshallAndWriteResponse(w, response.Result{Res: err.Error()}, http.StatusBadRequest, d.logger)
+			response.MarshallAndWriteResponse(w, response.Error{Err: err.Error()}, http.StatusBadRequest, d.logger)
 			return
 		}
 		d.logger.Errorf("internal server error in adding pick-up point: %v", err)
-		response.MarshallAndWriteResponse(w, response.Result{Res: response.ErrInternal.Error()}, http.StatusInternalServerError, d.logger)
+		response.MarshallAndWriteResponse(w, response.Error{Err: response.ErrInternal.Error()}, http.StatusInternalServerError, d.logger)
 		return
 	}
 

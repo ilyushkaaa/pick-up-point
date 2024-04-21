@@ -31,7 +31,7 @@ func TestGetPickUpPointByID(t *testing.T) {
 		defer resp.Body.Close()
 
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
-		assert.JSONEq(t, `{"result":"no pick-up points with such id"}`, string(body))
+		assert.JSONEq(t, `{"error":"no pick-up points with such id"}`, string(body))
 	})
 
 	t.Run("ok", func(t *testing.T) {
