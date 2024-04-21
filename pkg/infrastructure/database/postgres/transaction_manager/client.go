@@ -1,19 +1,14 @@
-package database
+package transaction_manager
 
 import (
 	"context"
 	"fmt"
-
-	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-func New(ctx context.Context) (*PGDatabase, error) {
+func New(ctx context.Context) (*TransactionManagerPGX, error) {
 	dsn := generateDsn()
-	pool, err := pgxpool.Connect(ctx, dsn)
-	if err != nil {
-		return nil, err
-	}
-	return NewDatabase(pool), nil
+	return NewTM(ctx, dsn)
+
 }
 
 func generateDsn() string {

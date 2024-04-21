@@ -1,6 +1,8 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type Order struct {
 	ID                    uint64
@@ -12,6 +14,7 @@ type Order struct {
 	OrderIssueDate        time.Time
 	IsIssued              bool
 	IsReturned            bool
+	PickUpPointID         uint64
 }
 
 func NewOrder(id, clientID uint64, weight, price float64, expireDate time.Time, packageType string) Order {

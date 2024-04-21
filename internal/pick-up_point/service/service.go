@@ -3,9 +3,13 @@ package service
 import (
 	"context"
 
+	"homework/internal/cache"
+	orderStorage "homework/internal/order/storage"
 	"homework/internal/pick-up_point/model"
-	"homework/internal/pick-up_point/storage"
+	ppStorage "homework/internal/pick-up_point/storage"
+	"homework/pkg/infrastructure/database/postgres/transaction_manager"
 )
+
 //go:generate mockgen -source ./service.go -destination=./mocks/service.go -package=mock_service
 type PickUpPointService interface {
 	AddPickUpPoint(ctx context.Context, point model.PickUpPoint) (*model.PickUpPoint, error)
@@ -16,11 +20,18 @@ type PickUpPointService interface {
 }
 
 type PPService struct {
-	storage storage.PPStorage
+	orderStorage       orderStorage.OrderStorage
+	ppStorage          ppStorage.PPStorage
+	transactionManager transaction_manager.TransactionManager
+	cache              cache.Cache
 }
 
-func New(storage storage.PPStorage) *PPService {
+func New(ppStorage ppStorage.PPStorage, orderStorage orderStorage.OrderStorage,
+	transactionManager transaction_manager.TransactionManager, cache cache.Cache) *PPService {
 	return &PPService{
-		storage: storage,
+		ppStorage:          ppStorage,
+		orderStorage:       orderStorage,
+		transactionManager: transactionManager,
+		cache:              cache,
 	}
 }

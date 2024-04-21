@@ -18,11 +18,9 @@ import (
 const tableName = "pick_up_points"
 
 func TestAddPickUpPoint(t *testing.T) {
-	del, db := initTest(t)
 
 	t.Run("error pick-up point with such name already exists", func(t *testing.T) {
-		setUp(t, db, tableName)
-		fillDataBase(t, db)
+		del := setUp(t, tableName)
 		request := httptest.NewRequest(http.MethodPost, "/pick-up-point", strings.NewReader(test_json.ValidPPAddRequest))
 		respWriter := httptest.NewRecorder()
 
@@ -34,12 +32,11 @@ func TestAddPickUpPoint(t *testing.T) {
 		defer resp.Body.Close()
 
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-		assert.JSONEq(t, `{"result":"pick-up point with such name already exists"}`, string(body))
+		assert.JSONEq(t, `{"error":"pick-up point with such name already exists"}`, string(body))
 	})
 
 	t.Run("ok", func(t *testing.T) {
-		setUp(t, db, tableName)
-		fillDataBase(t, db)
+		del := setUp(t, tableName)
 		request := httptest.NewRequest(http.MethodPost, "/pick-up-point", strings.NewReader(test_json.ValidPPAddRequestUnique))
 		respWriter := httptest.NewRecorder()
 

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (s *OrderStoragePG) IssueOrders(ctx context.Context, orderIDs map[uint64]struct{}) error {
+func (s *OrderStoragePG) IssueOrders(ctx context.Context, orderIDs []uint64) error {
 	issueTime := time.Now()
 	args := make([]interface{}, 0, len(orderIDs)+1)
 	args = append(args, issueTime)

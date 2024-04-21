@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"homework/pkg/database/postgres"
+	"homework/pkg/infrastructure/database/postgres"
 )
 
 type PPStorageDB struct {
@@ -9,5 +9,7 @@ type PPStorageDB struct {
 }
 
 func New(db database.Database) *PPStorageDB {
-	return &PPStorageDB{db: db}
+	return &PPStorageDB{
+		db: db,
+	}
 }

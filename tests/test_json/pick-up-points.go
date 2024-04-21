@@ -63,9 +63,9 @@ const (
 		},
 		"phone_number": "88005553535"}`
 
-	InternalError = `{"result":"internal error"}`
+	InternalError = `{"error":"internal error"}`
 
-	InvalidInput = `{"result":"invalid json passed"}`
+	InvalidInput = `{"error":"invalid json passed"}`
 
 	SuccessResult = `{"result":"success"}`
 

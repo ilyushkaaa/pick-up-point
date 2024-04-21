@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	producerMock "homework/pkg/kafka/producer/mocks"
+	producerMock "homework/pkg/infrastructure/kafka/producer/mocks"
 )
 
 type producerFixtures struct {

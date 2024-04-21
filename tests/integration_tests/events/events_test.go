@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"homework/pkg/kafka/consumer"
+	"homework/pkg/infrastructure/kafka/consumer"
 )
 
 const testTimeout = time.Second * 7

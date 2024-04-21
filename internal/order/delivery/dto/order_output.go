@@ -3,7 +3,7 @@ package dto
 import (
 	"time"
 
-	"homework/internal/order/model"
+	modelOrder "homework/internal/order/model"
 )
 
 type OrderOutput struct {
@@ -16,9 +16,10 @@ type OrderOutput struct {
 	OrderIssueDate        time.Time `json:"order_issue_date,omitempty"`
 	IsIssued              bool      `json:"is_issued"`
 	IsReturned            bool      `json:"is_returned"`
+	PickUpPointID         uint64    `json:"pick_up_point_id"`
 }
 
-func NewOrderOutput(o model.Order) OrderOutput {
+func NewOrderOutput(o modelOrder.Order) OrderOutput {
 	return OrderOutput{
 		ID:                    o.ID,
 		ClientID:              o.ClientID,
@@ -29,5 +30,6 @@ func NewOrderOutput(o model.Order) OrderOutput {
 		OrderIssueDate:        o.OrderIssueDate,
 		IsIssued:              o.IsIssued,
 		IsReturned:            o.IsReturned,
+		PickUpPointID:         o.PickUpPointID,
 	}
 }

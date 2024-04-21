@@ -1,6 +1,8 @@
 package storage
 
-import database "homework/pkg/database/postgres"
+import (
+	"homework/pkg/infrastructure/database/postgres"
+)
 
 type OrderStoragePG struct {
 	db database.Database

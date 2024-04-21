@@ -28,7 +28,7 @@ func TestSendMessage(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		t.Parallel()
 		s := setUp(t)
-		expected := SendMessageResult{
+		expected := &SendMessageResult{
 			Partition: 1,
 			Offset:    1,
 		}

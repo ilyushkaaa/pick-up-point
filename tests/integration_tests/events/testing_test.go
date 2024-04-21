@@ -19,9 +19,9 @@ import (
 	"go.uber.org/zap/zapcore"
 	eventsProducer "homework/internal/events/service/producer"
 	"homework/internal/middleware"
-	"homework/pkg/kafka"
-	"homework/pkg/kafka/consumer"
-	"homework/pkg/kafka/producer"
+	"homework/pkg/infrastructure/kafka"
+	"homework/pkg/infrastructure/kafka/consumer"
+	"homework/pkg/infrastructure/kafka/producer"
 )
 
 const eventsTopic = "test_events"

@@ -13,6 +13,7 @@ type OrderFromCourierInputData struct {
 	Price                 float64   `json:"price" valid:"required"`
 	StorageExpirationDate time.Time `json:"storage_expiration_date" valid:"required"`
 	PackageType           string    `json:"package_type"`
+	PickUpPointID         uint64    `json:"pick_up_point_id" valid:"required"`
 }
 
 func (o *OrderFromCourierInputData) Validate() error {

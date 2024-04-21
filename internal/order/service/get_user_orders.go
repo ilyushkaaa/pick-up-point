@@ -2,15 +2,25 @@ package service
 
 import (
 	"context"
+	"strconv"
 
 	filtermodel "homework/internal/filters/model"
 	ordermodel "homework/internal/order/model"
 )
 
 func (op *OrderServicePP) GetUserOrders(ctx context.Context, clientID uint64, filters filtermodel.Filters) ([]ordermodel.Order, error) {
-	orders, err := op.storage.GetUserOrders(ctx, clientID)
-	if err != nil {
-		return nil, err
+	gotFromCache := false
+	var orders []ordermodel.Order
+	data, err := op.cacheOrdersByClient.GetFromCache(ctx, strconv.FormatUint(clientID, 10))
+	if err == nil {
+		orders, gotFromCache = data.([]ordermodel.Order)
+	}
+	if !gotFromCache {
+		orders, err = op.orderStorage.GetUserOrders(ctx, clientID)
+		if err != nil {
+			return nil, err
+		}
+		op.cacheOrdersByClient.GoAddToCache(context.Background(), strconv.FormatUint(clientID, 10), orders)
 	}
 	if filters.Limit == 0 {
 		filters.Limit = len(orders)
@@ -31,5 +41,6 @@ func (op *OrderServicePP) GetUserOrders(ctx context.Context, clientID uint64, fi
 			break
 		}
 	}
+	op.cacheOrdersByClient.GoAddToCache(context.Background(), strconv.FormatUint(clientID, 10), ordersToReturn)
 	return ordersToReturn, nil
 }

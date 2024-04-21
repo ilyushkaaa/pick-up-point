@@ -16,6 +16,7 @@ type OrderDB struct {
 	StorageExpirationDate time.Time      `db:"storage_expiration_date"`
 	OrderIssueDate        sql.NullTime   `db:"order_issue_date"`
 	IsReturned            bool           `db:"is_returned"`
+	PickUpPointID         uint64         `db:"pick_up_point_id"`
 }
 
 func NewOrderDB(o model.Order) OrderDB {
@@ -32,5 +33,6 @@ func NewOrderDB(o model.Order) OrderDB {
 		StorageExpirationDate: o.StorageExpirationDate,
 		OrderIssueDate:        sql.NullTime{Valid: false},
 		PackageType:           packageType,
+		PickUpPointID:         o.PickUpPointID,
 	}
 }

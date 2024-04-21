@@ -6,7 +6,7 @@ import (
 
 	"github.com/Shopify/sarama"
 	eventsProducer "homework/internal/events/service/producer"
-	"homework/pkg/kafka/producer"
+	"homework/pkg/infrastructure/kafka/producer"
 )
 
 type ConfigKafka struct {

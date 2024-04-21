@@ -1,7 +1,9 @@
 package delivery
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -14,31 +16,42 @@ func (d *PPDelivery) GetPickUpPointByID(w http.ResponseWriter, r *http.Request) 
 	vars := mux.Vars(r)
 	ppID, ok := vars["PP_ID"]
 	if !ok {
-		response.WriteResponse(w, response.Result{Res: "pick-up point id was not passed"},
+		response.MarshallAndWriteResponse(w, response.Error{Err: "pick-up point id was not passed"},
 			http.StatusBadRequest, d.logger)
 		return
 	}
 	ppIDInt, err := strconv.ParseUint(ppID, 10, 64)
 	if err != nil {
 		d.logger.Errorf("error in pick-up point ID conversion: %s", err)
-		response.WriteResponse(w, response.Result{Res: "pick-up point ID must be positive integer"},
+		response.MarshallAndWriteResponse(w, response.Error{Err: "pick-up point ID must be positive integer"},
 			http.StatusBadRequest, d.logger)
 		return
+	}
+
+	data, err := d.cache.GetFromCache(r.Context(), fmt.Sprintf("pp_%s", ppID))
+	if err == nil {
+		body, ok := data.(string)
+		if ok {
+			response.WriteResponse(w, []byte(body), http.StatusOK, d.logger)
+			return
+		}
 	}
 
 	pickUpPoint, err := d.service.GetPickUpPointByID(r.Context(), ppIDInt)
 	if err != nil {
 		if errors.Is(err, storage.ErrPickUpPointNotFound) {
 			d.logger.Errorf("no pick-up points with id %d", ppIDInt)
-			response.WriteResponse(w, response.Result{Res: err.Error()},
+			response.MarshallAndWriteResponse(w, response.Error{Err: err.Error()},
 				http.StatusNotFound, d.logger)
 			return
 		}
 		d.logger.Errorf("internal server error in getting pick-up point: %v", err)
-		response.WriteResponse(w, response.Result{Res: response.ErrInternal.Error()}, http.StatusInternalServerError, d.logger)
+		response.MarshallAndWriteResponse(w, response.Error{Err: response.ErrInternal.Error()}, http.StatusInternalServerError, d.logger)
 		return
 	}
 
-	response.WriteResponse(w, pickUpPoint, http.StatusOK, d.logger)
+	d.cache.GoAddToCache(context.Background(), fmt.Sprintf("pp_%s", ppID), pickUpPoint)
+
+	response.MarshallAndWriteResponse(w, pickUpPoint, http.StatusOK, d.logger)
 
 }

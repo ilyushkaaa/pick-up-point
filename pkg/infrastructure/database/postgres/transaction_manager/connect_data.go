@@ -1,4 +1,4 @@
-package database
+package transaction_manager
 
 import (
 	"os"

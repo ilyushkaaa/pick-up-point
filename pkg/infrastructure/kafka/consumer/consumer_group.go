@@ -8,10 +8,10 @@ import (
 
 	"go.uber.org/zap"
 	"homework/internal/events/service/consumer"
-	"homework/pkg/kafka"
+	"homework/pkg/infrastructure/kafka"
 )
 
-const consumerStartTimeout = time.Second * 5
+const consumerStartTimeout = time.Second * 60
 
 func Run(ctx context.Context, cfg *kafka.ConfigKafka, logger *zap.SugaredLogger, waitChan chan struct{}) error {
 	client, err := newConsumerGroup(cfg)

@@ -33,7 +33,7 @@ func Test_UpdatePickUpPoint(t *testing.T) {
 		defer resp.Body.Close()
 
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-		assert.JSONEq(t, `{"result":"Address.house_num: non zero value required;ID: non zero value required"}`, string(body))
+		assert.JSONEq(t, `{"error":"Address.house_num: non zero value required;ID: non zero value required"}`, string(body))
 	})
 
 	t.Run("error pick-up point with such id was not found", func(t *testing.T) {
@@ -51,7 +51,7 @@ func Test_UpdatePickUpPoint(t *testing.T) {
 		defer resp.Body.Close()
 
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
-		assert.JSONEq(t, `{"result":"no pick-up points with such id"}`, string(body))
+		assert.JSONEq(t, `{"error":"no pick-up points with such id"}`, string(body))
 	})
 
 	t.Run("error pick-up point with such name already exists", func(t *testing.T) {
@@ -69,7 +69,7 @@ func Test_UpdatePickUpPoint(t *testing.T) {
 		defer resp.Body.Close()
 
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-		assert.JSONEq(t, `{"result":"pick-up point with such name already exists"}`, string(body))
+		assert.JSONEq(t, `{"error":"pick-up point with such name already exists"}`, string(body))
 	})
 
 	t.Run("internal error", func(t *testing.T) {

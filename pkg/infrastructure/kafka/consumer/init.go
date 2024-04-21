@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/Shopify/sarama"
-	"homework/pkg/kafka"
+	"homework/pkg/infrastructure/kafka"
 )
 
 func newConsumerGroup(cfg *kafka.ConfigKafka) (sarama.ConsumerGroup, error) {

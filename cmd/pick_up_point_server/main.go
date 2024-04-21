@@ -8,6 +8,9 @@ import (
 
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
+	"homework/internal/cache"
+	cacheInMemory "homework/internal/cache/in_memory"
+	cacheRedis "homework/internal/cache/redis"
 	"homework/internal/middleware"
 	deliveryOrder "homework/internal/order/delivery/http"
 	serviceOrder "homework/internal/order/service"
@@ -17,9 +20,10 @@ import (
 	servicePP "homework/internal/pick-up_point/service"
 	storagePP "homework/internal/pick-up_point/storage/database"
 	"homework/internal/routes"
-	database "homework/pkg/database/postgres"
-	"homework/pkg/kafka"
-	"homework/pkg/kafka/consumer"
+	"homework/pkg/infrastructure/database/postgres"
+	"homework/pkg/infrastructure/database/postgres/transaction_manager"
+	"homework/pkg/infrastructure/kafka"
+	"homework/pkg/infrastructure/kafka/consumer"
 )
 
 func main() {
@@ -40,7 +44,13 @@ func main() {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	db, err := database.New(ctx)
+
+	tm, err := transaction_manager.New(ctx)
+	if err != nil {
+		logger.Fatalf("error in creating transaction manager: %v", err)
+	}
+
+	db := database.New(tm)
 	if err != nil {
 		logger.Fatalf("error in database init: %v", err)
 	}
@@ -50,14 +60,32 @@ func main() {
 			logger.Errorf("error in closing db")
 		}
 	}()
-	stPP := storagePP.New(db)
-	svPP := servicePP.New(stPP)
-	dPP := deliveryPP.New(svPP, logger)
 
+	cacheConfig, err := cache.GetConfig()
+	if err != nil {
+		logger.Fatalf("error in getting cache config: %v", err)
+	}
+
+	redisCache := cacheRedis.New(logger, cacheConfig.RedisAddr, cacheConfig.RedisPassword, cacheConfig.RedisTTl)
+	defer func() {
+		err = redisCache.Close()
+		if err != nil {
+			logger.Errorf("error in closing redis cache: %v", err)
+		}
+	}()
+
+	orderByIDCache := cacheInMemory.New(logger, cacheConfig.OrderByIDTTl, cacheConfig.Capacity)
+	ppByIDCache := cacheInMemory.New(logger, cacheConfig.PPByIDTTl, cacheConfig.Capacity)
+	ordersByClientCache := cacheInMemory.New(logger, cacheConfig.OrdersByClientTTl, cacheConfig.Capacity)
+
+	stPP := storagePP.New(db)
 	stOrder := storageOrder.New(db)
 
+	svPP := servicePP.New(stPP, stOrder, tm, ppByIDCache)
+	dPP := deliveryPP.New(redisCache, svPP, logger)
+
 	packageTypes := packages.Init()
-	svOrder := serviceOrder.New(stOrder, packageTypes)
+	svOrder := serviceOrder.New(stOrder, stPP, packageTypes, tm, orderByIDCache, ordersByClientCache, ppByIDCache)
 	dOrder := deliveryOrder.New(svOrder, logger)
 
 	cfg, err := kafka.NewConfig()
