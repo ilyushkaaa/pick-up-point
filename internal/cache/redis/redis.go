@@ -3,6 +3,7 @@ package cache
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"go.uber.org/zap"
 	"homework/pkg/infrastructure/redis"
@@ -13,8 +14,8 @@ type RedisCache struct {
 	logger *zap.SugaredLogger
 }
 
-func New(logger *zap.SugaredLogger) *RedisCache {
-	rd := redis.New()
+func New(logger *zap.SugaredLogger, addr, password string, ttl time.Duration) *RedisCache {
+	rd := redis.New(addr, password, ttl)
 	return &RedisCache{
 		redis:  rd,
 		logger: logger,

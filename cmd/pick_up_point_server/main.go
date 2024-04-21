@@ -66,7 +66,7 @@ func main() {
 		logger.Fatalf("error in getting cache config: %v", err)
 	}
 
-	redisCache := cacheRedis.New(logger)
+	redisCache := cacheRedis.New(logger, cacheConfig.RedisAddr, cacheConfig.RedisPassword, cacheConfig.RedisTTl)
 	defer func() {
 		err = redisCache.Close()
 		if err != nil {

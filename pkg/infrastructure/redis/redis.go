@@ -2,7 +2,6 @@ package redis
 
 import (
 	"context"
-	"os"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -17,16 +16,14 @@ type Redis interface {
 
 type AppRedis struct {
 	redisClient *redis.Client
-	expireTime  time.Duration
+	ttl         time.Duration
 }
 
-func New() *AppRedis {
-	host := os.Getenv("REDIS_HOST")
-	port := os.Getenv("REDIS_PORT")
-	client := Connect(host, port)
+func New(addr, password string, ttl time.Duration) *AppRedis {
+	client := Connect(addr, password)
 	return &AppRedis{
 		redisClient: client,
-		expireTime:  time.Minute * 10,
+		ttl:         ttl,
 	}
 }
 
@@ -35,7 +32,7 @@ func (r *AppRedis) Get(ctx context.Context, key string) (string, error) {
 }
 
 func (r *AppRedis) Set(ctx context.Context, key string, value interface{}) error {
-	return r.redisClient.Set(ctx, key, value, r.expireTime).Err()
+	return r.redisClient.Set(ctx, key, value, r.ttl).Err()
 }
 
 func (r *AppRedis) Del(ctx context.Context, keys ...string) error {

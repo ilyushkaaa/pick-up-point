@@ -1,8 +1,13 @@
+//go:build integration
+// +build integration
+
 package pick_up_points
 
 import (
 	"context"
 	"fmt"
+	"os"
+	"strconv"
 	"testing"
 	"time"
 
@@ -34,7 +39,10 @@ func setUp(t *testing.T, tableName string) *delivery.PPDelivery {
 	stPP := storagePP.New(db)
 	stOrder := storageOrder.New(db)
 	logger := zap.NewNop().Sugar()
-	redisCache := cacheRedis.New(logger)
+	ttl, err := strconv.ParseUint(os.Getenv("CACHE_REDIS_TTL"), 10, 64)
+	require.NoError(t, err)
+	redisCache := cacheRedis.New(logger, fmt.Sprintf("%s:%s", os.Getenv("REDIS_HOST"),
+		os.Getenv("REDIS_PORT")), os.Getenv("REDIS_PASSWORD"), time.Duration(ttl))
 	t.Cleanup(func() {
 		err = redisCache.Close()
 		assert.NoError(t, err)
