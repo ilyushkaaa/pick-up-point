@@ -22,6 +22,7 @@ type Config struct {
 	RedisTTl          time.Duration
 	RedisAddr         string
 	RedisPassword     string
+	Capacity          int
 }
 
 func GetConfig() (*Config, error) {
@@ -41,6 +42,7 @@ func GetConfig() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+	capacity, err := strconv.Atoi(os.Getenv("CACHE_CAPACITY"))
 	return &Config{
 		OrderByIDTTl:      time.Duration(OrderByIDTTl),
 		PPByIDTTl:         time.Duration(PPByIDTTl),
@@ -48,5 +50,6 @@ func GetConfig() (*Config, error) {
 		RedisTTl:          time.Duration(RedisTTl),
 		RedisAddr:         fmt.Sprintf("%s:%s", os.Getenv("REDIS_HOST"), os.Getenv("REDIS_PORT")),
 		RedisPassword:     os.Getenv("REDIS_PASSWORD"),
+		Capacity:          capacity,
 	}, nil
 }

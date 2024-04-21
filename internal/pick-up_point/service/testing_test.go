@@ -12,6 +12,8 @@ import (
 	mockStoragePP "homework/internal/pick-up_point/storage/mocks"
 )
 
+const cacheCapacity = 1000
+
 type pickUpPointServiceFixtures struct {
 	ctrl        *gomock.Controller
 	srv         *PPService
@@ -24,7 +26,7 @@ func setUp(t *testing.T) pickUpPointServiceFixtures {
 	mockOrderStorage := mockStorageOrder.NewMockOrderStorage(ctrl)
 	tm := &fakeTransactionManager{}
 	logger := zap.NewNop().Sugar()
-	imMemoryCache := cacheInMemory.New(logger, time.Minute)
+	imMemoryCache := cacheInMemory.New(logger, time.Minute, cacheCapacity)
 	srv := New(mockPPStorage, mockOrderStorage, tm, imMemoryCache)
 
 	return pickUpPointServiceFixtures{

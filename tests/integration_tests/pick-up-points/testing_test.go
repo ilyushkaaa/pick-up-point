@@ -26,6 +26,8 @@ import (
 	"homework/tests/states"
 )
 
+const capacity = 1000
+
 func setUp(t *testing.T, tableName string) *delivery.PPDelivery {
 	t.Helper()
 	ctx := context.Background()
@@ -47,7 +49,7 @@ func setUp(t *testing.T, tableName string) *delivery.PPDelivery {
 		err = redisCache.Close()
 		assert.NoError(t, err)
 	})
-	imMemoryCache := cacheInMemory.New(logger, time.Minute)
+	imMemoryCache := cacheInMemory.New(logger, time.Minute, capacity)
 	srv := service.New(stPP, stOrder, tm, imMemoryCache)
 	del := delivery.New(redisCache, srv, logger)
 

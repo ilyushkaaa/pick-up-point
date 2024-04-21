@@ -74,9 +74,9 @@ func main() {
 		}
 	}()
 
-	orderByIDCache := cacheInMemory.New(logger, cacheConfig.OrderByIDTTl)
-	ppByIDCache := cacheInMemory.New(logger, cacheConfig.PPByIDTTl)
-	ordersByClientCache := cacheInMemory.New(logger, cacheConfig.OrdersByClientTTl)
+	orderByIDCache := cacheInMemory.New(logger, cacheConfig.OrderByIDTTl, cacheConfig.Capacity)
+	ppByIDCache := cacheInMemory.New(logger, cacheConfig.PPByIDTTl, cacheConfig.Capacity)
+	ordersByClientCache := cacheInMemory.New(logger, cacheConfig.OrdersByClientTTl, cacheConfig.Capacity)
 
 	stPP := storagePP.New(db)
 	stOrder := storageOrder.New(db)
