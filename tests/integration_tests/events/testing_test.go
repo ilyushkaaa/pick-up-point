@@ -1,6 +1,3 @@
-//go:build integration
-// +build integration
-
 package events
 
 import (
@@ -18,7 +15,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	eventsProducer "homework/internal/events/service/producer"
-	"homework/internal/middleware"
+	"homework/internal/interceptor"
 	"homework/pkg/infrastructure/kafka"
 	"homework/pkg/infrastructure/kafka/consumer"
 	"homework/pkg/infrastructure/kafka/producer"
@@ -27,7 +24,7 @@ import (
 const eventsTopic = "test_events"
 
 type TestEventsFixtures struct {
-	mw           *middleware.Middleware
+	i            *interceptor.Interceptor
 	buf          *bytes.Buffer
 	syncProducer *producer.SyncProducer
 	brokers      []string
@@ -67,7 +64,7 @@ func setUpAndConsume(t *testing.T) TestEventsFixtures {
 	})
 
 	ep := eventsProducer.New(syncProducer, eventsTopic)
-	mw := middleware.New(zapL, ep)
+	i := interceptor.New(zapL, ep)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	waitChan := make(chan struct{})
@@ -85,7 +82,7 @@ func setUpAndConsume(t *testing.T) TestEventsFixtures {
 	}()
 
 	testFixtures := TestEventsFixtures{
-		mw:           mw,
+		i:            i,
 		buf:          &buf,
 		syncProducer: syncProducer,
 		brokers:      brokers,
@@ -108,4 +105,14 @@ func (s TestEventsFixtures) GoRunConsume(ctx context.Context, t *testing.T, wait
 		}, s.logger, waitChan)
 		assert.NoError(t, err)
 	}()
+}
+
+type address string
+
+func (a address) Network() string {
+	return ""
+}
+
+func (a address) String() string {
+	return string(a)
 }

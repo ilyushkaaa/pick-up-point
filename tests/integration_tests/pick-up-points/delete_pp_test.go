@@ -1,3 +1,6 @@
+//go:build integration
+// +build integration
+
 package pick_up_points
 
 import (

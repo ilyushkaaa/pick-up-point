@@ -107,17 +107,17 @@ https://127.0.0.1:9010/api/v1/orders/returns/2 -H 'Authorization: Basic YWRtaW46
 ### Получить список заказов клиента
 ```bash
 curl -k -X GET \
-https://127.0.0.1:9010/api/v1/clients/{CLIENT_ID}/orders?num_of_last_orders=1 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
+https://127.0.0.1:9010/api/v1/clients/1/orders?num_of_last_orders=1 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
 ```
 
 ### Отдать заказ клиенту
 ```bash
-curl -k -X PUT \
+curl -k -X POST \
 https://127.0.0.1:9010/api/v1/orders/issue \
 -H 'Content-Type: application/json' \
 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx' \
 -d '{
-    "ordersIds": [12346, 12347]
+    "order_ids": [12346, 12347]
 }'
 ```
 
