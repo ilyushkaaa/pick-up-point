@@ -1,67 +1,41 @@
-//go:build integration
-// +build integration
-
 package pick_up_points
 
 import (
-	"io"
-	"net/http"
-	"net/http/httptest"
-	"strings"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"homework/tests/test_json"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"homework/tests/test_pb"
 )
 
 func TestUpdatePickUpPoint(t *testing.T) {
 
 	t.Run("error pick-up point with such id was not found", func(t *testing.T) {
 		del := setUp(t, tableName)
-		request := httptest.NewRequest(http.MethodPut, "/pick-up-point", strings.NewReader(test_json.ValidPPUpdateRequestNotExists))
-		respWriter := httptest.NewRecorder()
 
-		del.UpdatePickUpPoint(respWriter, request)
-		resp := respWriter.Result()
-		body, err := io.ReadAll(resp.Body)
+		result, err := del.Update(context.Background(), &test_pb.UpdatePPNotExist)
 
-		require.NoError(t, err)
-		defer resp.Body.Close()
-
-		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
-		assert.JSONEq(t, `{"error":"no pick-up points with such id"}`, string(body))
+		assert.ErrorIs(t, err, status.Error(codes.NotFound, "no pick-up points with such id"))
+		assert.Nil(t, result)
 	})
 
 	t.Run("error pick-up point with such name already exists", func(t *testing.T) {
 		del := setUp(t, tableName)
-		request := httptest.NewRequest(http.MethodPut, "/pick-up-point", strings.NewReader(test_json.ValidPPUpdateRequestNameAlreadyExists))
-		respWriter := httptest.NewRecorder()
 
-		del.UpdatePickUpPoint(respWriter, request)
-		resp := respWriter.Result()
-		body, err := io.ReadAll(resp.Body)
+		result, err := del.Update(context.Background(), &test_pb.UpdatePPNameAlreadyExists)
 
-		require.NoError(t, err)
-		defer resp.Body.Close()
-
-		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-		assert.JSONEq(t, `{"error":"pick-up point with such name already exists"}`, string(body))
+		assert.ErrorIs(t, err, status.Error(codes.InvalidArgument, "pick-up point with such name already exists"))
+		assert.Nil(t, result)
 	})
 
 	t.Run("ok", func(t *testing.T) {
 		del := setUp(t, tableName)
-		request := httptest.NewRequest(http.MethodPut, "/pick-up-point", strings.NewReader(test_json.ValidPPUpdateRequest))
-		respWriter := httptest.NewRecorder()
 
-		del.UpdatePickUpPoint(respWriter, request)
-		resp := respWriter.Result()
-		body, err := io.ReadAll(resp.Body)
+		result, err := del.Update(context.Background(), &test_pb.UpdatePPOk)
 
-		require.NoError(t, err)
-		defer resp.Body.Close()
-
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		assert.JSONEq(t, test_json.ValidPPResponse, string(body))
+		assert.NoError(t, err)
+		assert.Equal(t, result, &test_pb.UpdatePPOk)
 	})
 }

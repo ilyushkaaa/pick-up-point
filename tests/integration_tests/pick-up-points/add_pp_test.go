@@ -1,18 +1,13 @@
-//go:build integration
-// +build integration
-
 package pick_up_points
 
 import (
-	"io"
-	"net/http"
-	"net/http/httptest"
-	"strings"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"homework/tests/test_json"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"homework/tests/test_pb"
 )
 
 const tableName = "pick_up_points"
@@ -21,33 +16,19 @@ func TestAddPickUpPoint(t *testing.T) {
 
 	t.Run("error pick-up point with such name already exists", func(t *testing.T) {
 		del := setUp(t, tableName)
-		request := httptest.NewRequest(http.MethodPost, "/pick-up-point", strings.NewReader(test_json.ValidPPAddRequest))
-		respWriter := httptest.NewRecorder()
 
-		del.AddPickUpPoint(respWriter, request)
-		resp := respWriter.Result()
-		body, err := io.ReadAll(resp.Body)
+		result, err := del.Add(context.Background(), &test_pb.ValidPPAddRequest)
 
-		require.NoError(t, err)
-		defer resp.Body.Close()
-
-		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-		assert.JSONEq(t, `{"error":"pick-up point with such name already exists"}`, string(body))
+		assert.ErrorIs(t, err, status.Error(codes.InvalidArgument, "pick-up point with such name already exists"))
+		assert.Nil(t, result)
 	})
 
 	t.Run("ok", func(t *testing.T) {
 		del := setUp(t, tableName)
-		request := httptest.NewRequest(http.MethodPost, "/pick-up-point", strings.NewReader(test_json.ValidPPAddRequestUnique))
-		respWriter := httptest.NewRecorder()
 
-		del.AddPickUpPoint(respWriter, request)
-		resp := respWriter.Result()
-		body, err := io.ReadAll(resp.Body)
+		result, err := del.Add(context.Background(), &test_pb.ValidPPAddRequestUnique)
 
 		assert.NoError(t, err)
-		defer resp.Body.Close()
-
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		assert.JSONEq(t, test_json.ValidPPResponseAdd, string(body))
+		assert.Equal(t, result, &test_pb.AddedPP)
 	})
 }

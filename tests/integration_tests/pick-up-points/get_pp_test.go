@@ -1,34 +1,40 @@
-//go:build integration
-// +build integration
-
 package pick_up_points
 
 import (
-	"io"
-	"net/http"
-	"net/http/httptest"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"homework/tests/test_json"
+	"google.golang.org/grpc"
+	pb "homework/internal/pb/pick-up_point"
+	"homework/tests/test_pb"
 )
 
 func TestGetPickUpPoints(t *testing.T) {
 
 	t.Run("ok", func(t *testing.T) {
 		del := setUp(t, tableName)
-		request := httptest.NewRequest(http.MethodGet, "/pick-up-points", nil)
-		respWriter := httptest.NewRecorder()
+		fakeStream := &fakeServerStream{
+			pickUpPoints: make([]*pb.PickUpPoint, 0),
+		}
 
-		del.GetPickUpPoints(respWriter, request)
-		resp := respWriter.Result()
-		body, err := io.ReadAll(resp.Body)
+		err := del.GetAll(&pb.GetAllRequest{}, fakeStream)
 
-		require.NoError(t, err)
-		defer resp.Body.Close()
-
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		assert.JSONEq(t, test_json.ValidPPSliceResponse, string(body))
+		assert.NoError(t, err)
+		assert.Equal(t, fakeStream.pickUpPoints, test_pb.GetAllPP)
 	})
+}
+
+type fakeServerStream struct {
+	pickUpPoints []*pb.PickUpPoint
+	grpc.ServerStream
+}
+
+func (f *fakeServerStream) Send(data *pb.PickUpPoint) error {
+	f.pickUpPoints = append(f.pickUpPoints, data)
+	return nil
+}
+
+func (f *fakeServerStream) Context() context.Context {
+	return context.Background()
 }

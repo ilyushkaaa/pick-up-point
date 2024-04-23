@@ -1,6 +1,3 @@
-//go:build integration
-// +build integration
-
 package pick_up_points
 
 import (
@@ -17,7 +14,7 @@ import (
 	cacheInMemory "homework/internal/cache/in_memory"
 	cacheRedis "homework/internal/cache/redis"
 	storageOrder "homework/internal/order/storage/database"
-	delivery "homework/internal/pick-up_point/delivery/http"
+	delivery "homework/internal/pick-up_point/delivery/grpc"
 	"homework/internal/pick-up_point/service"
 	storagePP "homework/internal/pick-up_point/storage/database"
 	"homework/pkg/infrastructure/database/postgres"

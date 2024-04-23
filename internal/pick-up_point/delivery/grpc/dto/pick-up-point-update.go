@@ -8,6 +8,7 @@ import (
 
 func GetPickUpPointFromPBUpdate(pp *pb.PickUpPointUpdate) model.PickUpPoint {
 	return model.PickUpPoint{
+		ID:   pp.Id,
 		Name: pp.Name,
 		Address: address.PPAddress{
 			Region:   pp.Address.Region,
