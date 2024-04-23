@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"homework/internal/command_pp/response"
-	"homework/internal/pick-up_point/delivery/dto"
+	"homework/internal/pick-up_point/delivery/cli/dto"
 )
 
 func (ps *PPDelivery) AddPickUpPoint(ctx context.Context, params []string) response.Response {

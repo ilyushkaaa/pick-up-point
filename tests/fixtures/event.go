@@ -28,11 +28,6 @@ func (b *EventBuilder) RemoteAddr(v string) *EventBuilder {
 	return b
 }
 
-func (b *EventBuilder) URL(v string) *EventBuilder {
-	b.instance.URL = v
-	return b
-}
-
 func (b *EventBuilder) Pointer() *model.Event {
 	return b.instance
 }
@@ -42,6 +37,5 @@ func (b *EventBuilder) Value() model.Event {
 }
 
 func (b *EventBuilder) Valid() *EventBuilder {
-	return Event().RequestTime(states.EventTime).RequestMethod(states.EventMethodGet).RemoteAddr(states.EventAddrLocal).
-		URL(states.EventURLGetPP)
+	return Event().RequestTime(states.EventTime).RequestMethod(states.EventMethodGet).RemoteAddr(states.EventAddrLocal)
 }
