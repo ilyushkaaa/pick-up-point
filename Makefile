@@ -1,3 +1,4 @@
+include proto.mk
 include .env
 export
 
@@ -36,4 +37,3 @@ integration_tests_run:
 .PHONY: unit_tests_run
 unit_tests_run:
 	go test ./internal...
-
