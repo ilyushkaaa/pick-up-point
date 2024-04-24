@@ -8,7 +8,7 @@ import (
 	"homework/internal/events/model"
 )
 
-func (i *Interceptor) AccessLog(ctx context.Context, info *grpc.UnaryServerInfo) {
+func (i *Interceptor) AccessLog(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	p, _ := peer.FromContext(ctx)
 	newEvent := model.NewEvent(p.Addr.String(), info.FullMethod)
 	sendResult, err := i.producer.SendMessage(newEvent)
@@ -17,4 +17,5 @@ func (i *Interceptor) AccessLog(ctx context.Context, info *grpc.UnaryServerInfo)
 	} else {
 		i.logger.Infof("message was sent to kafka: partition: %d, offset: %d", sendResult.Partition, sendResult.Offset)
 	}
+	return handler(ctx, req)
 }

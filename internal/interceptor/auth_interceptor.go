@@ -14,7 +14,7 @@ import (
 	"homework/pkg/response"
 )
 
-func (i *Interceptor) Auth(ctx context.Context, req interface{}, handler grpc.UnaryHandler) (interface{}, error) {
+func (i *Interceptor) Auth(ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		i.logger.Error("failed to get metadata")

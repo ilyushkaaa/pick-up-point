@@ -40,6 +40,7 @@ func (op *OrderServicePP) DeleteOrder(ctx context.Context, orderID uint64) error
 			err = op.orderStorage.DeleteOrder(ctx, orderID)
 			if err == nil {
 				op.cacheOrderByID.GoDeleteFromCache(context.Background(), strconv.FormatUint(order.ID, 10))
+				op.metrics.DeletedOOrders.Inc()
 			}
 			return err
 		})

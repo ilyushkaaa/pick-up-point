@@ -50,7 +50,13 @@ func (op *OrderServicePP) AddOrder(ctx context.Context, order model.Order) error
 			if time.Now().After(order.StorageExpirationDate) {
 				return ErrShelfTimeExpired
 			}
-			return op.orderStorage.AddOrder(ctx, order)
+			err = op.orderStorage.AddOrder(ctx, order)
+			if err == nil {
+				op.metrics.DeliveredOrdersCount.Inc()
+				op.metrics.OrdersCountByPickUpPoints.WithLabelValues(strconv.FormatUint(order.PickUpPointID, 10)).Inc()
+				op.metrics.OrdersByClientCount.WithLabelValues(strconv.FormatUint(order.ClientID, 10)).Inc()
+			}
+			return err
 
 		})
 }

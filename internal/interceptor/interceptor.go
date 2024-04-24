@@ -1,16 +1,15 @@
 package interceptor
 
 import (
-	"context"
-
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
 	"homework/internal/events/service/producer"
+	"homework/pkg/infrastructure/prometheus"
 )
 
 type Interceptor struct {
 	logger   *zap.SugaredLogger
 	producer *producer.EventsProducer
+	metrics  *prometheus.ServerMetrics
 }
 
 func New(logger *zap.SugaredLogger, producer *producer.EventsProducer) *Interceptor {
@@ -20,7 +19,6 @@ func New(logger *zap.SugaredLogger, producer *producer.EventsProducer) *Intercep
 	}
 }
 
-func (i *Interceptor) CallInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	i.AccessLog(ctx, info)
-	return i.Auth(ctx, req, handler)
+func (i *Interceptor) SetMetrics(metrics *prometheus.ServerMetrics) {
+	i.metrics = metrics
 }

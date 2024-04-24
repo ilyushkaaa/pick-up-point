@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -29,10 +29,10 @@ import (
 	"homework/pkg/infrastructure/database/postgres/transaction_manager"
 	"homework/pkg/infrastructure/kafka"
 	"homework/pkg/infrastructure/kafka/consumer"
+	"homework/pkg/infrastructure/prometheus"
 )
 
 func main() {
-
 	zapLogger, err := zap.NewProduction()
 	if err != nil {
 		log.Fatalf("error in logger initialization: %v", err)
@@ -44,10 +44,6 @@ func main() {
 			log.Printf("error in logger sync: %v", err)
 		}
 	}()
-	err = godotenv.Load(".env")
-	if err != nil {
-		logger.Fatalf("error in getting env: %s", err)
-	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -127,6 +123,15 @@ func goRunGRPCServer(ctx context.Context, infra infrastructure, logger *zap.Suga
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	i := interceptor.New(logger, infra.cfg.Producer)
+	grpcMetrics := grpc_prometheus.NewServerMetrics()
+
+	s := grpc.NewServer(grpc.ChainUnaryInterceptor(grpcMetrics.UnaryServerInterceptor(), i.AccessLog, i.Metric, i.Auth))
+
+	bm, sm := prometheus.Init(s, logger, grpcMetrics)
+
+	i.SetMetrics(sm)
+
 	orderByIDCache := cacheInMemory.New(logger, infra.cacheConfig.OrderByIDTTl, infra.cacheConfig.Capacity)
 	ppByIDCache := cacheInMemory.New(logger, infra.cacheConfig.PPByIDTTl, infra.cacheConfig.Capacity)
 	ordersByClientCache := cacheInMemory.New(logger, infra.cacheConfig.OrdersByClientTTl, infra.cacheConfig.Capacity)
@@ -137,7 +142,7 @@ func goRunGRPCServer(ctx context.Context, infra infrastructure, logger *zap.Suga
 	svPP := servicePP.New(stPP, stOrder, infra.tm, ppByIDCache)
 
 	packageTypes := packages.Init()
-	svOrder := serviceOrder.New(stOrder, stPP, packageTypes, infra.tm, orderByIDCache, ordersByClientCache, ppByIDCache)
+	svOrder := serviceOrder.New(stOrder, stPP, packageTypes, infra.tm, orderByIDCache, ordersByClientCache, ppByIDCache, bm)
 
 	waitChan := make(chan struct{})
 
@@ -146,10 +151,6 @@ func goRunGRPCServer(ctx context.Context, infra infrastructure, logger *zap.Suga
 	if err != nil {
 		logger.Fatal(err)
 	}
-
-	i := interceptor.New(logger, infra.cfg.Producer)
-
-	s := grpc.NewServer(grpc.UnaryInterceptor(i.CallInterceptor))
 
 	pbOrder.RegisterOrdersServer(s, deliveryOrder.New(svOrder, logger))
 	pbPP.RegisterPickUpPointsServer(s, deliveryPP.New(infra.redisCache, svPP, logger))
