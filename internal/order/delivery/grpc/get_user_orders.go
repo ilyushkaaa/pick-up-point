@@ -10,11 +10,13 @@ import (
 )
 
 func (o OrderDelivery) GetUserOrders(request *pb.GetUserOrdersRequest, server pb.Orders_GetUserOrdersServer) error {
+	ctx, span := o.tracer.Start(server.Context(), "GetUserOrders")
+	defer span.End()
 	filters := model.Filters{
 		Limit:  int(request.GetLimit()),
 		PPOnly: request.PpOnly,
 	}
-	orders, err := o.service.GetUserOrders(server.Context(), request.GetClientId(), filters)
+	orders, err := o.service.GetUserOrders(ctx, request.GetClientId(), filters)
 	if err != nil {
 		o.logger.Errorf("internal server error in getting user orders: %v", err)
 		return status.Errorf(codes.Internal, response.ErrInternal.Error())

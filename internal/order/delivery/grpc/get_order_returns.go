@@ -12,7 +12,9 @@ import (
 )
 
 func (o OrderDelivery) GetOrderReturns(request *pb.GetOrdersReturnsRequest, server pb.Orders_GetOrderReturnsServer) error {
-	orders, err := o.service.GetOrderReturns(server.Context(), request.GetOrdersPerPage(), request.GetPageNum())
+	ctx, span := o.tracer.Start(server.Context(), "GetOrderReturns")
+	defer span.End()
+	orders, err := o.service.GetOrderReturns(ctx, request.GetOrdersPerPage(), request.GetPageNum())
 	if err != nil {
 		if errors.Is(err, service.ErrNoOrdersOnThisPage) {
 			o.logger.Errorf("no orders on page %d when %d orders per page", request.GetPageNum(), request.GetOrdersPerPage())

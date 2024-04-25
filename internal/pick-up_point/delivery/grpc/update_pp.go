@@ -13,6 +13,8 @@ import (
 )
 
 func (P PPDelivery) Update(ctx context.Context, req *pb.PickUpPointUpdate) (*pb.PickUpPointUpdate, error) {
+	ctx, span := P.tracer.Start(ctx, "UpdatePickUpPoint")
+	defer span.End()
 	err := req.ValidateAll()
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, err.Error())

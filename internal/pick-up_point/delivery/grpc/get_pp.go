@@ -9,7 +9,9 @@ import (
 )
 
 func (P PPDelivery) GetAll(_ *pb.GetAllRequest, req pb.PickUpPoints_GetAllServer) error {
-	pickUpPoints, err := P.service.GetPickUpPoints(req.Context())
+	ctx, span := P.tracer.Start(req.Context(), "GetAllPickUpPoints")
+	defer span.End()
+	pickUpPoints, err := P.service.GetPickUpPoints(ctx)
 	if err != nil {
 		P.logger.Errorf("internal server error in getting pick-up points: %v", err)
 		return status.Errorf(codes.Internal, response.ErrInternal.Error())

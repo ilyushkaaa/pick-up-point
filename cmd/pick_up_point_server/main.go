@@ -131,12 +131,12 @@ func main() {
 }
 
 func goRunGRPCServer(ctx context.Context, infra infrastructure, logger *zap.SugaredLogger) {
-	lis, err := net.Listen("tcp", ":9011")
+	lis, err := net.Listen("tcp", os.Getenv("GRPC_SERVER_ADDRESS"))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	tracer := otel.Tracer("test-tracer")
+	tracer := otel.Tracer(os.Getenv("TRACER_NAME"))
 
 	i := interceptor.New(logger, infra.cfg.Producer)
 	grpcMetrics := grpc_prometheus.NewServerMetrics()
@@ -175,7 +175,7 @@ func goRunGRPCServer(ctx context.Context, infra infrastructure, logger *zap.Suga
 
 	logger.Infow("starting grpc server",
 		"type", "START",
-		"addr", ":9011",
+		"addr", os.Getenv("GRPC_SERVER_ADDRESS"),
 	)
 	go func() {
 		logger.Fatal(s.Serve(lis))

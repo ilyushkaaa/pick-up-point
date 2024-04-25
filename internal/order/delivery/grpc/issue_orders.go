@@ -12,6 +12,8 @@ import (
 )
 
 func (o OrderDelivery) IssueOrders(ctx context.Context, issue *pb.OrdersToIssue) (*pb.ResultResponse, error) {
+	ctx, span := o.tracer.Start(ctx, "IssueOrders")
+	defer span.End()
 	if len(issue.OrderIds) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "at least 1 order required")
 	}

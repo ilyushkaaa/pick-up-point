@@ -14,6 +14,8 @@ import (
 )
 
 func (o OrderDelivery) Add(ctx context.Context, data *pb.OrderFromCourierInputData) (*pb.OrderFromCourierInputData, error) {
+	ctx, span := o.tracer.Start(ctx, "AddOrder")
+	defer span.End()
 	err := o.service.AddOrder(ctx, dto.GetOrderFromPB(data))
 	if err != nil {
 		if errors.Is(err, service.ErrOrderAlreadyInPickUpPoint) {

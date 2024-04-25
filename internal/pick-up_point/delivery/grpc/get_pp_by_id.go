@@ -13,6 +13,8 @@ import (
 )
 
 func (P PPDelivery) GetByID(ctx context.Context, req *pb.GetByIDRequest) (*pb.PickUpPoint, error) {
+	ctx, span := P.tracer.Start(ctx, "GetPickUpPointByID")
+	defer span.End()
 	pp, err := P.service.GetPickUpPointByID(ctx, req.GetId())
 	if err != nil {
 		if errors.Is(err, storage.ErrPickUpPointNotFound) {

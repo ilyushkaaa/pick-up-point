@@ -13,6 +13,8 @@ import (
 )
 
 func (o OrderDelivery) Delete(ctx context.Context, request *pb.DeleteOrderRequest) (*pb.ResultResponse, error) {
+	ctx, span := o.tracer.Start(ctx, "DeleteOrder")
+	defer span.End()
 	err := o.service.DeleteOrder(ctx, request.GetId())
 	if err != nil {
 		if errors.Is(err, storage.ErrOrderNotFound) {

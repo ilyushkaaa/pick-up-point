@@ -2,6 +2,7 @@ package prometheus
 
 import (
 	"net/http"
+	"os"
 
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/prometheus/client_golang/prometheus"
@@ -23,7 +24,7 @@ func Init(s *grpc.Server, logger *zap.SugaredLogger, grpcMetrics *grpc_prometheu
 		sm.HitsByResponseCodesAndRequestTime)
 
 	go func() {
-		logger.Fatal(http.ListenAndServe(":9012", promhttp.HandlerFor(reg, promhttp.HandlerOpts{EnableOpenMetrics: true})))
+		logger.Fatal(http.ListenAndServe(os.Getenv("KAFKA_METRICS_ADDR"), promhttp.HandlerFor(reg, promhttp.HandlerOpts{EnableOpenMetrics: true})))
 	}()
 
 	return bm, sm

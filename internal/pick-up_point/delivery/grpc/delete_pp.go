@@ -12,6 +12,8 @@ import (
 )
 
 func (P PPDelivery) Delete(ctx context.Context, req *pb.DeletePPRequest) (*pb.DeleteResponse, error) {
+	ctx, span := P.tracer.Start(ctx, "DeletePickUpPoint")
+	defer span.End()
 	err := P.service.DeletePickUpPoint(ctx, req.Id)
 	if err != nil {
 		if errors.Is(err, storage.ErrPickUpPointNotFound) {

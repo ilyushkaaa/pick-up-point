@@ -13,6 +13,8 @@ import (
 )
 
 func (o OrderDelivery) ReturnOrders(ctx context.Context, data *pb.ReturnOrderInputData) (*pb.ResultResponse, error) {
+	ctx, span := o.tracer.Start(ctx, "ReturnOrder")
+	defer span.End()
 	err := o.service.ReturnOrder(ctx, data.GetClientId(), data.GetOrderId())
 	if err != nil {
 		if errors.Is(err, service.ErrClientOrderNotFound) || errors.Is(err, storage.ErrClientOrderNotFound) {

@@ -13,6 +13,8 @@ import (
 )
 
 func (P PPDelivery) Add(ctx context.Context, req *pb.PickUpPointAdd) (*pb.PickUpPoint, error) {
+	ctx, span := P.tracer.Start(ctx, "AddPickUpPoint")
+	defer span.End()
 	err := req.ValidateAll()
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, err.Error())
