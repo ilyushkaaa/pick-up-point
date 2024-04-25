@@ -37,5 +37,5 @@ func (P PPDelivery) GetByID(ctx context.Context, req *pb.GetByIDRequest) (*pb.Pi
 	}
 	ppToReturn := dto.GetPBFromPickUpPoint(pp)
 	P.cache.GoAddToCache(ctx, strconv.FormatUint(req.GetId(), 10), ppToReturn)
-	return dto.GetPBFromPickUpPoint(pp), nil
+	return ppToReturn, nil
 }
