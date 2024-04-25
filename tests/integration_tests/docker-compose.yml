@@ -82,3 +82,14 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_INT
 
 
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "6832:6831/udp"
+      - "16687:16686"
+    networks:
+      - jaeger-example
+
+networks:
+  jaeger-example:
+

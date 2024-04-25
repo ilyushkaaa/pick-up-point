@@ -15,6 +15,7 @@ services:
       - kafka1
       - kafka2
       - kafka3
+      - redis
       - prometheus
       - jaeger
     tty: true
@@ -111,9 +112,9 @@ services:
   prometheus:
     image: prom/prometheus:v2.28.0
     volumes:
-      - ./pkg/infrastructure/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - ./pkg/infrastructure/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--config.file=/etc/prometheus/prometheus.yaml'
     ports:
       - "9090:9090"
     depends_on:

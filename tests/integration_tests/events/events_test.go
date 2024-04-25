@@ -30,7 +30,9 @@ func TestLoggingEvents(t *testing.T) {
 		}
 		require.NoError(t, consumer.WaitForConsumerReady(s.waitChan))
 
-		s.i.AccessLog(ctx, info)
+		s.i.AccessLog(ctx, "", info, func(ctx context.Context, req any) (any, error) {
+			return nil, nil
+		})
 
 		select {
 		case <-s.waitChan:
@@ -53,7 +55,9 @@ func TestLoggingEvents(t *testing.T) {
 		}
 		require.NoError(t, consumer.WaitForConsumerReady(s.waitChan))
 
-		s.i.AccessLog(ctx, info)
+		s.i.AccessLog(ctx, "", info, func(ctx context.Context, req any) (any, error) {
+			return nil, nil
+		})
 
 		select {
 		case <-s.waitChan:

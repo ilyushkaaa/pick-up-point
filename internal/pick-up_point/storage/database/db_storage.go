@@ -1,18 +1,15 @@
 package storage
 
 import (
-	"go.opentelemetry.io/otel/trace"
 	"homework/pkg/infrastructure/database/postgres"
 )
 
 type PPStorageDB struct {
-	db     database.Database
-	tracer trace.Tracer
+	db database.Database
 }
 
-func New(db database.Database, tracer trace.Tracer) *PPStorageDB {
+func New(db database.Database) *PPStorageDB {
 	return &PPStorageDB{
-		db:     db,
-		tracer: tracer,
+		db: db,
 	}
 }

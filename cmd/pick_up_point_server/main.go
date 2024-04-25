@@ -154,13 +154,13 @@ func goRunGRPCServer(ctx context.Context, infra infrastructure, logger *zap.Suga
 	ppByIDCache := cacheInMemory.New(logger, infra.cacheConfig.PPByIDTTl, infra.cacheConfig.Capacity)
 	ordersByClientCache := cacheInMemory.New(logger, infra.cacheConfig.OrdersByClientTTl, infra.cacheConfig.Capacity)
 
-	stPP := storagePP.New(infra.db, tracer)
-	stOrder := storageOrder.New(infra.db, tracer)
+	stPP := storagePP.New(infra.db)
+	stOrder := storageOrder.New(infra.db)
 
-	svPP := servicePP.New(stPP, stOrder, infra.tm, ppByIDCache, tracer)
+	svPP := servicePP.New(stPP, stOrder, infra.tm, ppByIDCache)
 
 	packageTypes := packages.Init()
-	svOrder := serviceOrder.New(stOrder, stPP, packageTypes, infra.tm, orderByIDCache, ordersByClientCache, ppByIDCache, bm, tracer)
+	svOrder := serviceOrder.New(stOrder, stPP, packageTypes, infra.tm, orderByIDCache, ordersByClientCache, ppByIDCache, bm)
 
 	waitChan := make(chan struct{})
 

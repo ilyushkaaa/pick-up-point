@@ -13,6 +13,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel"
 	"go.uber.org/zap"
 	cacheInMemory "homework/internal/cache/in_memory"
 	cacheRedis "homework/internal/cache/redis"
@@ -38,6 +39,8 @@ func setUp(t *testing.T, tableName string) *delivery.PPDelivery {
 
 	db := database.New(tm)
 
+	tracer := otel.Tracer("test-tracer")
+
 	stPP := storagePP.New(db)
 	stOrder := storageOrder.New(db)
 	logger := zap.NewNop().Sugar()
@@ -51,7 +54,7 @@ func setUp(t *testing.T, tableName string) *delivery.PPDelivery {
 	})
 	imMemoryCache := cacheInMemory.New(logger, time.Minute, capacity)
 	srv := service.New(stPP, stOrder, tm, imMemoryCache)
-	del := delivery.New(redisCache, srv, logger)
+	del := delivery.New(redisCache, srv, logger, tracer)
 
 	err = truncateTable(ctx, db, tableName)
 	require.NoError(t, err)

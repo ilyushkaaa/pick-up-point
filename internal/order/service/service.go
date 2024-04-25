@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 
-	"go.opentelemetry.io/otel/trace"
 	"homework/internal/cache"
 	filtermodel "homework/internal/filters/model"
 	ordermodel "homework/internal/order/model"
@@ -34,12 +33,11 @@ type OrderServicePP struct {
 	cacheOrdersByClient cache.Cache
 	cachePPByID         cache.Cache
 	metrics             *prometheus.BusinessMetrics
-	tracer              trace.Tracer
 }
 
 func New(storage orderStorage.OrderStorage, ppStorage ppStorage.PPStorage, packages map[string]*packages.Package,
 	transactionManager transaction_manager.TransactionManager, cacheOrderByID, cacheOrdersByClient,
-	cachePPByID cache.Cache, metrics *prometheus.BusinessMetrics, tracer trace.Tracer) *OrderServicePP {
+	cachePPByID cache.Cache, metrics *prometheus.BusinessMetrics) *OrderServicePP {
 	return &OrderServicePP{
 		orderStorage:        storage,
 		ppStorage:           ppStorage,
@@ -49,6 +47,5 @@ func New(storage orderStorage.OrderStorage, ppStorage ppStorage.PPStorage, packa
 		cacheOrdersByClient: cacheOrdersByClient,
 		cachePPByID:         cachePPByID,
 		metrics:             metrics,
-		tracer:              tracer,
 	}
 }
