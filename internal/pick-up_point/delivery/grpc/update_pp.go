@@ -3,6 +3,7 @@ package delivery
 import (
 	"context"
 	"errors"
+	"strconv"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -32,5 +33,6 @@ func (P PPDelivery) Update(ctx context.Context, req *pb.PickUpPointUpdate) (*pb.
 		P.logger.Errorf("internal server error in updating pick-up point: %v", err)
 		return nil, status.Errorf(codes.Internal, response.ErrInternal.Error())
 	}
+	P.cache.GoDeleteFromCache(ctx, strconv.FormatUint(req.GetId(), 10))
 	return req, nil
 }
