@@ -9,6 +9,8 @@ import (
 
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.opentelemetry.io/otel"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -27,6 +29,7 @@ import (
 	storagePP "homework/internal/pick-up_point/storage/database"
 	database "homework/pkg/infrastructure/database/postgres"
 	"homework/pkg/infrastructure/database/postgres/transaction_manager"
+	"homework/pkg/infrastructure/jaeger"
 	"homework/pkg/infrastructure/kafka"
 	"homework/pkg/infrastructure/kafka/consumer"
 	"homework/pkg/infrastructure/prometheus"
@@ -87,6 +90,16 @@ func main() {
 		}
 	}()
 
+	shutdown, err := jaeger.InitProvider()
+	if err != nil {
+		logger.Fatalf("error in tracer init: %v", err)
+	}
+	defer func() {
+		if err = shutdown(ctx); err != nil {
+			logger.Fatalf("failed to shutdown TracerProvider: %v", err)
+		}
+	}()
+
 	infra := infrastructure{
 		tm:          tm,
 		db:          db,
@@ -123,10 +136,15 @@ func goRunGRPCServer(ctx context.Context, infra infrastructure, logger *zap.Suga
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	tracer := otel.Tracer("test-tracer")
+
 	i := interceptor.New(logger, infra.cfg.Producer)
 	grpcMetrics := grpc_prometheus.NewServerMetrics()
 
-	s := grpc.NewServer(grpc.ChainUnaryInterceptor(grpcMetrics.UnaryServerInterceptor(), i.AccessLog, i.Metric, i.Auth))
+	s := grpc.NewServer(
+		grpc.StatsHandler(otelgrpc.NewServerHandler()),
+		grpc.ChainUnaryInterceptor(grpcMetrics.UnaryServerInterceptor(), i.AccessLog, i.Metric, i.Auth),
+	)
 
 	bm, sm := prometheus.Init(s, logger, grpcMetrics)
 
@@ -136,13 +154,13 @@ func goRunGRPCServer(ctx context.Context, infra infrastructure, logger *zap.Suga
 	ppByIDCache := cacheInMemory.New(logger, infra.cacheConfig.PPByIDTTl, infra.cacheConfig.Capacity)
 	ordersByClientCache := cacheInMemory.New(logger, infra.cacheConfig.OrdersByClientTTl, infra.cacheConfig.Capacity)
 
-	stPP := storagePP.New(infra.db)
-	stOrder := storageOrder.New(infra.db)
+	stPP := storagePP.New(infra.db, tracer)
+	stOrder := storageOrder.New(infra.db, tracer)
 
-	svPP := servicePP.New(stPP, stOrder, infra.tm, ppByIDCache)
+	svPP := servicePP.New(stPP, stOrder, infra.tm, ppByIDCache, tracer)
 
 	packageTypes := packages.Init()
-	svOrder := serviceOrder.New(stOrder, stPP, packageTypes, infra.tm, orderByIDCache, ordersByClientCache, ppByIDCache, bm)
+	svOrder := serviceOrder.New(stOrder, stPP, packageTypes, infra.tm, orderByIDCache, ordersByClientCache, ppByIDCache, bm, tracer)
 
 	waitChan := make(chan struct{})
 
@@ -152,8 +170,8 @@ func goRunGRPCServer(ctx context.Context, infra infrastructure, logger *zap.Suga
 		logger.Fatal(err)
 	}
 
-	pbOrder.RegisterOrdersServer(s, deliveryOrder.New(svOrder, logger))
-	pbPP.RegisterPickUpPointsServer(s, deliveryPP.New(infra.redisCache, svPP, logger))
+	pbOrder.RegisterOrdersServer(s, deliveryOrder.New(svOrder, logger, tracer))
+	pbPP.RegisterPickUpPointsServer(s, deliveryPP.New(infra.redisCache, svPP, logger, tracer))
 
 	logger.Infow("starting grpc server",
 		"type", "START",

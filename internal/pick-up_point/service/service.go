@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	"go.opentelemetry.io/otel/trace"
 	"homework/internal/cache"
 	orderStorage "homework/internal/order/storage"
 	"homework/internal/pick-up_point/model"
@@ -24,14 +25,16 @@ type PPService struct {
 	ppStorage          ppStorage.PPStorage
 	transactionManager transaction_manager.TransactionManager
 	cache              cache.Cache
+	tracer             trace.Tracer
 }
 
 func New(ppStorage ppStorage.PPStorage, orderStorage orderStorage.OrderStorage,
-	transactionManager transaction_manager.TransactionManager, cache cache.Cache) *PPService {
+	transactionManager transaction_manager.TransactionManager, cache cache.Cache, tracer trace.Tracer) *PPService {
 	return &PPService{
 		ppStorage:          ppStorage,
 		orderStorage:       orderStorage,
 		transactionManager: transactionManager,
 		cache:              cache,
+		tracer:             tracer,
 	}
 }
