@@ -24,7 +24,7 @@ func Init(s *grpc.Server, logger *zap.SugaredLogger, grpcMetrics *grpc_prometheu
 		sm.HitsByResponseCodesAndRequestTime)
 
 	go func() {
-		logger.Fatal(http.ListenAndServe(os.Getenv("KAFKA_METRICS_ADDR"), promhttp.HandlerFor(reg, promhttp.HandlerOpts{EnableOpenMetrics: true})))
+		logger.Fatal(http.ListenAndServe(os.Getenv("METRICS_ADDR"), promhttp.HandlerFor(reg, promhttp.HandlerOpts{EnableOpenMetrics: true})))
 	}()
 
 	return bm, sm
