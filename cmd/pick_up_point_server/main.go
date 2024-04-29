@@ -111,11 +111,11 @@ func main() {
 
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	err = pbOrder.RegisterOrdersHandlerFromEndpoint(ctx, mux, "localhost:9011", opts)
+	err = pbOrder.RegisterOrdersHandlerFromEndpoint(ctx, mux, os.Getenv("GRPC_SERVER_ADDRESS"), opts)
 	if err != nil {
 		logger.Fatalf("failed to register grpc gateway order handler: %v", err)
 	}
-	err = pbPP.RegisterPickUpPointsHandlerFromEndpoint(ctx, mux, "localhost:9011", opts)
+	err = pbPP.RegisterPickUpPointsHandlerFromEndpoint(ctx, mux, os.Getenv("GRPC_SERVER_ADDRESS"), opts)
 	if err != nil {
 		logger.Fatalf("failed to register grpc gateway pick-up points handler: %v", err)
 	}
