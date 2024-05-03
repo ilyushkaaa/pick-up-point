@@ -4,12 +4,14 @@
 package events
 
 import (
-	"net/http/httptest"
+	"context"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/peer"
 	"homework/pkg/infrastructure/kafka/consumer"
 )
 
@@ -20,16 +22,22 @@ func TestLoggingEvents(t *testing.T) {
 	t.Run("test get", func(t *testing.T) {
 		s := setUpAndConsume(t)
 		defer s.cancel()
-		req := httptest.NewRequest("GET", "http://127.0.0.1/pick-up-points", nil)
-		recorder := httptest.NewRecorder()
+		var addr address = "127.0.0.1:12345"
+		method := "/pb.Orders/IssueOrders"
+		ctx := peer.NewContext(context.Background(), &peer.Peer{Addr: addr})
+		info := &grpc.UnaryServerInfo{
+			FullMethod: method,
+		}
 		require.NoError(t, consumer.WaitForConsumerReady(s.waitChan))
 
-		s.mw.AccessLog(&fakeHandler{}).ServeHTTP(recorder, req)
+		s.i.AccessLog(ctx, "", info, func(ctx context.Context, req any) (any, error) {
+			return nil, nil
+		})
 
 		select {
 		case <-s.waitChan:
-			assert.Contains(t, s.buf.String(), `"method": "GET"`)
-			assert.Contains(t, s.buf.String(), `"url": "/pick-up-points"`)
+			assert.Contains(t, s.buf.String(), `"method": "/pb.Orders/IssueOrders"`)
+			assert.Contains(t, s.buf.String(), `"remote_addr": "127.0.0.1:12345"`)
 		case <-time.After(testTimeout):
 			t.Error("Timeout occurred")
 		}
@@ -39,16 +47,22 @@ func TestLoggingEvents(t *testing.T) {
 	t.Run("test post", func(t *testing.T) {
 		s := setUpAndConsume(t)
 		defer s.cancel()
-		req := httptest.NewRequest("POST", "http://127.0.0.1/pick-up-point", nil)
-		recorder := httptest.NewRecorder()
+		var addr address = "127.0.0.1:34567"
+		method := "/pb.PicUpPoints/Add"
+		ctx := peer.NewContext(context.Background(), &peer.Peer{Addr: addr})
+		info := &grpc.UnaryServerInfo{
+			FullMethod: method,
+		}
 		require.NoError(t, consumer.WaitForConsumerReady(s.waitChan))
 
-		s.mw.AccessLog(&fakeHandler{}).ServeHTTP(recorder, req)
+		s.i.AccessLog(ctx, "", info, func(ctx context.Context, req any) (any, error) {
+			return nil, nil
+		})
 
 		select {
 		case <-s.waitChan:
-			assert.Contains(t, s.buf.String(), `"method": "POST"`)
-			assert.Contains(t, s.buf.String(), `"url": "/pick-up-point"`)
+			assert.Contains(t, s.buf.String(), `"method": "/pb.PicUpPoints/Add"`)
+			assert.Contains(t, s.buf.String(), `"remote_addr": "127.0.0.1:34567"`)
 		case <-time.After(testTimeout):
 			t.Error("Timeout occurred")
 		}

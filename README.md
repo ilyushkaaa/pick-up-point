@@ -20,7 +20,7 @@ make integration_tests_run
 
 ```bash
 curl -k -X POST \
-  https://127.0.0.1:9000/pick-up-point \
+  https://127.0.0.1:9010/api/v1/pick-up-point \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx' \
   -d '{
@@ -29,16 +29,16 @@ curl -k -X POST \
         "region": "Курская область",
         "city": "Курск",
         "street": "Студенческая",
-        "house_num": "13А"
+        "houseNum": "13А"
     },
-    "phone_number": "88005553535"
+    "phoneNumber": "88005553535"
 }'
 ```
 ### Обновление информации о ПВЗ
 
 ```bash
 curl -k -X PUT \
-  https://127.0.0.1:9010/pick-up-point \
+  https://127.0.0.1:9010/api/v1/pick-up-point \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx' \
   -d '{
@@ -48,9 +48,9 @@ curl -k -X PUT \
         "region": "Курская область",
         "city": "Курск",
         "street": "Ленина",
-        "house_num": "13А"
+        "houseNum": "13А"
     },
-    "phone_number": "89001001010"
+    "phoneNumber": "89001001010"
 }'
 
 ```
@@ -58,77 +58,77 @@ curl -k -X PUT \
 ### Получение списка всех ПВЗ
 
 ```bash
-curl -k -X GET   https://127.0.0.1:9000/pick-up-points   -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
+curl -k -X GET   https://127.0.0.1:9010/api/v1/pick-up-points   -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
 ```
 
 ### Получение ПВЗ по его ID
 
 ```bash
 curl -k -X GET \
-  https://127.0.0.1:9010/pick-up-point/1 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
+  https://127.0.0.1:9010/api/v1/pick-up-point/1 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
 ```
 
 ### Удаление ПВЗ
 
 ```bash
 curl -k -X DELETE \
-  https://127.0.0.1:9000/pick-up-point/1 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
+  https://127.0.0.1:9010/api/v1/pick-up-point/1 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
 ```
 
 ### Принять заказ от курьера (добавить на ПВЗ)
-```
+```bash
 curl -k -X POST \
-https://127.0.0.1:9010/order \
+https://127.0.0.1:9010/api/v1/order \
 -H 'Content-Type: application/json' \
 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx' \
 -d '{
     "id": 12345,
-    "client_id": 67890,
+    "clientId": 67890,
     "weight": 12.1,
     "price": 50.99,
-    "storage_expiration_date": "2024-04-29T12:00:00Z",
-    "package_type": "box",
-    "pick_up_point_id": 1
+    "storageExpirationDate": "2024-04-29T12:00:00Z",
+    "packageType": "box",
+    "pickUpPointId": 1
 }'
 ```
 
 ### Отдать заказ курьеру (Удалить с ПВЗ)
-```
-curl -k -X DELETE \
-https://127.0.0.1:9000/order/12345 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
+```bash
+curl  -X DELETE \
+http://127.0.0.1:9010/api/v1/order/1 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
 ```
 
 ### Получить список возвратов
-```
+```bash
 curl -k -X GET \
-https://127.0.0.1:9000/orders/returns/2 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
+https://127.0.0.1:9010/api/v1/orders/returns/2 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
 ```
 
 ### Получить список заказов клиента
-```
+```bash
 curl -k -X GET \
-https://127.0.0.1:9000//clients/{CLIENT_ID}/orders?num_of_last_orders=1 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
+https://127.0.0.1:9010/api/v1/clients/1/orders?num_of_last_orders=1 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx'
 ```
 
 ### Отдать заказ клиенту
-```
-curl -k -X PUT \
-https://127.0.0.1:9000/orders/issue \
+```bash
+curl -k -X POST \
+https://127.0.0.1:9010/api/v1/orders/issue \
 -H 'Content-Type: application/json' \
 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx' \
 -d '{
-    "orders-ids": [12346, 12347]
+    "order_ids": [12346, 12347]
 }'
 ```
 
 ### Принять возврат от клиента
-```
+```bash
 curl -k -X PUT \
-https://127.0.0.1:9000/orders/return \
+https://127.0.0.1:9010/api/v1/orders/return \
 -H 'Content-Type: application/json' \
 -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQx' \
 -d '{
-    "order_id": 12345,
-    "client_id": 67890
+    "orderId": 12345,
+    "clientId": 67890
 }'
 ```

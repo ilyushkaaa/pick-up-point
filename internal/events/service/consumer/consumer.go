@@ -50,7 +50,6 @@ func (s *EventsConsumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim
 				"request time", newEvent.RequestTime,
 				"method", newEvent.RequestMethod,
 				"remote_addr", newEvent.RemoteAddr,
-				"url", newEvent.URL,
 			)
 
 			session.MarkMessage(message, "")

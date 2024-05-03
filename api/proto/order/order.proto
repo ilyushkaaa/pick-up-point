@@ -1,0 +1,93 @@
+syntax = "proto3";
+package pb;
+option go_package = "/pb";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+service Orders {
+  rpc Add(OrderFromCourierInputData) returns (OrderFromCourierInputData) {
+    option (google.api.http) = {
+      post: "/api/v1/order"
+      body: "*"
+    };
+  }
+  rpc Delete(DeleteOrderRequest) returns (ResultResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/order/{id}"
+    };
+  }
+  rpc IssueOrders(OrdersToIssue) returns (ResultResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/orders/issue"
+      body: "*"
+    };
+  }
+  rpc ReturnOrders(ReturnOrderInputData) returns (ResultResponse) {
+    option (google.api.http) = {
+      put: "/api/v1/orders/return"
+      body: "*"
+    };
+  }
+  rpc GetOrderReturns(GetOrdersReturnsRequest) returns (stream Order) {
+    option (google.api.http) = {
+      get: "/api/v1/orders/returns/{orders_per_page}"
+    };
+  }
+  rpc GetUserOrders(GetUserOrdersRequest) returns (stream Order) {
+    option (google.api.http) = {
+      get: "/api/v1/clients/{client_id}/orders"
+    };
+  }
+}
+
+message OrderFromCourierInputData {
+  uint64 id = 1;
+  uint64 client_id = 2;
+  double weight = 3;
+  double price = 4;
+  google.protobuf.Timestamp storage_expiration_date = 5;
+  optional string package_type = 6;
+  uint64 pick_up_point_id = 7;
+}
+message Order {
+  uint64 id = 1;
+  uint64 client_id = 2;
+  double weight = 3;
+  double price = 4;
+  string package_type = 5;
+  google.protobuf.Timestamp storage_expiration_date = 6;
+  google.protobuf.Timestamp order_issue_date = 7;
+  bool is_issued = 8;
+  bool is_returned = 9;
+  uint64 pick_up_point_id = 10;
+}
+
+
+message DeleteOrderRequest{
+  uint64 id = 1;
+}
+
+
+message ResultResponse{
+  string result = 1;
+}
+
+message OrdersToIssue {
+  repeated uint64 order_ids = 1;
+}
+
+message ReturnOrderInputData {
+  uint64 order_id = 1;
+  uint64 client_id = 2;
+}
+
+message GetOrdersReturnsRequest {
+  uint64 orders_per_page = 1;
+  uint64 page_num = 2;
+}
+
+message GetUserOrdersRequest {
+  int64 limit = 1;
+  bool pp_only = 2;
+  uint64 client_id = 3;
+}

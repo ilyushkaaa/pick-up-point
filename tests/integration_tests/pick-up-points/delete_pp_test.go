@@ -4,50 +4,32 @@
 package pick_up_points
 
 import (
-	"io"
-	"net/http"
-	"net/http/httptest"
+	"context"
 	"testing"
 
-	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"homework/tests/test_json"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"homework/tests/test_pb"
 )
 
 func TestDeletePickUpPointBy(t *testing.T) {
 
 	t.Run("error no pick-up points with such id", func(t *testing.T) {
 		del := setUp(t, tableName)
-		request := httptest.NewRequest(http.MethodDelete, "/pick-up-point/5020", nil)
-		request = mux.SetURLVars(request, map[string]string{"PP_ID": "5020"})
-		respWriter := httptest.NewRecorder()
 
-		del.DeletePickUpPoint(respWriter, request)
-		resp := respWriter.Result()
-		body, err := io.ReadAll(resp.Body)
+		result, err := del.Delete(context.Background(), &test_pb.DeletePPRequestNotExist)
 
-		require.NoError(t, err)
-		defer resp.Body.Close()
-
-		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
-		assert.JSONEq(t, `{"error":"no pick-up points with such id"}`, string(body))
+		assert.ErrorIs(t, err, status.Error(codes.NotFound, "no pick-up points with such id"))
+		assert.Nil(t, result)
 	})
 
 	t.Run("ok", func(t *testing.T) {
 		del := setUp(t, tableName)
-		request := httptest.NewRequest(http.MethodDelete, "/pick-up-point/5000", nil)
-		request = mux.SetURLVars(request, map[string]string{"PP_ID": "5000"})
-		respWriter := httptest.NewRecorder()
 
-		del.DeletePickUpPoint(respWriter, request)
-		resp := respWriter.Result()
-		body, err := io.ReadAll(resp.Body)
+		result, err := del.Delete(context.Background(), &test_pb.DeletePPRequestOk)
 
-		require.NoError(t, err)
-		defer resp.Body.Close()
-
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		assert.JSONEq(t, test_json.SuccessResult, string(body))
+		assert.NoError(t, err)
+		assert.Equal(t, result, &test_pb.DeleteSuccessResult)
 	})
 }

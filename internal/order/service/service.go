@@ -10,6 +10,7 @@ import (
 	orderStorage "homework/internal/order/storage"
 	ppStorage "homework/internal/pick-up_point/storage"
 	"homework/pkg/infrastructure/database/postgres/transaction_manager"
+	"homework/pkg/infrastructure/prometheus"
 )
 
 type OrderService interface {
@@ -31,10 +32,12 @@ type OrderServicePP struct {
 	cacheOrderByID      cache.Cache
 	cacheOrdersByClient cache.Cache
 	cachePPByID         cache.Cache
+	metrics             *prometheus.BusinessMetrics
 }
 
 func New(storage orderStorage.OrderStorage, ppStorage ppStorage.PPStorage, packages map[string]*packages.Package,
-	transactionManager transaction_manager.TransactionManager, cacheOrderByID, cacheOrdersByClient, cachePPByID cache.Cache) *OrderServicePP {
+	transactionManager transaction_manager.TransactionManager, cacheOrderByID, cacheOrdersByClient,
+	cachePPByID cache.Cache, metrics *prometheus.BusinessMetrics) *OrderServicePP {
 	return &OrderServicePP{
 		orderStorage:        storage,
 		ppStorage:           ppStorage,
@@ -43,5 +46,6 @@ func New(storage orderStorage.OrderStorage, ppStorage ppStorage.PPStorage, packa
 		cacheOrderByID:      cacheOrderByID,
 		cacheOrdersByClient: cacheOrdersByClient,
 		cachePPByID:         cachePPByID,
+		metrics:             metrics,
 	}
 }

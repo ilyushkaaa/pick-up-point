@@ -39,6 +39,7 @@ func (op *OrderServicePP) IssueOrders(ctx context.Context, orderIDs []uint64) er
 			err = op.orderStorage.IssueOrders(ctx, orderIDs)
 			if err == nil {
 				op.cacheOrderByID.GoDeleteFromCache(context.Background(), getKeysOrderKeys(orderIDs)...)
+				op.metrics.IssuedOrdersCount.Inc()
 			}
 			return err
 		})
